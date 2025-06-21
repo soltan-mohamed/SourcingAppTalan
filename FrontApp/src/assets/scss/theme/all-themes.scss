@@ -1,0 +1,31 @@
+﻿/*
+ *  Document   : all-themes.scss
+ *  Author     : RedStar Template
+ *  Description: This scss file for import all theme style scss files
+
+             [1. Purple Theme]               
+             [2. Blue Theme]               
+             [3. Cyan Theme]              
+             [4. Green Theme]             
+             [5. Orange Theme]               
+             [6. Black Theme]               
+             [7. White Theme]               
+             [8. Dark Template Theme]               
+ */
+
+/*            [1. Purple Theme]               */
+@use "theme-purple";
+/*             [2. Blue Theme]               */
+@use "theme-blue";
+/*             [3. Cyan Theme]               */
+@use "theme-cyan";
+/*             [4. Green Theme]               */
+@use "theme-green";
+/*             [5. Orange Theme]               */
+@use "theme-orange";
+/*             [6. Black Theme]               */
+@use "theme-black";
+/*             [7. White Theme]               */
+@use "theme-white";
+/*             [8. Dark Template Theme]               */
+@use "dark";

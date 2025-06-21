@@ -1,0 +1,24 @@
+.rightSetting {
+  padding: 20px 25px 0px 25px;
+  p {
+    margin: 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    text-align: left;
+  }
+  .mat-button-toggle-checked {
+    background-color: #6e68c1 !important;
+    color: #ffffff !important;
+  }
+  .mat-button-toggle {
+    height: 30px;
+    font-size: 14px;
+    .mat-pseudo-checkbox-checked::after {
+      border-left: 2px solid #ffffff;
+      color: #ffffff;
+    }
+  }
+  .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+    line-height: 30px !important;
+  }
+}

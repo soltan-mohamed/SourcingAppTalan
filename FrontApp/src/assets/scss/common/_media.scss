@@ -1,0 +1,252 @@
+﻿/*
+ *  Document   : _media.scss
+ *  Author     : RedStar Template
+ *  Description: This scss file for media queries classes
+ */
+
+@media (min-width: 1281px) {
+  .navbar-header {
+    float: left;
+  }
+  .navbar-collapse {
+    width: auto;
+    border-top: 0;
+    box-shadow: none;
+    &.collapse {
+      display: block !important;
+      height: auto !important;
+      padding-bottom: 0;
+      overflow: visible !important;
+    }
+  }
+  .navbar-toggle {
+    display: none;
+  }
+  .navbar-nav {
+    float: left;
+    margin: 0;
+    > li {
+      float: left;
+      > a {
+        padding-top: 15px;
+        padding-bottom: 15px;
+      }
+    }
+  }
+}
+
+@media (max-width: 1025px) {
+  .sidemenu-collapse {
+    display: none !important;
+  }
+}
+/* 
+  ##Device = Laptops, Desktops
+  ##Screen = B/w 1025px to 1280px
+*/
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .navbar-header {
+    float: left;
+  }
+  .navbar-toggle {
+    display: none;
+  }
+  .navbar-collapse {
+    width: auto;
+    border-top: 0;
+    box-shadow: none;
+    &.collapse {
+      display: block !important;
+      height: auto !important;
+      padding-bottom: 0;
+      overflow: visible !important;
+    }
+  }
+  .navbar-toggle {
+    display: none;
+  }
+  .navbar-nav {
+    float: left;
+    margin: 0;
+    > li {
+      float: left;
+      > a {
+        padding-top: 15px;
+        padding-bottom: 15px;
+      }
+    }
+  }
+  .navbar .collapse-menu-icon {
+    padding-left: 0px !important;
+  }
+}
+
+/* 
+  ##Device = Tablets, Ipads 
+  ##Screen = B/w 768px to 1024px
+*/
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  section.content {
+    margin: 35px 15px 0 15px;
+    .content-block {
+      padding: 25px 10px 0px 12px;
+    }
+  }
+  .rtl {
+    .content-block {
+      padding: 25px 12px 0px 10px !important;
+    }
+  }
+  .navbar-header {
+    float: left;
+  }
+  .navbar-collapse {
+    width: auto;
+    border-top: 0;
+    box-shadow: none;
+    &.collapse {
+      display: block !important;
+      height: auto !important;
+      padding-bottom: 0;
+      overflow: visible !important;
+    }
+  }
+
+  .navbar-toggle {
+    display: none;
+  }
+  .navbar-nav {
+    float: left;
+    margin: 0;
+    > li {
+      float: left;
+      > a {
+        padding-top: 15px;
+        padding-bottom: 15px;
+      }
+    }
+  }
+  .navbar-brand {
+    margin-left: 0px !important;
+  }
+
+  .rtl {
+    .navbar {
+      .navbar-toggle {
+        float: left;
+        margin-left: 15px;
+        margin-right: 0;
+      }
+      .navbar-header {
+        margin-bottom: 0px;
+      }
+    }
+  }
+}
+
+/* 
+  ##Device = Low Resolution Tablets, Mobiles 
+  ##Screen = B/w 481px to 767px
+*/
+
+@media (min-width: 481px) and (max-width: 767px) {
+  section.content {
+    margin: 35px 15px 0 15px;
+    .content-block {
+      padding: 25px 10px 0px 12px;
+    }
+  }
+  .rtl {
+    .content-block {
+      padding: 25px 12px 0px 10px !important;
+    }
+  }
+  .navbar {
+    .navbar-header {
+      display: inline-block;
+      width: calc(100% + 30px);
+      float: left;
+    }
+    .navbar-toggle {
+      float: right;
+      position: relative;
+      margin-right: 40px !important;
+    }
+    .nav {
+      > li {
+        display: inline-block;
+      }
+    }
+  }
+  .navbar-brand {
+    margin-left: 0px !important;
+  }
+}
+
+/* 
+  ##Device = Most of the Smartphones Mobiles (Portrait)
+  ##Screen = B/w 320px to 479px
+*/
+
+@media (min-width: 320px) and (max-width: 480px) {
+  section.content {
+    margin: 35px 15px 0 15px;
+    .content-block {
+      padding: 25px 10px 0px 12px;
+    }
+  }
+  .rtl {
+    .content-block {
+      padding: 25px 12px 0px 10px !important;
+    }
+  }
+  .navbar {
+    .navbar-header {
+      width: 100%;
+      padding: 0;
+    }
+    .navbar-toggle {
+      float: right;
+      position: relative;
+      margin-right: 30px !important;
+    }
+    .nav {
+      > li {
+        display: inline-block;
+      }
+    }
+  }
+  .navbar-brand {
+    margin-left: 0px !important;
+  }
+}
+@media (max-width: 280px) {
+  section.content {
+    margin: 35px 15px 0 15px;
+    .content-block {
+      padding: 25px 10px 0px 12px;
+    }
+  }
+  .rtl {
+    .content-block {
+      padding: 25px 12px 0px 10px;
+    }
+  }
+  .navbar {
+    .navbar-header {
+      width: 100%;
+      padding: 0;
+    }
+    .navbar-toggle {
+      margin-right: 30px !important;
+      float: right;
+      position: relative;
+    }
+    .nav {
+      > li {
+        display: inline-block;
+      }
+    }
+  }
+}

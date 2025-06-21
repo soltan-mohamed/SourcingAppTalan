@@ -1,0 +1,17 @@
+/*
+ *  Document   : _collapse.scss
+ *  Author     : RedStar Template
+ *  Description: This scss file for collapse style classes
+ */
+@use "../common/mixins" as mix;
+.collapse,
+.collapse.in,
+.collapsing {
+  .well {
+    @include mix.border-radius(0);
+    margin-bottom: 0;
+  }
+  &.show {
+    display: block;
+  }
+}

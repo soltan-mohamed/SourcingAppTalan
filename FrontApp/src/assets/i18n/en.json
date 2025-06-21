@@ -1,0 +1,49 @@
+{
+  "LOGIN": {
+    "TITLE": "Welcome to Sourcing Talan"
+  },
+  "MENUITEMS": {
+    "MAIN": {
+      "TEXT": "Main"
+    },
+    "DASHBOARD": {
+      "TEXT": "Dashboard",
+      "LIST": {
+        "DASHBOARD1": "Dashboard 1",
+        "DASHBOARD2": "Dashboard 2",
+        "DASHBOARD3": "Dashboard 3",
+        "RECRUTEUR-DASHBOARD": "Recruteur Dashboard",
+        "EVALUATEUR-DASHBOARD": "Evaluateur Dashboard",
+        "MANAGER-DASHBOARD": "Manager Dashboard"
+      }
+    },
+        "RECRUTEURS": {
+      "TEXT": "Recruteurs",
+      "LIST": {
+        "ALL-RECRUTEURS": "All recruteurs",
+        "ADD-RECRUTEUR": "Add recruteur",
+        "EDIT-RECRUTEUR": "Edit recruteur",
+        "ABOUT-RECRUTEUR": "About recruteur"
+      }
+    },
+    "EVALUATEURS": {
+      "TEXT": "Evaluateurs",
+      "LIST": {
+        "ALL-EVALUATEURS": "All evaluateurs",
+        "ADD-EVALUATEUR": "Add evaluateur",
+        "EDIT-EVALUATEUR": "Edit evaluateur",
+        "ABOUT-EVALUATEUR": "About evaluateur"
+      }
+    },
+    "MANAGERS": {
+      "TEXT": "Managers",
+      "LIST": {
+        "ALL-MANAGERS": "All managers",
+        "ADD-MANAGER": "Add manager",
+        "EDIT-MANAGER": "Edit manager",
+        "ABOUT-MANAGER": "About manager",
+        "MANAGER-ATTENDANCE": "manager Attendance"
+      }
+    }
+  }
+}

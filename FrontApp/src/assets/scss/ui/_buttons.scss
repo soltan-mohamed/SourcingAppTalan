@@ -1,0 +1,43 @@
+﻿/*
+ *  Document   : _buttons.scss
+ *  Author     : RedStar Template
+ *  Description: This scss file for button style classes
+ */
+@use "@angular/material" as mat;
+.example-button-row button,
+.example-button-row a {
+  margin-right: 8px;
+}
+
+.btn:focus,
+.btn.focus {
+  box-shadow: none;
+}
+
+.btn-space {
+  margin-right: 10px !important;
+}
+.btn-outline-default {
+  border: 1px solid #005cbb;
+  color: #005cbb;
+  &:hover {
+    background-color: #343dff;
+    color: rgb(255, 255, 255);
+  }
+}
+.formSubmitBtn {
+  @include mat.button-overrides(
+    (
+      filled-container-color: #005cbb,
+      filled-label-text-color: #ffffff,
+    )
+  );
+}
+.formCancelBtn {
+  @include mat.button-overrides(
+    (
+      filled-container-color: #ba1a1a,
+      filled-label-text-color: #ffffff,
+    )
+  );
+}

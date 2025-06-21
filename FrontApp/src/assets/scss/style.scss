@@ -1,0 +1,107 @@
+@use "sass:meta";
+/*
+ *  Document   : style.css
+ *  Author     : RedStar Template
+ *  Description: This is a main style scss file for import all scss files.
+ *
+ *  Structure (with shortcodes):
+                 [1. Common ]
+                 [2. Fonts ]                   
+                 [3. Components ]       
+                 [4. Apps]                   
+                 [5. Pages ]    
+                 [6. Pugins ]        
+                 [7. UI ]     
+                 [8. Browser ]     
+
+                
+/*                 [1. Common ]                   			*/
+/* Importing Bootstrap SCSS file. */
+@import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+@include meta.load-css("common/_variables");
+@include meta.load-css("common/_mixins");
+@include meta.load-css("common/_customanimate.scss");
+@include meta.load-css("common/_general.scss");
+@include meta.load-css("common/_demo.scss");
+@include meta.load-css("common/_helpers.scss");
+@include meta.load-css("common/_media.scss");
+@include meta.load-css("common/_animation.scss");
+@include meta.load-css("common/_rtl.scss");
+
+/*                 [2. Fonts]                   				*/
+// @import "fonts/_material.scss";
+@include meta.load-css("fonts/fontawesome/fontawesome.scss");
+@include meta.load-css("fonts/fontawesome/regular.scss");
+@include meta.load-css("fonts/fontawesome/solid.scss");
+@include meta.load-css("fonts/fontawesome/brands.scss");
+
+/*                 [3. Components ]                   		*/
+@include meta.load-css("components/_breadcrumbs.scss");
+@include meta.load-css("components/_checkboxradio.scss");
+@include meta.load-css("components/_dropdownmenu.scss");
+@include meta.load-css("components/_feed.scss");
+@include meta.load-css("components/_formcomponents.scss");
+@include meta.load-css("components/_infobox.scss");
+@include meta.load-css("components/_inputformgroup.scss");
+@include meta.load-css("components/_labels.scss");
+@include meta.load-css("components/_leftsidebaroverlay.scss");
+@include meta.load-css("components/_navbar");
+@include meta.load-css("components/_navtabs.scss");
+@include meta.load-css("components/_noticeboard.scss");
+@include meta.load-css("components/_rightsidebar.scss");
+@include meta.load-css("components/_searchbar.scss");
+@include meta.load-css("components/_switch.scss");
+@include meta.load-css("components/_thumbnails.scss");
+@include meta.load-css("components/_todo.scss");
+@include meta.load-css("components/_settingSidebar.scss");
+
+/*                 [4. Apps]                   				*/
+@include meta.load-css("apps/_calendar.scss");
+@include meta.load-css("apps/_chat.scss");
+@include meta.load-css("apps/_contactlist.scss");
+@include meta.load-css("apps/_contactgrid.scss");
+@include meta.load-css("apps/_dragdrop.scss");
+@include meta.load-css("apps/_task.scss");
+
+/*                 [5. Pages ]                   				*/
+@include meta.load-css("pages/_dashboard.scss");
+@include meta.load-css("pages/_inbox.scss");
+@include meta.load-css("pages/_pricing.scss");
+@include meta.load-css("pages/_profile.scss");
+@include meta.load-css("pages/_timeline.scss");
+// @import "pages/_extra_pages.scss";
+@include meta.load-css("pages/_auth.scss");
+@include meta.load-css("pages/_payslip.scss");
+
+/*                 [6. Pugins ]                   				*/
+@include meta.load-css("plugins/_carousel.scss");
+@include meta.load-css("plugins/_charts.scss");
+@include meta.load-css("plugins/_formwizard.scss");
+@include meta.load-css("plugins/_imagegallery.scss");
+@include meta.load-css("plugins/_maps.scss");
+@include meta.load-css("plugins/_tables.scss");
+
+/*                 [7. UI ]                   */
+@include meta.load-css("ui/_alerts.scss");
+@include meta.load-css("ui/_badgelistgroupitem.scss");
+@include meta.load-css("ui/_buttons.scss");
+@include meta.load-css("ui/_card.scss");
+@include meta.load-css("ui/_collapse.scss");
+@include meta.load-css("ui/_dialogs.scss");
+@include meta.load-css("ui/_expansion.scss");
+@include meta.load-css("ui/_mediaobject.scss");
+@include meta.load-css("ui/_modals.scss");
+@include meta.load-css("ui/_pageloader.scss");
+@include meta.load-css("ui/_pagination.scss");
+@include meta.load-css("ui/_panels.scss");
+@include meta.load-css("ui/_preloaders.scss");
+@include meta.load-css("ui/_progressbars.scss");
+@include meta.load-css("ui/_slider.scss");
+@include meta.load-css("ui/_snackbar.scss");
+@include meta.load-css("ui/_tabs.scss");
+@include meta.load-css("ui/_tooltippopovers.scss");
+@include meta.load-css("ui/_ckeditor.scss");
+
+/*                 [8. Browser ]                   			*/
+@include meta.load-css("browser/_ie10.scss");
+@include meta.load-css("browser/_ie11.scss");

@@ -1,0 +1,548 @@
+﻿/*
+ *  Document   : _card.scss
+ *  Author     : RedStar Template
+ *  Description: This scss file for card style classes
+ */
+@use "../common/mixins" as mix;
+.light {
+  .mat-mdc-card {
+    background: #ffffff;
+  }
+}
+.mat-mdc-card {
+  margin-bottom: 20px;
+}
+.header-style {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .mat-mdc-button {
+    height: 30px;
+  }
+}
+.mat-mdc-card-header {
+  position: relative;
+  display: flex;
+  width: 100%;
+  padding: 10px 15px !important;
+  line-height: 30px;
+  border-bottom: 1px solid;
+  border-color: #523f690f;
+  .mat-mdc-card-title {
+    margin: 0;
+    font-size: 17px;
+    line-height: 28px;
+    padding-right: 10px;
+    font-weight: 500;
+  }
+  .header-dropdown {
+    position: absolute;
+    top: 5px;
+    right: 0;
+    list-style: none;
+  }
+}
+.mat-mdc-card-content {
+  padding: 15px !important;
+}
+.card {
+  background: #fff;
+  min-height: 50px;
+  position: relative;
+  margin-bottom: 24px;
+  border: 1px solid #f2f4f9;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(183, 192, 206, 0.2);
+  -webkit-box-shadow: 0 0 10px 0 rgba(183, 192, 206, 0.2);
+
+  .card-inside-title {
+    margin-top: 25px;
+    margin-bottom: 15px;
+    display: block;
+    font-size: 15px;
+    color: #000;
+
+    small {
+      color: #999;
+      display: block;
+      font-size: 11px;
+      margin-top: 5px;
+
+      a {
+        color: #777;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .card-inside-title:first-child {
+    margin-top: 0;
+  }
+
+  .bg-red,
+  .bg-pink,
+  .bg-purple,
+  .bg-indigo,
+  .bg-blue,
+  .bg-cyan,
+  .bg-teal,
+  .bg-green,
+  .bg-yellow,
+  .bg-orange,
+  .bg-deep-orange,
+  .bg-brown,
+  .bg-grey,
+  .bg-black {
+    border-bottom: none !important;
+    color: #fff !important;
+
+    h2,
+    small,
+    .material-icons {
+      color: #fff !important;
+    }
+
+    .badge {
+      background-color: #fff;
+      color: #555;
+    }
+  }
+
+  .header {
+    position: relative;
+    display: flex;
+    width: 100%;
+    color: #555;
+    padding: 10px 15px;
+    line-height: 30px;
+
+    .header-dropdown {
+      position: absolute;
+      top: 5px;
+      right: 0px;
+      list-style: none;
+
+      .dropdown-menu {
+        li {
+          display: block !important;
+        }
+      }
+
+      li {
+        display: inline-block;
+      }
+
+      i {
+        font-size: 20px;
+        color: #999;
+        @include mix.transition(all 0.5s);
+
+        &:hover {
+          color: #000;
+        }
+      }
+    }
+
+    h2 {
+      margin: 0;
+      color: #5b626b;
+      font-size: 17px;
+      line-height: 28px;
+      padding-right: 10px;
+      font-weight: 500;
+
+      small {
+        display: block;
+        font-size: 12px;
+        margin-top: 5px;
+        color: #999;
+        line-height: 15px;
+
+        a {
+          font-weight: bold;
+          color: #777;
+        }
+      }
+    }
+
+    .col-xs-12 {
+      h2 {
+        margin-top: 5px;
+      }
+    }
+  }
+
+  .body {
+    font-size: 14px;
+    color: #555;
+    padding: 15px;
+
+    @for $i from 1 through 12 {
+      .col-xs-#{$i},
+      .col-sm-#{$i},
+      .col-md-#{$i},
+      .col-lg-#{$i} {
+        margin-bottom: 20px;
+      }
+    }
+  }
+  .list-body {
+    padding: 0px 10px;
+  }
+  &.card-statistic-1 .card-header,
+  &.card-statistic-2 .card-header {
+    border-color: transparent;
+    padding-bottom: 0;
+    height: auto;
+    min-height: auto;
+    display: block;
+  }
+
+  &.card-statistic-1 .card-icon {
+    width: 30px;
+    height: 30px;
+    margin: 10px 0px 0px 20px;
+    border-radius: 3px;
+    line-height: 78px;
+    text-align: center;
+    float: left;
+    font-size: 30px;
+  }
+
+  &.card-statistic-1 .card-header h4,
+  &.card-statistic-2 .card-header h4 {
+    line-height: 1.2;
+  }
+
+  &.card-statistic-1 .card-body,
+  &.card-statistic-2 .card-body {
+    padding-top: 0;
+  }
+
+  &.card-statistic-1 .card-body,
+  &.card-statistic-2 .card-body {
+    font-size: 26px;
+    font-weight: 700;
+    padding-bottom: 0;
+  }
+
+  &.card-statistic-1,
+  &.card-statistic-2 {
+    display: inline-block;
+    width: 100%;
+  }
+
+  &.card-statistic-1 .card-icon,
+  &.card-statistic-2 .card-icon {
+    width: 80px;
+    height: 80px;
+    margin: 10px;
+    border-radius: 3px;
+    line-height: 94px;
+    text-align: center;
+    float: left;
+    border-radius: 50px;
+    margin-right: 15px;
+
+    .ion,
+    .fas,
+    .far,
+    .fab,
+    .fal {
+      font-size: 22px;
+      color: #fff;
+    }
+  }
+
+  &.card-statistic-1 .card-icon {
+    line-height: 90px;
+  }
+
+  &.card-statistic-2 .card-icon {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    font-size: 22px;
+    margin: 25px;
+    box-shadow: 5px 3px 10px 0 rgba(21, 15, 15, 0.3);
+    border-radius: 10px;
+    background: #6777ef;
+  }
+  &.card-statistic-2 .card-icon-only {
+    font-size: 35px;
+    margin: 20px;
+  }
+
+  &.card-statistic-1 .card-header,
+  &.card-statistic-2 .card-header {
+    padding-bottom: 0;
+    padding-top: 25px;
+  }
+
+  &.card-statistic-2 .card-header + .card-body,
+  &.card-statistic-2 .card-body + .card-header {
+    padding-top: 0;
+  }
+
+  &.card-statistic-1 .card-header h4,
+  &.card-statistic-2 .card-header h4 {
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+
+  &.card-statistic-1 .card-header h4 {
+    margin-bottom: 0;
+  }
+
+  &.card-statistic-2 .card-header h4 {
+    text-transform: none;
+    margin-bottom: 0;
+  }
+
+  &.card-statistic-1 .card-body {
+    font-size: 20px;
+  }
+
+  &.card-statistic-2 {
+    .card-chart {
+      margin-left: -10px;
+      margin-right: -1px;
+      margin-bottom: -7px;
+
+      canvas {
+        height: 70px !important;
+      }
+    }
+    .card-right {
+      float: right;
+      margin: 15px 15px 15px 0px;
+    }
+  }
+}
+.plain-card {
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+  margin: 0.5rem 0 1rem 0;
+}
+.card-inner .progress {
+  height: 10px;
+  margin: 0px;
+}
+.col-block {
+  margin-left: 5px;
+}
+.card-height-100 {
+  height: 100px;
+}
+.doc-card-title {
+  color: #00bdf2;
+  font-size: 16px;
+}
+.doc-card-image {
+  background: #fff;
+  position: inherit;
+  padding: 2px;
+  box-shadow: 0 5px 25px 0 rgba(0, 0, 0, 0.2);
+}
+.card-spacing {
+  padding-right: 0px;
+}
+
+.course-card-blog {
+  margin-top: 30px;
+  .course-card-caption {
+    margin-top: 5px;
+  }
+}
+.course-card {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  margin-bottom: 30px;
+  border-radius: 6px;
+  color: rgba(0, 0, 0, 0.87);
+  background: #fff;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  .course-card-image {
+    height: 60%;
+    position: relative;
+    overflow: hidden;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: -30px;
+    border-radius: 6px;
+    box-shadow: 0 16px 38px -12px rgba(0, 0, 0, 0.56),
+      0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+  }
+  .blog-table {
+    padding: 15px 30px;
+  }
+  .ftr {
+    margin-top: 15px;
+    .author {
+      color: #888;
+    }
+    div {
+      display: inline-block;
+    }
+    .stats {
+      position: relative;
+      top: 1px;
+      font-size: 14px;
+      float: right;
+      line-height: 30px;
+    }
+  }
+  .author {
+    .avatar {
+      width: 36px;
+      height: 36px;
+      overflow: hidden;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+  }
+}
+.blog-table {
+  margin-bottom: 0px;
+}
+.blog-category {
+  position: relative;
+  line-height: 0;
+  margin: 15px 0;
+}
+.blog-text-success {
+  color: #28a745 !important;
+}
+.course-card-caption {
+  font-weight: 700;
+}
+.course-card-caption,
+.course-card-caption a {
+  color: #333;
+  text-decoration: none;
+}
+.about-course-img img {
+  width: 100%;
+  height: 100%;
+}
+
+// card header select item style start
+.header-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .header-form-field {
+    width: 80px;
+    background: #ededed;
+    border: none;
+    border-radius: 5px;
+  }
+
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined
+    .mat-mdc-form-field-infix {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 4%;
+    margin-bottom: -20%;
+    margin-left: -10px;
+  }
+
+  .mat-mdc-form-field:not(.mat-form-field-disabled)
+    .mat-mdc-floating-label.mdc-floating-label {
+    top: 42%;
+    font-size: 12px;
+  }
+  .mat-mdc-select-value {
+    font-size: 12px;
+  }
+  .mdc-floating-label--float-above {
+    top: 80% !important;
+  }
+  .mat-mdc-form-field-bottom-align {
+    display: none;
+  }
+  .mat-mdc-select-trigger {
+    width: 65px;
+  }
+  .mat-mdc-form-field-flex {
+    height: 30px;
+  }
+  .mat-mdc-notch-piece {
+    border: none !important;
+  }
+}
+.header-select-option {
+  width: 80px;
+  font-size: 13px !important;
+  .mat-mdc-option .mat-pseudo-checkbox-minimal {
+    display: none;
+  }
+  .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+    display: none;
+  }
+}
+// card header select item style end
+
+// appointment card
+.appointment-card {
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  .total-revenue {
+    font-size: 18px;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+
+  .appointment-amount {
+    font-size: 30px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    margin: 20px 0px;
+  }
+  .appointment-details {
+    display: flex;
+    justify-content: space-between;
+    .appointment-item {
+      background-color: white;
+      border-radius: 8px;
+      padding: 10px;
+      color: black;
+      width: 120px;
+      text-align: left;
+      &.income {
+        background-color: #2472f3;
+        text-align: center;
+      }
+      &.expense {
+        background-color: #f27e29;
+        text-align: center;
+      }
+      .amount {
+        font-size: 25px;
+        font-weight: bold;
+        color: white;
+      }
+      .label {
+        font-size: 14px;
+        display: block;
+      }
+    }
+  }
+}
