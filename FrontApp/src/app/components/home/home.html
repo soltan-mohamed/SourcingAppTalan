@@ -1,0 +1,128 @@
+<mat-sidenav-container class="example-container !bg-gray-100">
+    <mat-sidenav class="!w-[20%]" #sidenav mode="side" [(opened)]="sideBarOpened">
+        <div class="p-3 bg m-0 absolute h-full w-full flex-col">
+
+            <!-- App logo + name -->
+            <div class="p-1 flex justify-center items-center h-[15%] ">
+                <img src="assets\images\talan-logo1.png" alt="Talan Logo" class="h-full mx-auto " >
+            </div>
+
+            <hr style="border-color: rgba(31, 41, 55, 1);">
+
+            <!-- My profile div -->
+            <div class="w-full py-3 flex items-center gap-3 px-4">
+                <div class="flex justify-center items-center w-10 h-10 bg-white/20 rounded-full">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjDGMp734S91sDuUFqL51_xRTXS15iiRoHew&s" alt="Talan Logo" class="h-full mx-auto " >
+                </div>
+                <div class="flex-1">
+                    <span class="text-white font-medium text-sm">Med Saber Mahjoub</span>
+                </div>
+            </div>
+
+            <hr style="border-color: rgba(31, 41, 55, 1);">
+
+            <!-- Main container for the menu items -->
+            <div class="w-full mb-6 justify-center items-center flex flex-col p-0 h-[70%]">
+
+                <!-- App pages -->
+                <div class="flex flex-col w-[95%] h-[90%] p-1 gap-2">
+
+                    <!-- Home -->
+                    <div class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
+                        [ngClass]="{
+                            'active-menu-item': activeItem === 'home',
+                            'text-white hover:bg-white/10': activeItem !== 'home'
+                        }"
+                        [routerLink]="['/home/list']"
+                        (click)="activeItem = 'home'"
+                    >
+                        <div class="flex items-center justify-center w-8 h-8">
+                            <span class="material-symbols-outlined"
+                                [ngClass]="{ 'text-gray-700': activeItem === 'home', 'text-white': activeItem !== 'home' }"
+                            >
+                                home
+                            </span>
+                        </div>
+                        <div class="ml-2"><span>Home</span></div>
+                    </div>
+
+                    <!-- Candidates history -->
+                    <div *ngIf="isAuthenticated" class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
+                        [ngClass]="{
+                            'active-menu-item': activeItem === 'candidates',
+                            'text-white hover:bg-white/10': activeItem !== 'candidates'
+                        }"
+                        [routerLink]="['/home/my-publications']"
+                        (click)="activeItem = 'candidates'"
+                    >
+                        <div class="flex items-center justify-center w-8 h-8">
+                            <span class="material-symbols-outlined"
+                                [ngClass]="{ 'text-gray-700': activeItem === 'candidates', 'text-white': activeItem !== 'candidates' }"
+                            >
+                                clinical_notes
+                            </span>
+                        </div>
+                        <div class="ml-2"><span>Candidates</span></div>
+                    </div>
+
+                    <!-- My account - only shown when authenticated -->
+                    <div *ngIf="isAuthenticated" class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
+                        [ngClass]="{
+                            'active-menu-item': activeItem === 'sourcing',
+                            'text-white hover:bg-white/10': activeItem !== 'sourcing'
+                        }"
+                        [routerLink]="['/home/my-account']"
+                        (click)="activeItem = 'sourcing'"
+                    >
+                        <div class="flex items-center justify-center w-8 h-8">
+                            <span class="material-symbols-outlined"
+                                [ngClass]="{ 'text-gray-700': activeItem === 'sourcing', 'text-white': activeItem !== 'sourcing' }"
+                            >
+                                person_search
+                            </span>
+                        </div>
+                        <div class="ml-2"><span>Sourcing</span></div>
+                    </div>
+
+                    <div *ngIf="isAuthenticated" class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1 mt-auto"
+                        [ngClass]="{
+                            'active-menu-item': activeItem === 'logout',
+                            'text-white hover:bg-white/10': activeItem !== 'logout'
+                        }"
+                        (click)="logout()"
+                    >
+                        <div class="flex items-center justify-center w-8 h-8">
+                            <span class="material-symbols-outlined text-white">
+                                logout
+                            </span>
+                        </div>
+                        <div class="ml-2"><span>Logout</span></div>
+                    </div>
+
+
+
+                </div>
+
+
+
+            </div>
+        </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+        <div class="h-[50px] flex justify-start items-center border-b border-gray-200">
+            <button class="flex justify-center items-center ml-4" mat-button (click)="sidenav.toggle()">
+                <span class="material-symbols-outlined">
+                    menu
+                </span>
+            </button>
+        </div>
+
+        <div class="overflow-auto" style="height: calc(100% - 50px);">
+            <div class="w-full">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+
+    </mat-sidenav-content>
+</mat-sidenav-container>

@@ -4,6 +4,7 @@ import { AuthGuard } from '../app/core/guard/auth.guard';
 import { AuthLayoutComponent } from './layout/app-layout/auth-layout/auth-layout.component';
 import { Page404Component } from './authentication/page404/page404.component';
 //import { Role } from '../app/models/role';
+import { Home } from './components/home/home';
 
 export const APP_ROUTE: Route[] = [
   {
@@ -14,6 +15,10 @@ export const APP_ROUTE: Route[] = [
       { path: '', redirectTo: '/authentication/signin', pathMatch: 'full' },
 
     ],
+  },
+  {
+    path: 'home',
+    component: Home,
   },
   {
     path: 'authentication',
