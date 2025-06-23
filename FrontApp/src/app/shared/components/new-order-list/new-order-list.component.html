@@ -1,0 +1,39 @@
+<div class="responsive_table">
+  <table mat-table [dataSource]="ordersDatasource" class="mat-cell advance-table">
+
+    <!-- Product Column -->
+    <ng-container matColumnDef="product">
+      <mat-header-cell *matHeaderCellDef>Product</mat-header-cell>
+      <mat-cell *matCellDef="let order">{{ order.product }}</mat-cell>
+    </ng-container>
+
+    <!-- Customers Column -->
+    <ng-container matColumnDef="customers">
+      <mat-header-cell *matHeaderCellDef>Customers</mat-header-cell>
+      <mat-cell *matCellDef="let order">
+        <ul class="list-unstyled order-list">
+          @for (customer of order.customers; track customer) {
+            <li class="avatar avatar-sm">
+              <img class="rounded-circle" [src]="customer.image" alt="user" />
+            </li>
+          }
+          @if (order.extraCustomers) {
+            <li class="avatar avatar-sm">
+              <span class="badge">+{{order.extraCustomers}}</span>
+            </li>
+          }
+        </ul>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Total Column -->
+    <ng-container matColumnDef="total">
+      <mat-header-cell *matHeaderCellDef>Total</mat-header-cell>
+      <mat-cell *matCellDef="let order">{{ order.total }}</mat-cell>
+    </ng-container>
+
+    <!-- Header and Rows -->
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </table>
+</div>

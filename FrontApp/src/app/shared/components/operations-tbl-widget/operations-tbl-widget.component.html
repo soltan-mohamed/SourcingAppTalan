@@ -1,0 +1,142 @@
+<mat-card>
+  <mat-card-header class="header-style">
+    <mat-card-title>Operations</mat-card-title>
+    <a mat-button color="primary" href="#" (click)="$event.preventDefault();">View All</a>
+  </mat-card-header>
+  <mat-card-content>
+    <ng-scrollbar style="height: 410px" visibility="hover">
+      <div class="responsive_table">
+        <table mat-table [dataSource]="operationDataSource" class="mat-cell advance-table">
+
+          <!-- Patient Image Column -->
+          <ng-container matColumnDef="patientName">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              <span class="truncate-text">Condidate Name</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let operation">
+              <img [src]="operation.patientImage" class="table-img" alt="image" />
+              <span class="truncate-text">{{operation.patientName}}</span>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Doctors Team Column -->
+          <ng-container matColumnDef="doctorsTeam">
+            <mat-header-cell *matHeaderCellDef>Doctors Team</mat-header-cell>
+            <mat-cell *matCellDef="let operation">
+              <ul class="list-unstyled order-list m-b-0">
+                @for (doctor of operation.doctors; track doctor) {
+                <li class="avatar avatar-sm">
+                  <img class="rounded-circle" [src]="doctor.image" alt="user">
+                </li>
+                }
+                @if (operation.extraDoctors > 0) {
+                <li class="avatar avatar-sm">
+                  <span class="badge">+{{ operation.extraDoctors }}</span>
+                </li>
+                }
+              </ul>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Date Of Operation Column -->
+          <ng-container matColumnDef="dateOfOperation">
+            <mat-header-cell *matHeaderCellDef>Date Of Operation</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.dateOfOperation }}</mat-cell>
+          </ng-container>
+
+          <!-- Operation Type Column -->
+          <ng-container matColumnDef="operationType">
+            <mat-header-cell *matHeaderCellDef>Operation Type</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.operationType }}</mat-cell>
+          </ng-container>
+
+          <!-- Duration Column -->
+          <ng-container matColumnDef="duration">
+            <mat-header-cell *matHeaderCellDef>Duration</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.duration }}</mat-cell>
+          </ng-container>
+
+          <!-- Anesthesia Type Column -->
+          <ng-container matColumnDef="anesthesiaType">
+            <mat-header-cell *matHeaderCellDef>Anesthesia Type</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.anesthesiaType }}</mat-cell>
+          </ng-container>
+
+          <!-- Post-Op Status Column -->
+          <ng-container matColumnDef="postOpStatus">
+            <mat-header-cell *matHeaderCellDef>Post-Op Status</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.postOpStatus }}</mat-cell>
+          </ng-container>
+
+          <!-- Follow-Up Date Column -->
+          <ng-container matColumnDef="followUpDate">
+            <mat-header-cell *matHeaderCellDef>Follow-Up Date</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.followUpDate }}</mat-cell>
+          </ng-container>
+
+          <!-- Location Column -->
+          <ng-container matColumnDef="location">
+            <mat-header-cell *matHeaderCellDef>Location</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.location }}</mat-cell>
+          </ng-container>
+
+          <!-- Notes Column -->
+          <ng-container matColumnDef="notes">
+            <mat-header-cell *matHeaderCellDef>Notes</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.notes }}</mat-cell>
+          </ng-container>
+
+          <!-- Surgeon Lead Column -->
+          <ng-container matColumnDef="surgeonLead">
+            <mat-header-cell *matHeaderCellDef>Surgeon Lead</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.surgeonLead }}</mat-cell>
+          </ng-container>
+
+          <!-- Patient ID Column -->
+          <ng-container matColumnDef="patientID">
+            <mat-header-cell *matHeaderCellDef>Patient ID</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.patientID }}</mat-cell>
+          </ng-container>
+
+          <!-- Billing Information Column -->
+          <ng-container matColumnDef="billingInformation">
+            <mat-header-cell *matHeaderCellDef>Billing Information</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.billingInformation }}</mat-cell>
+          </ng-container>
+
+          <!-- Report Column -->
+          <ng-container matColumnDef="report">
+            <mat-header-cell *matHeaderCellDef>Report</mat-header-cell>
+            <mat-cell *matCellDef="let operation">
+              <i class="far fa-file-pdf tbl-pdf col-red font-17"></i>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Diseases Column -->
+          <ng-container matColumnDef="diseases">
+            <mat-header-cell *matHeaderCellDef>Diseases</mat-header-cell>
+            <mat-cell *matCellDef="let operation">{{ operation.disease }}</mat-cell>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+            <mat-cell *matCellDef="let operation">
+              <button mat-icon-button class="tbl-action-btn">
+                <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+              </button>
+              <button mat-icon-button class="tbl-action-btn">
+                <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </table>
+
+
+      </div>
+    </ng-scrollbar>
+  </mat-card-content>
+</mat-card>

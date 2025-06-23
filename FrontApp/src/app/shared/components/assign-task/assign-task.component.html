@@ -1,0 +1,54 @@
+<table mat-table [dataSource]="tasks" class="mat-elevation-z8">
+
+    <!-- User Image Column -->
+    <ng-container matColumnDef="userImage">
+        <th mat-header-cell *matHeaderCellDef> Img </th>
+        <td mat-cell *matCellDef="let task">
+            <img [src]="task.userImage" alt="" class="user-image">
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="userName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <span class="truncate-text">User Name</span>
+        </th>
+        <td mat-cell *matCellDef="let task">
+            <span class="truncate-text">{{task.userName}}</span>
+        </td>
+    </ng-container>
+
+    <!-- Task Name Column -->
+    <ng-container matColumnDef="taskDetails">
+        <th mat-header-cell *matHeaderCellDef> Task </th>
+        <td mat-cell *matCellDef="let task"> {{task.taskDetails}} </td>
+    </ng-container>
+
+    <!-- Status Column -->
+    <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let task">
+            <span [ngClass]="task.statusClass" class="label">{{task.status}}</span>
+        </td>
+    </ng-container>
+
+    <!-- Manager Column -->
+    <ng-container matColumnDef="manager">
+        <th mat-header-cell *matHeaderCellDef> Manager </th>
+        <td mat-cell *matCellDef="let task"> {{task.manager}} </td>
+    </ng-container>
+
+    <!-- Progress Column -->
+    <ng-container matColumnDef="progress">
+        <th mat-header-cell *matHeaderCellDef> Progress </th>
+        <td mat-cell *matCellDef="let task">
+            <div class="progress progress-xs">
+                <div [ngClass]="task.progressClass" class="progress-bar" [style.width.%]="task.progress">
+                </div>
+            </div>
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['userImage', 'userName', 'taskDetails', 'status', 'progress']">
+    </tr>
+    <tr mat-row *matRowDef="let row; columns: ['userImage', 'userName', 'taskDetails', 'status', 'progress'];"></tr>
+</table>

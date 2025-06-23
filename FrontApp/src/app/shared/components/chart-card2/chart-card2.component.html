@@ -1,0 +1,24 @@
+<mat-card class="chart-card2">
+    <mat-card-title class="title">
+        <mat-icon>bar_chart</mat-icon> {{title}}
+    </mat-card-title>
+    <mat-card-subtitle class="subtitle">
+        {{subtitle}}
+    </mat-card-subtitle>
+
+    <apx-chart [series]="cardChartOptions.series!" [chart]="cardChartOptions.chart!"
+        [plotOptions]="cardChartOptions.plotOptions!" [colors]="cardChartOptions.colors!"
+        [labels]="cardChartOptions.labels!"></apx-chart>
+
+    <div class="main-label">
+        <p>Room Status</p>
+        <div class="legend">
+            <div class="m-l-10 m-r-10">
+                <span class="occupied"></span> Occupied
+            </div>
+            <div class="m-l-10 m-r-10">
+                <span class="available"></span> Available
+            </div>
+        </div>
+    </div>
+</mat-card>

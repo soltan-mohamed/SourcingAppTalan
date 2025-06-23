@@ -1,0 +1,39 @@
+<mat-tab-group>
+  @for (employee of employees; track employee) {
+    <mat-tab [label]="employee.name">
+      <ng-template mat-tab-label>
+        <img [src]="employee.imgUrl" alt="user" class="tab-user-style">{{ employee.name }}
+      </ng-template>
+      <div class="table-responsive mt-3">
+        <table class="table table-hover dashboard-task-infos">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Status</th>
+              <th>Manager</th>
+              <th>Progress</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (task of employee.tasks; track task) {
+              <tr>
+                <td>{{ task.name }}</td>
+                <td>
+                  <span [ngClass]="task.statusClass">{{ task.status }}</span>
+                </td>
+                <td>{{ task.manager }}</td>
+                <td>
+                  <div class="progress shadow-style progress-xs">
+                    <div class="progress-bar" [ngClass]="task.progressBarClass" role="progressbar"
+                      [style.width]="task.progress + '%'" [attr.aria-valuenow]="task.progress"
+                    aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </mat-tab>
+  }
+</mat-tab-group>

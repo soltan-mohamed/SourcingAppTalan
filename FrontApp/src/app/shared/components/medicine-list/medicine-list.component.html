@@ -1,0 +1,21 @@
+<table mat-table [dataSource]="medicineDataSource" class="mat-cell medicine-list">
+
+    <!-- Medicine Name Column -->
+    <ng-container matColumnDef="medicine">
+        <mat-header-cell *matHeaderCellDef>Medicine</mat-header-cell>
+        <mat-cell *matCellDef="let medicine">
+            <i [ngClass]="medicine.icon" class="pill-style"></i> {{ medicine.name }}
+        </mat-cell>
+    </ng-container>
+
+    <!-- Dosage Column -->
+    <ng-container matColumnDef="dosage">
+        <mat-header-cell *matHeaderCellDef class="text-end">Dosage</mat-header-cell>
+        <mat-cell *matCellDef="let medicine" class="text-end">
+            <span class="badge-outline">{{ medicine.dosage }}</span>
+        </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</table>

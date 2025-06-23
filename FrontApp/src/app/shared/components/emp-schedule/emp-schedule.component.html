@@ -1,0 +1,15 @@
+<ul class="list-unstyled user-progress list-unstyled-border list-unstyled-noborder">
+    @for (schedule of schedules; track schedule) {
+    <li class="lecture-list">
+        <img alt="image" class="msr-3 rounded-circle" width="40" [src]="schedule.imageUrl">
+        <div class="">
+            <div class="media-title font-14 font-b-500">{{ schedule.name }}</div>
+            <div class="text-job text-muted mb-0 font-12">{{ schedule.degree }}</div>
+        </div>
+        <div class="ms-auto">
+            <div class="media-title font-14 font-b-500">{{ schedule.date }}</div>
+            <div class="text-job text-muted mb-0 font-12">{{ schedule.time }}</div>
+        </div>
+    </li>
+    }
+</ul>

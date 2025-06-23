@@ -1,0 +1,16 @@
+<ul class="list-unstyled list-unstyled-border list-unstyled-noborder">
+  @for (report of reports; track report) {
+    <li class="report-list">
+      <div class="d-flex">
+        <i [ngClass]="[report.icon, report.colorClass, 'file-style', 'font-20']"></i>
+        <div class="media-title font-b-500 font-14">{{ report.title }}</div>
+      </div>
+      <div class="ms-auto">
+        <td>
+          <i class="far fa-trash-alt" aria-label="Delete"></i>
+          <i class="far fa-arrow-alt-circle-down" aria-label="Download"></i>
+        </td>
+      </div>
+    </li>
+  }
+</ul>

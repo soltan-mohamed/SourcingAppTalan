@@ -1,0 +1,19 @@
+<div class="assign-style">
+  <ul class="feedBody">
+    @for (activity of activities; track activity) {
+      <li [ngClass]="activity.isActive ? 'active-feed' : 'diactive-feed'">
+        <div class="feed-user-img">
+          <img [src]="activity.userImage" class="img-radius" alt="User-Profile-Image">
+        </div>
+        <div class="font-14 m-b-10 font-b-500">
+          <span class="feedLblStyle" [ngClass]="activity.labelStyle">{{ activity.label }}</span> {{
+          activity.userName }}
+          <small class="text-muted float-end">{{ activity.time }}</small>
+        </div>
+        <p class="m-b-15 m-t-15">
+          {{ activity.message }}
+        </p>
+      </li>
+    }
+  </ul>
+</div>

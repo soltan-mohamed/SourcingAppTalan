@@ -1,0 +1,9 @@
+@for (activity of activities; track activity) {
+  <div class="sl-item {{ activity.statusClass }}">
+    <div class="sl-content">
+      <small class="text-muted">
+        <i class="fa fa-user position-left"></i> {{ activity.timestamp }}</small>
+        <p>{{ activity.message }}</p>
+      </div>
+    </div>
+  }

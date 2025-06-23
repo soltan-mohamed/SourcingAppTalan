@@ -1,0 +1,39 @@
+<div class="chat">
+  <div class="chat-header clearfix">
+    <img [src]="avatar" alt="avatar">
+    <div class="chat-about">
+      <div class="chat-with">{{ userName }}</div>
+      <div class="chat-num-messages">{{ newMessagesCount }} new messages</div>
+    </div>
+  </div>
+
+  <ng-scrollbar style="height: 270px" visibility="hover">
+    <div class="chat-history" id="chat-conversation">
+      <ul>
+        @for (message of messages; track message) {
+          <li [ngClass]="{'clearfix': message.sender !== userName}">
+            <div class="message-data" [ngClass]="{ 'text-end': message.sender === userName }">
+              <span class="message-data-time">{{ message.time }}</span> &nbsp; &nbsp;
+              <span class="message-data-name">{{ message.sender }}</span>
+              <i class="zmdi"
+              [ngClass]="{'zmdi-circle': message.sender === userName, 'zmdi-circle online': message.sender !== userName}"></i>
+            </div>
+            <div class="message"
+              [ngClass]="{'my-message': message.sender === userName, 'other-message': message.sender !== userName}">
+              <p>{{ message.text }}</p>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  </ng-scrollbar>
+
+  <div class="chat-message clearfix">
+    <div class="form-line">
+      <mat-form-field class="example-full-width">
+        <input matInput [(ngModel)]="messageText" placeholder="Enter text here..."
+          (keydown.enter)="sendMessage()">
+        </mat-form-field>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,17 @@
+<div class="info-box1" [ngClass]="cardClass">
+    <div class="card-statistic-3">
+        <div class="card-icon card-icon-large">
+            <i class="{{ iconClass }}"></i>
+        </div>
+        <div class="card-content">
+            <h6 class="card-title">{{ title }}</h6>
+            <span class="data-1 font-16">{{ value }}</span>
+            <mat-progress-bar mode="determinate" [value]="progressValue"
+                class="progress-round progress-shadow mt-2 mb-2" [ngClass]="progressClass"></mat-progress-bar>
+            <p class="mb-0 text-sm">
+                <span class="mr-2"><i class="fa fa-arrow-up"></i> {{ percentageChange }}%</span>
+                <span class="text-nowrap"> Since last month</span>
+            </p>
+        </div>
+    </div>
+</div>

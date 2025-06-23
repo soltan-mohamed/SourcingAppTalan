@@ -1,0 +1,68 @@
+<mat-card>
+    <mat-card-header class="header-style">
+        <mat-card-title>Appointments</mat-card-title>
+        <a mat-button color="primary" href="#" (click)="$event.preventDefault();">View All</a>
+    </mat-card-header>
+    <mat-card-content>
+        <ng-scrollbar style="height: 400px" visibility="hover">
+            <div class="responsive_table">
+
+                <table mat-table [dataSource]="patientDataSource" class="mat-cell advance-table">
+
+                    <!-- Patient Name Column -->
+                    <ng-container matColumnDef="patientName">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            <span class="truncate-text">Condidate Name</span>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let patient">
+                            <img [src]="patient.image" class="table-img" alt="image" />
+                            <span class="truncate-text">{{patient.name}}</span>
+                        </mat-cell>
+                    </ng-container>
+
+
+                    <!-- Gender Column -->
+                    <ng-container matColumnDef="gender">
+                        <mat-header-cell *matHeaderCellDef>Gender</mat-header-cell>
+                        <mat-cell *matCellDef="let patient">{{ patient.gender }}</mat-cell>
+                    </ng-container>
+
+                    <!-- Last Visit Column -->
+                    <ng-container matColumnDef="lastVisit">
+                        <mat-header-cell *matHeaderCellDef>Last Visit</mat-header-cell>
+                        <mat-cell *matCellDef="let patient">{{ patient.lastVisit }}</mat-cell>
+                    </ng-container>
+
+                    <!-- Diseases Column -->
+                    <ng-container matColumnDef="diseases">
+                        <mat-header-cell *matHeaderCellDef>Diseases</mat-header-cell>
+                        <mat-cell *matCellDef="let patient">
+                            <div [ngClass]="patient.diseaseClass">{{ patient.disease }}</div>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Report Column -->
+                    <ng-container matColumnDef="report">
+                        <mat-header-cell *matHeaderCellDef>Report</mat-header-cell>
+                        <mat-cell *matCellDef="let patient">
+                            <i class="far fa-file-pdf tbl-pdf col-red font-18"></i>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Details Column -->
+                    <ng-container matColumnDef="details">
+                        <mat-header-cell *matHeaderCellDef>Details</mat-header-cell>
+                        <mat-cell *matCellDef="let patient">
+                            <button mat-button color="primary">Details</button>
+                        </mat-cell>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                </table>
+
+
+            </div>
+        </ng-scrollbar>
+    </mat-card-content>
+</mat-card>

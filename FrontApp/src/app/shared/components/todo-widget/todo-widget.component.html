@@ -1,0 +1,38 @@
+<div cdkDropList class="task-list" (cdkDropListDropped)="drop($event)">
+  @for (todo of todos; track trackByFn($index, todo)) {
+    <div class="task-box" cdkDrag>
+      <div>
+        <div class="task-handle" cdkDragHandle>
+          <mat-icon aria-hidden="false">drag_indicator</mat-icon>
+        </div>
+      </div>
+      <mat-checkbox (change)="toggle(todo)" [checked]="todo.done" class="m-r-5" color="primary"></mat-checkbox>
+      <div class="task-custom-placeholder" *cdkDragPlaceholder></div>
+      <div matTooltip="{{ todo.title }}" [ngClass]="{done: todo.done}" class="todoTitle">
+        {{ todo.title }}
+      </div>
+        <div [ngClass]="{
+            'task-low': todo.priority === 'Low',
+            'task-high': todo.priority === 'High',
+            'task-normal': todo.priority === 'Normal'
+          }">
+        @if (todo.priority === 'Low') {
+          <mat-icon matTooltip="Low" aria-hidden="false" class="lbl-low">
+            arrow_downward
+          </mat-icon>
+        }
+        @if (todo.priority === 'High') {
+          <mat-icon matTooltip="High" aria-hidden="false" class="lbl-high">
+            arrow_upward
+          </mat-icon>
+        }
+        @if (todo.priority === 'Normal') {
+          <mat-icon matTooltip="Normal" aria-hidden="false" class="lbl-normal">
+            remove
+          </mat-icon>
+        }
+        {{ todo.priority }}
+      </div>
+    </div>
+  }
+</div>

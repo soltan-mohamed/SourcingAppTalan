@@ -1,0 +1,28 @@
+<!-- event-card.component.html -->
+<div class="event-list">
+  @for (event of events | slice:0:maxEvents; track event) {
+    <mat-card class="event-card">
+      <div class="event-content">
+        <div class="date-container">
+          <div class="day">{{event.day}}</div>
+          <div class="date-block">
+            <span class="date">{{event.date}}</span>
+            <span class="month">{{event.month}}</span>
+          </div>
+        </div>
+        <div class="event-details">
+          <h3 class="event-title">{{event.title}}</h3>
+          <div class="event-time">
+            <mat-icon class="time-icon">schedule</mat-icon>
+            {{event.timeStart}} - {{event.timeEnd}}
+          </div>
+        </div>
+        @if (event.status) {
+          <div class="event-status">
+            {{event.status}}
+          </div>
+        }
+      </div>
+    </mat-card>
+  }
+</div>

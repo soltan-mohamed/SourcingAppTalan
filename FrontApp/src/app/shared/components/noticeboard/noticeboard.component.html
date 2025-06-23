@@ -1,0 +1,15 @@
+<div class="notice-board">
+  <div class="notice-list">
+    @for (notice of notices; track notice) {
+      <mat-card class="notice-card">
+        <div class="card-content">
+          <img [src]="notice.image" alt="Notice Image" class="notice-image msr-3" />
+          <div class="notice-details">
+            <h3>{{ notice.title }}</h3>
+            <p>By - {{ notice.author }}</p>
+          </div>
+        </div>
+      </mat-card>
+    }
+  </div>
+</div>

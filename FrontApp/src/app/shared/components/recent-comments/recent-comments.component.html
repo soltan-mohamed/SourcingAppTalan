@@ -1,0 +1,14 @@
+<div class="recent-comment">
+  @for (comment of comments; track comment) {
+    <div class="notice-board">
+      <div class="table-img">
+        <img class="notice-object" [src]="comment.imgSrc" alt="...">
+      </div>
+      <div class="notice-body">
+        <p class="notice-heading {{comment.colorClass}} font-16 font-b-500">{{ comment.name }}</p>
+        <p>{{ comment.message }}</p>
+        <small class="text-muted">{{ comment.timestamp }}</small>
+      </div>
+    </div>
+  }
+</div>

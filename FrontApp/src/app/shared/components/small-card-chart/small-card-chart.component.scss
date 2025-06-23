@@ -1,0 +1,21 @@
+:host ::ng-deep .small-card-chart {
+  .title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .amount {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+  .percentage {
+    display: flex;
+    align-items: center;
+    color: #4b6dff;
+    font-weight: 600;
+    font-size: 16px;
+    .icon {
+      margin: 0px 5px;
+    }
+  }
+}

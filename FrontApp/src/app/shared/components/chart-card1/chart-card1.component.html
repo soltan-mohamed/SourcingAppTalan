@@ -1,0 +1,15 @@
+<mat-card class="chart-card1">
+    <mat-card-title class="title">
+        <mat-icon>bar_chart</mat-icon> {{title}}
+    </mat-card-title>
+    <mat-card-subtitle class="subtitle">
+        {{subtitle}}
+    </mat-card-subtitle>
+
+    <div id="chart">
+        <apx-chart [series]="cardChartOptions.series!" [chart]="cardChartOptions.chart!"
+            [xaxis]="cardChartOptions.xaxis!" [yaxis]="cardChartOptions.yaxis!" [colors]="cardChartOptions.colors!"
+            [plotOptions]="cardChartOptions.plotOptions!" [dataLabels]="cardChartOptions.dataLabels!"
+            [tooltip]="cardChartOptions.tooltip!" [grid]="cardChartOptions.grid!"></apx-chart>
+    </div>
+</mat-card>

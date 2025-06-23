@@ -1,0 +1,25 @@
+<div class="card card-statistic-2">
+  <div class="clearfix">
+    <div class="card-icon-only shadow-primary float-start">
+      <img [src]="img" alt="">
+    </div>
+    <div class="card-right">
+      <div>
+        <h6 class="float-end">{{ title }}</h6>
+      </div>
+      <div class="col-green">
+        <h4 class="font-weight-bold float-end mb-0">{{ value }}</h4>
+      </div>
+    </div>
+  </div>
+  <div class="card-content msl-4 mb-3">
+    <p class="m-b-0 d-flex font-12">
+      @if (arrowIcon === 'trending_up') {
+        <i class="material-icons col-green psr-2">trending_up</i>
+      } @else {
+        <i class="material-icons col-orange psr-2">trending_down</i>
+      }
+      {{ description }}
+    </p>
+  </div>
+</div>
