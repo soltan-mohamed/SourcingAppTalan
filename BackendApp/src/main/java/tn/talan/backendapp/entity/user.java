@@ -1,5 +1,6 @@
 package tn.talan.backendapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -51,6 +52,10 @@ public class user {
 
     @OneToMany(mappedBy = "demandeur")
     private List<recrutement> recrutementsDemandeur;
+
+    @OneToMany(mappedBy = "evaluateur", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<evaluationAction> evaluationsFaites;
 
 
 }

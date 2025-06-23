@@ -1,7 +1,10 @@
 package tn.talan.backendapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.Date;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,5 +37,10 @@ public class recrutement {
     @ManyToOne
     @JoinColumn(name = "candidat_id")
     private candidat candidat;
+
+    @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<evaluationAction> evaluations;
+
 
 }
