@@ -1,5 +1,6 @@
 package tn.talan.backendapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,12 +8,16 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import tn.talan.backendapp.enums.role;
 
+import java.util.List;
+
 @Entity
 @Table(name = "user")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"recrutementsResponsable", "recrutementsDemandeur"})
+
 public class user {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,5 +45,12 @@ public class user {
 
     @Column(name = "profile_photo_path")
     private String profilePhotoPath;
+
+    @OneToMany(mappedBy = "responsable")
+    private List<recrutement> recrutementsResponsable;
+
+    @OneToMany(mappedBy = "demandeur")
+    private List<recrutement> recrutementsDemandeur;
+
 
 }

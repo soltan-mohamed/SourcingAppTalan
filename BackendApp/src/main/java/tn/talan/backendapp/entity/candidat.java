@@ -1,4 +1,5 @@
 package tn.talan.backendapp.entity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,8 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import tn.talan.backendapp.enums.statut;
 
+import java.util.List;
+
 
 @Entity
 @Table(name="candidat")
@@ -14,6 +17,9 @@ import tn.talan.backendapp.enums.statut;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"recrutements"})
+
+
 public class candidat {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -39,6 +45,10 @@ public class candidat {
     @Enumerated(EnumType.STRING)
     @Column(name = "statut")
     private statut statut;
+
+    @OneToMany(mappedBy = "candidat")
+    private List<recrutement> recrutements;
+
 
 
 
