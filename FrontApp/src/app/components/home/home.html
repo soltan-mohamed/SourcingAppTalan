@@ -46,13 +46,32 @@
                         <div class="ml-2"><span>Home</span></div>
                     </div>
 
+                    <!-- Interviews -->
+                    <div class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
+                        [ngClass]="{
+                            'active-menu-item': activeItem === 'interviews',
+                            'text-white hover:bg-white/10': activeItem !== 'interviews'
+                        }"
+                        [routerLink]="['/home/my-interviews']"
+                        (click)="activeItem = 'interviews'"
+                    >
+                        <div class="flex items-center justify-center w-8 h-8">
+                            <span class="material-symbols-outlined"
+                                [ngClass]="{ 'text-gray-700': activeItem === 'interviews', 'text-white': activeItem !== 'interviews' }"
+                            >
+                                checklist
+                            </span>
+                        </div>
+                        <div class="ml-2"><span>Interviews</span></div>
+                    </div>
+
                     <!-- Candidates history -->
                     <div *ngIf="isAuthenticated" class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
                         [ngClass]="{
                             'active-menu-item': activeItem === 'candidates',
                             'text-white hover:bg-white/10': activeItem !== 'candidates'
                         }"
-                        [routerLink]="['/home/my-publications']"
+                        [routerLink]="['/home/list-candidates']"
                         (click)="activeItem = 'candidates'"
                     >
                         <div class="flex items-center justify-center w-8 h-8">
@@ -65,7 +84,7 @@
                         <div class="ml-2"><span>Candidates</span></div>
                     </div>
 
-                    <!-- My account - only shown when authenticated -->
+                    <!-- Sourcing -- Smart Matching -->
                     <div *ngIf="isAuthenticated" class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
                         [ngClass]="{
                             'active-menu-item': activeItem === 'sourcing',

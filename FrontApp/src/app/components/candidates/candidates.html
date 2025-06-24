@@ -1,0 +1,29 @@
+<div class="p-6">
+  <div class="max-w-7xl mx-auto">
+    <mat-card class="bg-white shadow-lg rounded-lg overflow-hidden">
+      
+      <mat-card-header class="flex bg-gray-100 px-6 py-4 border-b border-gray-200">
+        <div> 
+        <mat-card-title class="text-xl p-2 font-semibold text-blue-900">
+                Candidates List
+        </mat-card-title>
+        </div>   
+        <div class="flex justify-center">
+            <button matIconButton aria-label="Add candidate">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content class="p-6">
+        <ng-scrollbar class="h-[450px]" visibility="hover">
+          <app-table-card 
+            [dataSource]="studentData" 
+            [columnDefinitions]="studentColumnDefinitions">
+          </app-table-card>
+        </ng-scrollbar>
+      </mat-card-content>
+
+    </mat-card>
+  </div>
+</div>
