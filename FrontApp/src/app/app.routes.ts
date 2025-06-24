@@ -5,6 +5,7 @@ import { AuthLayoutComponent } from './layout/app-layout/auth-layout/auth-layout
 import { Page404Component } from './authentication/page404/page404.component';
 //import { Role } from '../app/models/role';
 import { Home } from './components/home/home';
+import { Candidates } from './components/candidates/candidates';
 
 export const APP_ROUTE: Route[] = [
   {
@@ -19,6 +20,9 @@ export const APP_ROUTE: Route[] = [
   {
     path: 'home',
     component: Home,
+    children : [
+      {path : 'list-candidates', component : Candidates }
+    ]
   },
   {
     path: 'authentication',
