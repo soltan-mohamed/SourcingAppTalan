@@ -9,5 +9,6 @@ import java.util.List;
 
 public interface evaluationActionRepository extends JpaRepository<evaluationAction, Long> {
     List<evaluationAction> findByStatutAndEvaluateur_Id(statut statut, Long evaluateurId);
+    List<evaluationAction> findByDate(Date date);
 
 }

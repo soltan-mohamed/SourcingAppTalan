@@ -37,6 +37,10 @@ public class evaluationActionController {
         return service.getScheduledEvaluationsByUserId(id);
     }
 
+    @GetMapping("/date")
+    public List<evaluationAction> getEvaluationActionsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
+        return service.getEvaluationActionsByDate(date);
+    }
 
     @PostMapping
     public evaluationAction create(@RequestBody evaluationAction e) {

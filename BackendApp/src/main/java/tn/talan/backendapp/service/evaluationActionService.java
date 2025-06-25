@@ -26,6 +26,10 @@ public class evaluationActionService {
         return repository.findById(id).orElse(null);
     }
 
+    public List<evaluationAction> getEvaluationActionsByDate(Date date) {
+        return repository.findByDate(date);
+    }
+
     public List<evaluationAction> getScheduledEvaluationsByUserId(Long userId) {
         return repository.findByStatutAndEvaluateur_Id(statut.scheduled, userId);
     }

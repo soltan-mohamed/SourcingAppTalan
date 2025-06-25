@@ -32,6 +32,10 @@ public class recrutementService {
         return repository.findByDemandeur_IdAndResponsable_IdAndDate(demandeurId, responsableId, date);
     }
 
+    public List<recrutement> getRecrutementsByDate(Date date) {
+        return repository.findByDate(date);
+    }
+
     public List<candidat> getCandidatsByResponsable(Long responsableId) {
         List<recrutement> recrutements = repository.findByResponsable_Id(responsableId);
         return recrutements.stream()

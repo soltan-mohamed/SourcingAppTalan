@@ -40,6 +40,11 @@ public class recrutementController {
         return service.getCandidatsByResponsable(id);
     }
 
+    @GetMapping("/recrutements/date")
+    public List<recrutement> getRecrutementsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
+        return service.getRecrutementsByDate(date);
+    }
+
     @GetMapping("/{id}")
     public recrutement getById(@PathVariable Long id) {
         return service.getById(id);

@@ -4,6 +4,7 @@ import tn.talan.backendapp.entity.candidat;
 import tn.talan.backendapp.dao.candidatRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -22,6 +23,9 @@ public class candidatService {
         return repository.findById(id).orElse(null);
     }
 
+    public List<candidat> getCandidatsByDate(Date date) {
+        return repository.findByDate(date);
+    }
     public candidat save(candidat c) {
         return repository.save(c);
     }

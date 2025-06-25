@@ -1,9 +1,11 @@
 package tn.talan.backendapp.controller;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import tn.talan.backendapp.entity.candidat;
 import tn.talan.backendapp.service.candidatService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -24,6 +26,12 @@ public class candidatController {
     @GetMapping("/{id}")
     public candidat getById(@PathVariable Long id) {
         return service.getById(id);
+    }
+
+    @GetMapping("/date")
+    public List<candidat> getCandidatsByDate(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
+        return service.getCandidatsByDate(date);
     }
 
     @PostMapping
