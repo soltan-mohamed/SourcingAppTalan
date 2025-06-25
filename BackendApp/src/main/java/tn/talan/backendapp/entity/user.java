@@ -41,9 +41,6 @@ public class user {
     @Column(name = "role")
     private role role;
 
-    @Column(name = "profile_cover_path")
-    private String profileCoverPath;
-
     @Column(name = "profile_photo_path")
     private String profilePhotoPath;
 

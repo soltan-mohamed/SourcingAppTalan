@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import tn.talan.backendapp.enums.statut;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -25,13 +26,13 @@ public class candidat {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "nom")
+    @Column(name = "nom" , nullable = false)
     private String nom;
-    @Column(name = "prenom")
+    @Column(name = "prenom", nullable = false)
     private String prenom;
-    @Column(name = "email", unique = true)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
-    @Column(name = "telephone")
+    @Column(name = "telephone", nullable = false)
     private String telephone;
     @Column(name = "competences")
     private String competences;
@@ -45,6 +46,10 @@ public class candidat {
     @Enumerated(EnumType.STRING)
     @Column(name = "statut")
     private statut statut;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "date_creation")
+    private Date date = new Date();
 
     @OneToMany(mappedBy = "candidat")
     private List<recrutement> recrutements;

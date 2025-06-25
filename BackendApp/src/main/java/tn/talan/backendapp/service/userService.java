@@ -38,7 +38,6 @@ public class userService {
             user.setEmail(updated.getEmail());
             user.setPassword(updated.getPassword());
             user.setRole(updated.getRole());
-            user.setProfileCoverPath(updated.getProfileCoverPath());
             user.setProfilePhotoPath(updated.getProfilePhotoPath());
             return repository.save(user);
         }
