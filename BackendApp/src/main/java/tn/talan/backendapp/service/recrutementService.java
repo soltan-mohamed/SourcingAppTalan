@@ -2,11 +2,13 @@ package tn.talan.backendapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tn.talan.backendapp.entity.candidat;
 import tn.talan.backendapp.entity.recrutement;
 import tn.talan.backendapp.dao.recrutementRepository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class recrutementService {
@@ -28,6 +30,14 @@ public class recrutementService {
 
     public List<recrutement> searchByDemandeurAndResponsableAndDate(Long demandeurId, Long responsableId, Date date) {
         return repository.findByDemandeur_IdAndResponsable_IdAndDate(demandeurId, responsableId, date);
+    }
+
+    public List<candidat> getCandidatsByResponsable(Long responsableId) {
+        List<recrutement> recrutements = repository.findByResponsable_Id(responsableId);
+        return recrutements.stream()
+                .map(recrutement::getCandidat)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
 

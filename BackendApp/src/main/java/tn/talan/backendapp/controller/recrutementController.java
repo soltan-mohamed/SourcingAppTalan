@@ -3,6 +3,7 @@ package tn.talan.backendapp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import tn.talan.backendapp.entity.candidat;
 import tn.talan.backendapp.entity.recrutement;
 import tn.talan.backendapp.service.recrutementService;
 
@@ -32,6 +33,11 @@ public class recrutementController {
             @RequestParam Long responsableId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
         return service.searchByDemandeurAndResponsableAndDate(demandeurId, responsableId, date);
+    }
+
+    @GetMapping("/candidats/responsable/{id}")
+    public List<candidat> getCandidatsByResponsable(@PathVariable Long id) {
+        return service.getCandidatsByResponsable(id);
     }
 
     @GetMapping("/{id}")

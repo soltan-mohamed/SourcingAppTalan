@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface recrutementRepository extends JpaRepository<recrutement, Long> {
     List<recrutement> findByDemandeur_IdAndResponsable_IdAndDate(Long demandeurId, Long responsableId, Date date);
+    List<recrutement> findByResponsable_Id(Long responsableId);
 
 }
