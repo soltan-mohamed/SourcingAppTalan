@@ -6,6 +6,9 @@ import { MatIcon } from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CreateCandidat } from '../create-candidat/create-candidat';
+
 @Component({
   selector: 'app-candidates',
   imports: [
@@ -14,12 +17,17 @@ import {MatIconModule} from '@angular/material/icon';
     TableCardComponent,
     MatIcon,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatDialogModule
   ],
   templateUrl: './candidates.html',
   styleUrl: './candidates.scss'
 })
 export class Candidates {
+
+  constructor(
+    private dialog: MatDialog,
+  ) {}
 
   studentColumnDefinitions = [
     { def: 'name', label: 'Name', type: 'text' },
@@ -111,5 +119,19 @@ export class Candidates {
       cv: 'download link',
     },
   ];
+
+  openAddCandidate(): void {
+    const dialogRef = this.dialog.open(CreateCandidat, {
+      width: '800px',
+      disableClose: false
+    });
+
+    // dialogRef.afterClosed().subscribe((result: Publication) => {
+    //   if (result) {
+    //     // Reload publications from server after adding a new one
+    //     setTimeout(() => this.loadUserPublications(), 1000);
+    //   }
+    // });
+  }
 
 }

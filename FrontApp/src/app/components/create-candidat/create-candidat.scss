@@ -1,0 +1,13 @@
+::ng-deep .error-snackbar {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  ::ng-deep .warning-snackbar {
+    background-color: #ff9800;
+    color: white;
+  }
+  
+  ::ng-deep .mat-mdc-snack-bar-action {
+    color: white;
+  }
