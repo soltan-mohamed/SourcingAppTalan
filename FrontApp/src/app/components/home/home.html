@@ -4,10 +4,10 @@
 
             <!-- App logo + name -->
             <div class="p-1 flex justify-center items-center h-[15%] ">
-                <img src="assets\images\talan-logo1.png" alt="Talan Logo" class="h-full mx-auto " >
+                <img src="assets\images\talan-logo2.png" alt="Talan Logo" class="h-full mx-auto " >
             </div>
 
-            <hr style="border-color: rgba(31, 41, 55, 1);">
+            <hr style="border-color: rgb(52, 145, 16);">
 
             <!-- My profile div -->
             <div class="w-full py-3 flex items-center gap-3 px-4">
@@ -19,7 +19,7 @@
                 </div>
             </div>
 
-            <hr style="border-color: rgba(31, 41, 55, 1);">
+            <hr style="border-color: rgb(52, 145, 16);">
 
             <!-- Main container for the menu items -->
             <div class="w-full mb-6 justify-center items-center flex flex-col p-0 h-[70%]">
@@ -38,7 +38,7 @@
                     >
                         <div class="flex items-center justify-center w-8 h-8">
                             <span class="material-symbols-outlined"
-                                [ngClass]="{ 'text-gray-700': activeItem === 'home', 'text-white': activeItem !== 'home' }"
+                                [ngClass]="{ 'text-red-500': activeItem === 'home', 'text-white': activeItem !== 'home' }"
                             >
                                 home
                             </span>
@@ -57,7 +57,7 @@
                     >
                         <div class="flex items-center justify-center w-8 h-8">
                             <span class="material-symbols-outlined"
-                                [ngClass]="{ 'text-gray-700': activeItem === 'interviews', 'text-white': activeItem !== 'interviews' }"
+                                [ngClass]="{ 'text-red-500': activeItem === 'interviews', 'text-white': activeItem !== 'interviews' }"
                             >
                                 checklist
                             </span>
@@ -76,7 +76,7 @@
                     >
                         <div class="flex items-center justify-center w-8 h-8">
                             <span class="material-symbols-outlined"
-                                [ngClass]="{ 'text-gray-700': activeItem === 'candidates', 'text-white': activeItem !== 'candidates' }"
+                                [ngClass]="{ 'text-red-500': activeItem === 'candidates', 'text-white': activeItem !== 'candidates' }"
                             >
                                 clinical_notes
                             </span>
@@ -95,7 +95,7 @@
                     >
                         <div class="flex items-center justify-center w-8 h-8">
                             <span class="material-symbols-outlined"
-                                [ngClass]="{ 'text-gray-700': activeItem === 'sourcing', 'text-white': activeItem !== 'sourcing' }"
+                                [ngClass]="{ 'text-red-500': activeItem === 'sourcing', 'text-white': activeItem !== 'sourcing' }"
                             >
                                 person_search
                             </span>
