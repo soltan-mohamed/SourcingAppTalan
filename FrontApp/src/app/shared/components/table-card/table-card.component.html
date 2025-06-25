@@ -107,6 +107,11 @@
                     <span class="badge badge-solid-blue">{{ row.status }}</span>
                 </div>
                 }
+                @case ('not scheduled') {
+                <div>
+                    <span class="badge badge-solid-notsched">{{ row.status }}</span>
+                </div>
+                }
                 
                 }
             </div>

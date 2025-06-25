@@ -1,24 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
+import { MatChipEditedEvent, MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+
+interface CandidateData {
+  nom?: string;
+  prenom?: string;
+  phone?: string;
+  email?: string;
+  competences?: string[];
+  [key: string]: any;
+}
 
 @Component({
-  selector: 'app-create-candidat',
-  imports: [ReactiveFormsModule,
+  selector: 'app-edit-candidat',
+  imports: [
+    ReactiveFormsModule,
     CommonModule,
     MatIconModule,
     MatChipsModule
   ],
-  templateUrl: './create-candidat.html',
-  styleUrl: './create-candidat.scss'
+  templateUrl: './edit-candidat.html',
+  styleUrl: './edit-candidat.scss'
 })
-export class CreateCandidat implements OnInit {
+export class EditCandidat implements OnInit {
+
   CandidateForm!: FormGroup;
   
-  keywords : string[] = [];
+  keywords: string[] = [];
   
   // File upload properties
   selectedFile: File | null = null;
@@ -29,22 +41,61 @@ export class CreateCandidat implements OnInit {
   // Form submission state
   isSubmitting: boolean = false;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    @Inject(MAT_DIALOG_DATA) public data: CandidateData,
+    public dialogRef: MatDialogRef<EditCandidat>
+  ) {}
 
   ngOnInit(): void {
     this.initializeForm();
+    this.populateFormWithData();
   }
 
   initializeForm(): void {
     this.CandidateForm = this.formBuilder.group({
-      nom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ]],
-      prenom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ]],
+      nom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2)]],
+      prenom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2)]],
       telephone: ['', [Validators.required, Validators.pattern(/^[0-9-\s]{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
-      //poste: ['', Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ],
       competences: [[]],
     });
   }
+
+  populateFormWithData(): void {
+    if (this.data) {
+      console.log('Received data:', this.data);
+      
+      let fullName = this.extractFirstWord(this.data['name'] || '');
+
+      this.CandidateForm.patchValue({
+        prenom: fullName.firstWord,
+        nom: fullName.rest,
+        telephone: this.data.phone || '',
+        email: this.data.email || ''
+      });
+      
+      // Populate keywords/competences
+      if (this.data.competences && Array.isArray(this.data.competences)) {
+        this.keywords = [...this.data.competences];
+      }
+    }
+  }
+
+  extractFirstWord(input: string): { firstWord: string, rest: string } {
+    const trimmed = input.trim();
+    const firstSpaceIndex = trimmed.indexOf(' ');
+
+    if (firstSpaceIndex === -1) {
+      return { firstWord: trimmed, rest: '' };
+    }
+
+    const firstWord = trimmed.substring(0, firstSpaceIndex);
+    const rest = trimmed.substring(firstSpaceIndex + 1).trim();
+
+    return { firstWord, rest };
+  }
+
 
   getFormProgress(): number {
     const totalFields = 5;
@@ -159,14 +210,12 @@ export class CreateCandidat implements OnInit {
       setTimeout(() => {
         this.isSubmitting = false;
         console.log('Candidate submitted successfully!');
-        this.resetForm();
+        
+        // Close dialog and return the updated data
+        this.dialogRef.close(formData);
       }, 2000);
     } else {
       this.CandidateForm.markAllAsTouched();
-      
-      // if (this.selectedDomainNames.length === 0) {
-      //   this.CandidateForm.get('domains')?.setErrors({ required: true });
-      // }
       
       if (!this.selectedFile) {
         this.fileError = true;
@@ -176,10 +225,8 @@ export class CreateCandidat implements OnInit {
   }
 
   closeForm(): void {
-    // Reset form and close modal/dialog
-    this.resetForm();
-    console.log('Form closed');
-    // In real app, this would close the modal or navigate away
+    // Close dialog without saving
+    this.dialogRef.close();
   }
 
   private resetForm(): void {

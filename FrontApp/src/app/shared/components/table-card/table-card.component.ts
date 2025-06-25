@@ -9,6 +9,8 @@ import { FeatherIconsComponent } from '../feather-icons/feather-icons.component'
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { EditCandidat } from 'app/components/edit-candidat/edit-candidat';
 
 @Component({
   selector: 'app-table-card',
@@ -22,6 +24,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatTooltipModule,
     MatButtonModule,
     FeatherIconsComponent,
+    MatDialogModule
   ],
   templateUrl: './table-card.component.html',
   styleUrl: './table-card.component.scss'
@@ -35,6 +38,10 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   displayedColumns: string[] = [];
 
   @ViewChild(MatSort, { static: false }) sort!: MatSort;
+
+  constructor(
+    private dialog: MatDialog,
+  ) {}
 
   ngOnInit() {
     console.log('ngOnInit - dataSource:', this.dataSource);
@@ -122,10 +129,6 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  editCall(row: T) {
-    console.log('Edit row:', row);
-  }
-
   onContextMenu(event: MouseEvent, row: T) {
     event.preventDefault();
     console.log('Context menu for row:', row);
@@ -139,5 +142,23 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     } else {
       return 'primary';
     }
+  }
+
+  editCall(row: T): void {
+    const dialogRef = this.dialog.open(EditCandidat, {
+      width: '800px',
+      disableClose: false,
+      data: row 
+    });
+
+    // Handle the dialog result
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Dialog was closed with data:', result);
+        // Handle the updated candidate data
+      } else {
+        console.log('Dialog was closed without saving');
+      }
+    });
   }
 }
