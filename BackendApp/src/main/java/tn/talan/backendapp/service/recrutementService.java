@@ -1,14 +1,18 @@
 package tn.talan.backendapp.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.talan.backendapp.entity.recrutement;
 import tn.talan.backendapp.dao.recrutementRepository;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class recrutementService {
+    @Autowired
     private final recrutementRepository repository;
+
 
     public recrutementService(recrutementRepository repository) {
         this.repository = repository;
@@ -21,6 +25,11 @@ public class recrutementService {
     public recrutement getById(Long id) {
         return repository.findById(id).orElse(null);
     }
+
+    public List<recrutement> searchByDemandeurAndResponsableAndDate(Long demandeurId, Long responsableId, Date date) {
+        return repository.findByDemandeur_IdAndResponsable_IdAndDate(demandeurId, responsableId, date);
+    }
+
 
     public recrutement save(recrutement r) {
         return repository.save(r);
