@@ -14,17 +14,5 @@ export const DASHBOARD_ROUTE: Route[] = [
     path: 'main',
     component: MainComponent,
   },
-  /*{
-    path: 'dashboard2',
-    component: Dashboard2Component,
-  },*/
-  /*{
-    path: 'teacher-dashboard',
-    component: DashboardComponent,
-  },
-  {
-    path: 'student-dashboard',
-    component: StudentDashboard,
-  },*/
   { path: '**', component: Page404Component },
 ];

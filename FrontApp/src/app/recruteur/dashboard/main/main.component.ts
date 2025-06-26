@@ -34,6 +34,7 @@ import { TableCardComponent } from '@shared/components/table-card/table-card.com
 import { EmpStatusComponent } from '@shared/components/emp-status/emp-status.component';
 import { ChartCard1Component } from '@shared/components/chart-card1/chart-card1.component';
 import { EmpStatus1Component } from '@shared/components/emp-status1/emp-status1.component';
+import { AuthService } from '@core';
 export type chartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -89,12 +90,14 @@ export class MainComponent implements OnInit {
       active: 'Dashboard 1',
     },
   ];
-  constructor() {
-    //constructor
-  }
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
     this.chart3();
+  }
+
+    logout() {
+    this.authService.logout();
   }
 
   // Events

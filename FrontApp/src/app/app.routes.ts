@@ -10,37 +10,19 @@ export const APP_ROUTE: Route[] = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [AuthGuard],
- children: [
+    children: [
       { path: '', redirectTo: '/authentication/signin', pathMatch: 'full' },
 
-      {
-        path: 'recruteur',
-        canActivate: [AuthGuard],
-        data: {
-          role: Role.Recruteur,
-        },
-        loadChildren: () =>
-          import('./recruteur/recruteur.routes').then((m) => m.RECRUTEUR_ROUTE),
-      },
-     /* {
-        path: 'teacher',
-        canActivate: [AuthGuard],
-        data: {
-          role: Role.Evaluateur,
-        },
-        loadChildren: () =>
-          import('./teacher/teacher.routes').then((m) => m.TEACHER_ROUTE),
-      },
-      {
-        path: 'student',
-        canActivate: [AuthGuard],
-        data: {
-          role: Role.Manager,
-        },
-        loadChildren: () =>
-          import('./student/student.routes').then((m) => m.STUDENT_ROUTE),
-      },*/
-
+{
+  path: 'recruteur',
+  canActivate: [AuthGuard],
+  data: {
+    role: 'RECRUTEUR'  // Use string literal to ensure exact match
+  },
+  loadChildren: () =>
+    import('./recruteur/recruteur.routes').then((m) => m.RECRUTEUR_ROUTE),
+},
+      // ... autres routes
     ],
   },
   {
