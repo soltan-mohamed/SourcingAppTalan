@@ -28,11 +28,11 @@ public class recrutement {
 
     @ManyToOne
     @JoinColumn(name = "responsable_id")
-    private user responsable;
+    private Utilisateur responsable;
 
     @ManyToOne
     @JoinColumn(name = "demandeur_id")
-    private user demandeur;
+    private Utilisateur demandeur;
 
     @ManyToOne
     @JoinColumn(name = "candidat_id")

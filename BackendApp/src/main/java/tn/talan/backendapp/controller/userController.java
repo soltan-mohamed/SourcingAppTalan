@@ -1,43 +1,38 @@
 package tn.talan.backendapp.controller;
 
-import tn.talan.backendapp.entity.user;
-import tn.talan.backendapp.service.userService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import tn.talan.backendapp.entity.User;
+import tn.talan.backendapp.service.UserService;
 
 import java.util.List;
 
+@RequestMapping("/users")
 @RestController
-@RequestMapping("/api/users")
-@CrossOrigin(origins = "*")
-public class userController {
-    private final userService service;
+public class UserController {
+    private final UserService userService;
 
-    public userController(userService service) {
-        this.service = service;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @GetMapping
-    public List<user> getAll() {
-        return service.getAll();
+    @GetMapping("/me")
+    public ResponseEntity<User> authenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User currentUser = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(currentUser);
     }
 
-    @GetMapping("/{id}")
-    public user getById(@PathVariable Long id) {
-        return service.getById(id);
-    }
+    @GetMapping("/")
+    public ResponseEntity<List<User>> allUsers() {
+        List <User> users = userService.allUsers();
 
-    @PostMapping
-    public user create(@RequestBody user user) {
-        return service.save(user);
-    }
-
-    @PutMapping("/{id}")
-    public user update(@PathVariable Long id, @RequestBody user user) {
-        return service.update(id, user);
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+        return ResponseEntity.ok(users);
     }
 }

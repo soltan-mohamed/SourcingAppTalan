@@ -31,7 +31,7 @@ public class evaluationAction {
     @ManyToOne
     @JoinColumn(name = "evaluateur_id")
     @JsonIgnoreProperties({"recrutementsResponsable", "recrutementsDemandeur"})
-    private user evaluateur;
+    private Utilisateur evaluateur;
 
     @ManyToOne
     @JoinColumn(name = "recrutement_id")
