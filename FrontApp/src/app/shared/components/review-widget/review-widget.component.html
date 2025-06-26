@@ -1,0 +1,27 @@
+<div class="review-block">
+  @for (review of reviews; track review) {
+  <div class="row">
+    <div class="review-img">
+      <img [src]="review.imageUrl" alt="">
+    </div>
+    <div class="col">
+      <p class="m-b-15 font-b-500 font-16">{{ review.name }}
+        <span class="float-end m-r-10 font-12">{{ review.timeAgo }}</span>
+      </p>
+      @for (star of getStars(review.rating); track star.id) {
+      <i class="material-icons">{{ star.type }}</i>
+      }
+      <p class="m-t-15 m-b-15">{{ review.comment }}</p>
+      <a href="#!">
+        <i class="material-icons m-r-10">thumb_up</i>
+      </a>
+      <a href="#!">
+        <i class="material-icons m-r-10 col-red">thumb_down</i>
+      </a>
+    </div>
+  </div>
+  }
+  <div class="text-center m-b-5">
+    <a href="#!" class="b-b-primary text-primary">View all Customer Reviews</a>
+  </div>
+</div>

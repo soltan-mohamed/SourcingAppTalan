@@ -1,97 +1,147 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { User } from '../models/user';
 import { Role } from '@core/models/role';
 
-@Injectable({
-  providedIn: 'root',
-})
+interface LoginResponse {
+  email: string;
+  token: string;
+  expiresIn: number;
+  fullName: string;
+  role: Role;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private currentUserSubject: BehaviorSubject<User>;
-  public currentUser: Observable<User>;
+  private currentUserSubject: BehaviorSubject<User | null>;
+  public currentUser: Observable<User | null>;
+  private jwtHelper = new JwtHelperService();
+  private apiUrl = 'http://localhost:9090/talan';
 
-  private users = [
-    {
-      id: 1,
-      img: 'assets/images/user/recruteur.jpg',
-      username: 'recruteur@talan.tn',
-      password: 'recruteur@123',
-      firstName: 'Anouer',
-      lastName: 'Khemeja',
-      role: Role.Recruteur,
-      token: 'recruteur-token',
-    },
-    {
-      id: 2,
-      img: 'assets/images/user/evaluateur.jpg',
-      username: 'evaluateur@talan.tn',
-      password: 'evaluateur@123',
-      firstName: 'Mohamed',
-      lastName: 'Soltan',
-      role: Role.Evaluateur,
-      token: 'evaluateur-token',
-    },
-    {
-      id: 3,
-      img: 'assets/images/user/manager.jpg',
-      username: 'manager@talan.tn',
-      password: 'manager@123',
-      firstName: 'Safouane',
-      lastName: 'Chabchoub',
-      role: Role.Manager,
-      token: 'manager-token',
-    },
-  ];
-
-  constructor(private http: HttpClient) {
-    this.currentUserSubject = new BehaviorSubject<User>(
-      JSON.parse(localStorage.getItem('currentUser') || '{}')
-    );
+  constructor(private http: HttpClient, private router: Router) {
+    // Initialize currentUserSubject with null
+    this.currentUserSubject = new BehaviorSubject<User | null>(null);
     this.currentUser = this.currentUserSubject.asObservable();
+    
+    // Load user after initialization
+    this.loadInitialUser();
   }
 
-  public get currentUserValue(): User {
-    return this.currentUserSubject.value;
+  private loadInitialUser(): void {
+    const user = this.getUserFromStorage();
+    this.currentUserSubject.next(user);
   }
 
-  login(username: string, password: string) {
+login(email: string, password: string): Observable<User> {
+  return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { email, password })
+    .pipe(
+      map(response => {
+        const user = this.createUserFromResponse(response);
+        this.storeAuthData(user, response.token);
+        this.redirectBasedOnRole(user.role); // Add this line
+        return user;
+      }),
+      catchError(error => {
+        this.clearAuthData();
+        return throwError(() => error);
+      })
+    );
+}
 
-    const user = this.users.find((u) => u.username === username && u.password === password);
+private redirectBasedOnRole(role: Role): void {
+  console.log('Attempting redirect for role:', role);
+  
+  const routes = {
+    [Role.RECRUTEUR]: '/recruteur', // Juste '/recruteur' car la redirection est gérée dans RECRUTEUR_ROUTE
+    [Role.EVALUATEUR]: '/evaluateur',
+    [Role.MANAGER]: '/manager'
+  };
 
-    if (!user) {
-      return this.error('Username or password is incorrect');
-    } else {
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      this.currentUserSubject.next(user);
-      return this.ok({
-        id: user.id,
-        img: user.img,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        token: user.token,
-      });
+  const targetRoute = routes[role] || '/recruteur';
+  
+  console.log('Navigating to:', targetRoute);
+  this.router.navigateByUrl(targetRoute)
+    .then(success => {
+      if (!success) {
+        console.error('Navigation failed, falling back to dashboard');
+        this.router.navigate(['/recruteur']);  /// hna l'mochkla !!!!!!
+      }
+    })
+    .catch(err => {
+      console.error('Navigation error:', err);
+      this.router.navigate(['/dashboard']);
+    });
+}
+  private createUserFromResponse(response: LoginResponse): User {
+    const user = new User();
+    user.email = response.email;
+    user.fullName = response.fullName;
+    user.role = response.role;
+    user.token = response.token;
+    return user;
+  }
+
+  private getUserFromStorage(): User | null {
+    try {
+      const userJson = localStorage.getItem('currentUser');
+      const token = localStorage.getItem('token');
+      
+      if (!userJson || !token || this.isTokenExpired(token)) {
+        this.clearAuthData();
+        return null;
+      }
+      
+      return JSON.parse(userJson) as User;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      this.clearAuthData();
+      return null;
     }
   }
-  ok(body?: {
-    id: number;
-    img: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    token: string;
-  }) {
-    return of(new HttpResponse({ status: 200, body }));
-  }
-  error(message: string) {
-    return throwError(message);
+
+  private isTokenExpired(token: string): boolean {
+    return this.jwtHelper.isTokenExpired(token);
   }
 
-  logout() {
-    // remove user from local storage to log user out
+  private storeAuthData(user: User, token: string): void {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    localStorage.setItem('token', token);
+    this.currentUserSubject.next(user);
+  }
+
+  logout(): void {
+    this.clearAuthData();
+    this.router.navigate(['/authentication/signin']);
+  }
+
+  clearAuthData(): void {
     localStorage.removeItem('currentUser');
-    this.currentUserSubject.next(this.currentUserValue);
-    return of({ success: false });
+    localStorage.removeItem('token');
+    // Check if currentUserSubject exists before calling next
+    if (this.currentUserSubject) {
+      this.currentUserSubject.next(null);
+    }
+  }
+
+  get currentUserValue(): User | null {
+    return this.currentUserSubject?.value;
+  }
+
+  get token(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  isAuthenticated(): boolean {
+    const token = this.token;
+    return token ? !this.isTokenExpired(token) : false;
+  }
+
+  hasRole(requiredRole: Role): boolean {
+    const user = this.currentUserValue;
+    return user?.role === requiredRole;
   }
 }

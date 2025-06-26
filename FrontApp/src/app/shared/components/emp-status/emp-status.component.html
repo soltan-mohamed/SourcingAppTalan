@@ -1,0 +1,27 @@
+<div class="responsive_table">
+    <table mat-table [dataSource]="empDataSource" class="mat-cell advance-table">
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <span class="truncate-text">Candidate
+                    Name</span></mat-header-cell>
+            <mat-cell *matCellDef="let emp">
+                <!--<img [src]="emp.image" class="table-img" alt="image" />--><span class="truncate-text">
+                    <div class="media-title font-b-500">
+                        <a [href]="'mailto:' + emp.email">{{emp.name}}</a>
+                    </div>
+                    <!--<div class="text-job font-10">{{emp.qualification}}</div>-->
+                </span></mat-cell>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+            <mat-cell *matCellDef="let emp">
+                <div [ngClass]="emp.statusClass">{{emp.status}}</div>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="empDisplayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: empDisplayedColumns;"></mat-row>
+    </table>
+
+</div>

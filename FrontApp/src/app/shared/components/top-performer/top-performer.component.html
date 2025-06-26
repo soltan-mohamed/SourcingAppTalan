@@ -1,0 +1,52 @@
+<div class="top-performer-card">
+    <!-- Angular Material Tab Group -->
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+        <mat-tab label="Week"></mat-tab>
+        <mat-tab label="Month"></mat-tab>
+        <mat-tab label="Year"></mat-tab>
+    </mat-tab-group>
+
+    <!-- Table -->
+    <table mat-table [dataSource]="displayedPerformers" class="performer-table" matSort>
+        <!-- Photo Column -->
+        <ng-container matColumnDef="photo">
+            <th mat-header-cell *matHeaderCellDef> Img </th>
+            <td mat-cell *matCellDef="let performer">
+                <img class="photo" [src]="performer.photo" alt="{{ performer.name }}" />
+            </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Name </th>
+            <td mat-cell *matCellDef="let performer">
+                <div class="name">{{ performer.name }}</div>
+                <div class="id">ID: {{ performer.id }}</div>
+            </td>
+        </ng-container>
+
+        <!-- Standard Column -->
+        <ng-container matColumnDef="standard">
+            <th mat-header-cell *matHeaderCellDef> Standard </th>
+            <td mat-cell *matCellDef="let performer">{{ performer.standard }}</td>
+        </ng-container>
+        <!-- Percentage Column -->
+        <ng-container matColumnDef="percentage">
+            <th mat-header-cell *matHeaderCellDef> Percentage </th>
+            <td mat-cell *matCellDef="let performer"> <span class="badge badge-solid-orange">{{ performer.percentage
+                    }}</span></td>
+        </ng-container>
+
+        <!-- Rank Column -->
+        <ng-container matColumnDef="rank">
+            <th mat-header-cell *matHeaderCellDef> Rank </th>
+            <td mat-cell *matCellDef="let performer">{{ performer.standard }}</td>
+        </ng-container>
+
+
+
+        <!-- Table Rows -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+</div>

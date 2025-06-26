@@ -1,0 +1,19 @@
+<ul class="list-unstyled">
+  @for (document of documents; track document) {
+    <li class="d-flex mb-3">
+      <span [ngClass]="['msr-3', 'align-self-center', 'img-icon', document.iconClass, document.textClass]">
+        <i [ngClass]="document.icon"></i>
+      </span>
+      <div class="set-flex">
+        <div class="font-14 font-b-500 mb-1">{{ document.title }}</div>
+        <p>{{ document.type }}, {{ document.size }} MB</p>
+      </div>
+      <div class="ms-auto">
+        <td>
+          <i class="far fa-trash-alt psr-3" (click)="onDelete(document)"></i>
+          <i class="far fa-arrow-alt-circle-down" (click)="onDownload(document)"></i>
+        </td>
+      </div>
+    </li>
+  }
+</ul>

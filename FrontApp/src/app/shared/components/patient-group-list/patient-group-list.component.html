@@ -1,0 +1,17 @@
+<div class="list-body">
+  <ul class="list-unstyled list-unstyled-noborder">
+    @for (group of patientGroups; track group) {
+      <li class="patient-group-list">
+        <div class="d-flex">
+          <div [ngClass]="['lbl-bedge', group.colorClass]">
+            <span class="lbl-bedge-title">{{ group.label }}</span>
+          </div>
+          <div class="group-details font-14">{{ group.title }}</div>
+        </div>
+        <div class="ms-auto">
+          <div class="media-title text-muted mb-0 font-12">{{ group.patientCount }} Patients</div>
+        </div>
+      </li>
+    }
+  </ul>
+</div>

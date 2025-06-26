@@ -1,0 +1,44 @@
+:host ::ng-deep .chart-card2 {
+  padding: 20px;
+  .title {
+    font-size: 18px;
+    font-weight: 500;
+    vertical-align: middle;
+    display: flex;
+  }
+  .subtitle {
+    font-size: 12px;
+    color: #9aa0ac;
+  }
+
+  .main-label {
+    margin-top: 10px;
+    p {
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 25px;
+      font-weight: 600;
+    }
+  }
+
+  .legend {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+  }
+
+  .occupied,
+  .available {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+  }
+
+  .occupied {
+    background-color: #ffa726;
+  }
+
+  .available {
+    background-color: #dbdbdb;
+  }
+}

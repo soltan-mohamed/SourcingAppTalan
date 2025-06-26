@@ -1,0 +1,19 @@
+<div class="row">
+    <div class="col-lg-4">
+        <div class="small-card-chart">
+            <span class="title">{{ title }}</span>
+            <p class="amount">{{ amount }}</p>
+            <p class="percentage">
+                <mat-icon class="icon">arrow_circle_up</mat-icon>
+                <!-- <i-feather name="arrow-up-circle" class="w-20 h-20 m-2 d-flex align-items-center"></i-feather> -->
+                {{ percentageChange }}
+            </p>
+        </div>
+    </div>
+    <div class="col-lg-8 align-self-center">
+        <apx-chart [series]="smallChart5Options.series!" [chart]="smallChart5Options.chart!"
+            [colors]="smallChart5Options.colors!" [yaxis]="smallChart5Options.yaxis!"
+            [plotOptions]="smallChart5Options.plotOptions!" [tooltip]="smallChart5Options.tooltip!"
+            [xaxis]="smallChart5Options.xaxis!"></apx-chart>
+    </div>
+</div>

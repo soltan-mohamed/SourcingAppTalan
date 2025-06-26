@@ -1,0 +1,33 @@
+.top-performer-card {
+  .performer-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    td {
+      padding: 8px 0;
+
+      .photo {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+      }
+
+      .name {
+        font-weight: 500;
+      }
+
+      .id {
+        font-size: 0.75rem;
+        color: #6c757d;
+      }
+    }
+  }
+}
+:host ::ng-deep .mat-column-photo {
+  max-width: 50px;
+}

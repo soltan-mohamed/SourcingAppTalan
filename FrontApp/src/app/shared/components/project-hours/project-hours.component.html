@@ -1,0 +1,25 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="d-flex justify-content-between mt-2 mb-2">
+            <div><span class="fw-bold">{{ completedHours }}</span> Hours</div>
+            <div>Expected: {{ expectedHours }}</div>
+        </div>
+        <div class="progress project-bar mb-2">
+            <div *ngFor="let bar of progressBars" class="progress-bar" [ngClass]="bar.color"
+                [style.width.%]="bar.percentage">
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="search-project">
+            <div class="columnHeader light-bg">
+                <div class="column">Project Name</div>
+                <div class="column">Completed</div>
+            </div>
+            <div *ngFor="let project of projects" class="project-source">
+                <div><span><i class="fa fa-circle" [ngClass]="project.color"></i></span>{{ project.name }}</div>
+                <div>{{ project.completed }}%</div>
+            </div>
+        </div>
+    </div>
+</div>

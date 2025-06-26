@@ -1,0 +1,37 @@
+<mat-card class="chart-card2">
+    <mat-card-title class="title">
+        <mat-icon>bar_chart</mat-icon> {{title}}
+    </mat-card-title>
+    <mat-card-subtitle class="subtitle">
+        {{subtitle}}
+    </mat-card-subtitle>
+    <mat-card-content>
+        <div id="chart">
+            <apx-chart [series]="pieChartOptions.series2!" [chart]="pieChartOptions.chart!"
+                [labels]="pieChartOptions.labels!" [responsive]="pieChartOptions.responsive!"
+                [dataLabels]="pieChartOptions.dataLabels!" [legend]="pieChartOptions.legend!" class="apex-pie-center">
+            </apx-chart>
+        </div>
+        <div class="table-responsive m-t-15">
+            <table class="table align-items-center">
+                <tbody>
+                    <tr>
+                        <td><i class="fa fa-circle col-cyan msr-2"></i> Fever</td>
+                        <td>23</td>
+                        <td class="col-green">+32%</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fa fa-circle col-blue msr-2"></i>Cholera</td>
+                        <td>32</td>
+                        <td class="col-green">+12%</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fa fa-circle col-orange msr-2"></i>Typhoid</td>
+                        <td>12</td>
+                        <td class="col-orange">-12%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </mat-card-content>
+</mat-card>

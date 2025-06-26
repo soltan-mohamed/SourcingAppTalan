@@ -1,0 +1,19 @@
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <ul class="breadcrumb">
+      <li>
+        <h4 class="page-title">{{title}}</h4>
+      </li>
+      <li class="breadcrumb-item bcrumb-1">
+        <a [routerLink]="'/recruteur/dashboard/main'">
+          <!-- <i class="fas fa-home"></i>   -->
+          <i-feather name="home" class="breadcrumb-icon"></i-feather>
+        </a>
+      </li>
+      @for (item of items; track item) {
+      <li class="breadcrumb-item">{{item}}</li>
+      }
+      <li class="breadcrumb-item active">{{active_item}}</li>
+    </ul>
+  </div>
+</div>

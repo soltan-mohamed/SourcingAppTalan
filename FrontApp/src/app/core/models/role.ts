@@ -1,6 +1,5 @@
 export enum Role {
-  All = 'All',
-  Recruteur = 'Recruteur',
-  Evaluateur = 'Evaluateur',
-  Manager = 'Manager',
+  RECRUTEUR = 'RECRUTEUR',
+  EVALUATEUR = 'EVALUATEUR',
+  MANAGER = 'MANAGER'
 }

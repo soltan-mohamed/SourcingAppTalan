@@ -1,0 +1,98 @@
+/* event-card.component.scss */
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+}
+
+.event-card {
+  background: #eaeef8;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 0px;
+
+  .event-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .date-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+
+    .day {
+      font-size: 0.875rem;
+      margin-bottom: 15px;
+      font-weight: 500;
+    }
+
+    .date-block {
+      background: #786bed;
+      border-radius: 8px;
+      padding: 0.5rem;
+      text-align: center;
+      width: 100%;
+
+      .date {
+        display: block;
+        font-size: 1.25rem;
+        font-weight: 500;
+        line-height: 1;
+        color: #ffffff;
+      }
+
+      .month {
+        display: block;
+        font-size: 0.75rem;
+        color: #ffffff;
+        margin-top: 0.25rem;
+      }
+    }
+  }
+
+  .event-details {
+    flex: 1;
+    margin-top: 25px;
+
+    .event-title {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .event-time {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+
+      .time-icon {
+        font-size: 21px;
+        width: 21px;
+        height: 21px;
+      }
+    }
+  }
+
+  .event-status {
+    position: absolute;
+    top: -0.5rem;
+    right: 0;
+    background: #f7d1d4;
+    color: #ff4081;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+
+    &:empty {
+      display: none;
+    }
+  }
+}

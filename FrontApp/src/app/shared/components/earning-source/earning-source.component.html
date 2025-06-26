@@ -1,0 +1,15 @@
+<ul class="list-unstyled">
+  @for (source of earningSources; track source) {
+    <li>
+      <div class="mb-2">
+        <span class="progress-label">{{ source.label }}</span>
+        <span class="float-end progress-percent label m-b-5" [ngClass]="source.labelClass">{{ source.percentage
+        }}%</span>
+      </div>
+      <div class="progress skill-progress m-b-20 w-100">
+        <div class="progress-bar" [ngClass]="source.class" [style.width]="source.percentage + '%'"
+        role="progressbar" [attr.aria-valuenow]="source.percentage" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </li>
+  }
+</ul>

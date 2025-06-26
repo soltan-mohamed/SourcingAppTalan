@@ -1,0 +1,25 @@
+<div class="plain-card">
+    <div class="card-inner">
+        <p class="tx-primary m-b-20 font-b-500 font-20">{{ heading }}</p>
+        <div class="row">
+            <div class="col-4">
+                <label class="font-b-500 font-16">Today</label>
+                <p>{{ todayCount }}</p>
+            </div>
+            <div class="col-4">
+                <label class="font-b-500 font-16">This Week</label>
+                <p>{{ weekCount }}</p>
+            </div>
+            <div class="col-4">
+                <label class="font-b-500 font-16">This Month</label>
+                <p>{{ monthCount }}</p>
+            </div>
+        </div>
+        <div class="progress shadow-style">
+            <div class="progress-bar" [style.width]="progressPercentage + '%'" [style.backgroundColor]="progressColor"
+                role="progressbar" [attr.aria-valuenow]="progressPercentage" aria-valuemin="0" aria-valuemax="100">
+                {{ progressPercentage }}%
+            </div>
+        </div>
+    </div>
+</div>

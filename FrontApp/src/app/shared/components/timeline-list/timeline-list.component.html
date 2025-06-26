@@ -1,0 +1,17 @@
+<ul class="timeline">
+  @for (item of timelineItems; track item) {
+    <li>
+      <div class="timeline-badge primary">
+        <img [src]="item.image" class="notice-object" alt="...">
+      </div>
+      <div class="timeline-panel">
+        <div class="timeline-heading">
+          <p class="timeline-title">{{ item.title }}</p>
+        </div>
+        <div class="timeline-body">
+          <p>{{ item.timeAgo }}</p>
+        </div>
+      </div>
+    </li>
+  }
+</ul>

@@ -6,6 +6,7 @@ import { Page404Component } from './authentication/page404/page404.component';
 //import { Role } from '../app/models/role';
 import { Home } from './components/home/home';
 import { Candidates } from './components/candidates/candidates';
+import { Role } from '../app/models/role';
 
 export const APP_ROUTE: Route[] = [
   {
@@ -15,6 +16,16 @@ export const APP_ROUTE: Route[] = [
     children: [
       { path: '', redirectTo: '/authentication/signin', pathMatch: 'full' },
 
+{
+  path: 'recruteur',
+  canActivate: [AuthGuard],
+  data: {
+    role: 'RECRUTEUR'  // Use string literal to ensure exact match
+  },
+  loadChildren: () =>
+    import('./recruteur/recruteur.routes').then((m) => m.RECRUTEUR_ROUTE),
+},
+      // ... autres routes
     ],
   },
   {
