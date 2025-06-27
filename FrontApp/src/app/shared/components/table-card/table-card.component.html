@@ -107,7 +107,7 @@
                     <span class="badge badge-solid-blue">{{ row.status }}</span>
                 </div>
                 }
-                @case ('not scheduled') {
+                @case ('contacted') {
                 <div>
                     <span class="badge badge-solid-notsched">{{ row.status }}</span>
                 </div>
@@ -253,6 +253,9 @@
         <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
             <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)">
                 <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+            </button>
+                        <button *ngIf="row.status === 'contacted'" mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="newHiringProcess(row)">
+                <app-feather-icons [icon]="'user-plus'" [class]="'tbl-fav-edit'"></app-feather-icons>
             </button>
         </mat-cell>
     </ng-container>

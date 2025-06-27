@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EditCandidat } from 'app/components/edit-candidat/edit-candidat';
+import { CreateRecrutement } from 'app/components/create-recrutement/create-recrutement';
 
 @Component({
   selector: 'app-table-card',
@@ -142,6 +143,23 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     } else {
       return 'primary';
     }
+  }
+
+  newHiringProcess(row: T): void {
+    const dialogRef = this.dialog.open(CreateRecrutement, {
+      width: '800px',
+      disableClose: false,
+      data: row 
+    });
+
+    // Handle the dialog result
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Dialog was closed with data:', result);
+      } else {
+        console.log('Dialog was closed without saving');
+      }
+    });
   }
 
   editCall(row: T): void {

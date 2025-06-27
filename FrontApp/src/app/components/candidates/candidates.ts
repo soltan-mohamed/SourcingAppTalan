@@ -70,7 +70,7 @@ export class Candidates {
       email: 'ahmed.salhi@gmail.com',
       position: 'IT Support',
       //dateOfAdmission: '10-05-2025',
-      status : 'not scheduled',
+      status : 'contacted',
       img: 'assets/images/user/user3.jpg',
       cv: 'download link',
     },
