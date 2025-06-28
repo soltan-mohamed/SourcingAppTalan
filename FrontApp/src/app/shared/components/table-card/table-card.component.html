@@ -260,7 +260,7 @@
         </mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row class="hover:bg-gray-200!" [@rowsAnimation]="" *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+    <mat-row class="hover:bg-gray-200!" [@rowsAnimation]="" *matRowDef="let row; columns: displayedColumns;" (click)="openHistory(row)"
         [style.cursor]="'pointer'" matRipple>
     </mat-row>
 </table>

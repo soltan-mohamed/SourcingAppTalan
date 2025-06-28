@@ -1,0 +1,54 @@
+.candidate-history-container {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.evaluation-step {
+  transition: all 0.2s ease-in-out;
+}
+
+.evaluation-step:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.evaluation-tree {
+    font-family: inherit;
+}
+
+.evaluation-card {
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.evaluation-card:hover {
+    border-left: 3px solid #3b82f6;
+    transform: translateY(-1px);
+}
+
+.mat-tree-node {
+    min-height: auto !important;
+}
+
+.mat-icon-button {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+}
