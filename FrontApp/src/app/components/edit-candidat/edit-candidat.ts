@@ -44,8 +44,12 @@ export class EditCandidat implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: CandidateData,
-    public dialogRef: MatDialogRef<EditCandidat>
+    public dialogRef: MatDialogRef<EditCandidat>,
   ) {}
+
+  onClose(): void {
+    this.dialogRef.close();
+  }
 
   ngOnInit(): void {
     this.initializeForm();

@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-candidat',
@@ -29,7 +30,11 @@ export class CreateCandidat implements OnInit {
   // Form submission state
   isSubmitting: boolean = false;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder,private dialogRef: MatDialogRef<CreateCandidat>) {}
+
+  onClose(): void {
+    this.dialogRef.close();
+  }
 
   ngOnInit(): void {
     this.initializeForm();

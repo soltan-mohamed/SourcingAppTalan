@@ -38,7 +38,12 @@ export class CreateRecrutement implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: CandidateData,
+    private dialogRef: MatDialogRef<CreateRecrutement>
   ) {}
+
+  onClose(): void {
+    this.dialogRef.close();
+  }
 
   ngOnInit(): void {
     this.initializeForm();
