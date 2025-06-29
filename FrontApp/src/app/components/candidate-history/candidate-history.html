@@ -1,13 +1,17 @@
 <div class="bg-white rounded-xl shadow-lg max-h-[90vh] overflow-hidden flex flex-col">
     
     <!-- Header -->
-    <div class="bg-gradient-to-r from-lime-700 to-blue-700 px-8 py-6">
+    <div class="flex justify-between bg-gradient-to-r from-lime-700 to-blue-700 px-7 py-6">
         <h2 class="text-2xl font-serif text-white font-medium tracking-wide flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             Candidate History
         </h2>
+
+        <button class="hover:cursor-pointer" (click)="onClose()">
+            <mat-icon class="mt-2! text-white!" >close</mat-icon>
+        </button>
     </div>
 
     <!-- Loading State -->
@@ -76,7 +80,16 @@
 
         <!-- Evaluation History Tree -->
         <div>
-            <h4 class="text-lg font-semibold text-gray-900 mb-6">Evaluation History</h4>
+            <div class="flex gap-1 mb-5">
+                <div class="flex justify-center items-center text-center">
+                    <h4 class="text-lg font-semibold text-gray-900">Evaluation History</h4>
+                </div>
+                <div class="flex justify-center items-center">
+                    <button (click)="openNewInterview()" matIconButton aria-label="Add interview">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </div>
 
             <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="hover:shadow-md transition-shadow evaluation-tree bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
                 
@@ -157,7 +170,7 @@
 
                             <!-- Notes -->
                             <div *ngIf="node.data.notes" class="mt-3">
-                                <div class="bg-gray-50 border-l-4 border-blue-400 p-3 rounded-r">
+                                <div class="bg-gray-50 border-l-4 w-80 border-blue-400 p-3 rounded-r">
                                     <div class="flex">
                                         <svg class="h-4 w-4 text-blue-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 

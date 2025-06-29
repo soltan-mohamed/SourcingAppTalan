@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MatTreeModule, MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogRef } from '@angular/material/dialog';
 
 interface RecrutementEvaluation {
   candidate?: Candidate;
@@ -49,7 +51,8 @@ interface FlatNode {
   imports: [
     CommonModule,
     MatTreeModule,
-    MatIconModule
+    MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './candidate-history.html',
   styleUrl: './candidate-history.scss'
@@ -103,8 +106,12 @@ export class CandidateHistory implements OnInit {
 
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
-  constructor() {}
+  constructor(private dialogRef: MatDialogRef<CandidateHistory>) {}
 
+  onClose(): void {
+    this.dialogRef.close();
+  }
+  
   ngOnInit(): void {
     this.loadCandidateData();
   }
@@ -272,6 +279,10 @@ export class CandidateHistory implements OnInit {
       'in-progress': 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
     };
     return icons[status] || icons['pending'];
+  }
+
+  openNewInterview() {
+
   }
 
   formatDate(date: Date): string {
