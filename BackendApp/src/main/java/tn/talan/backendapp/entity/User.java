@@ -1,26 +1,23 @@
 package tn.talan.backendapp.entity;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
-
-
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
-
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -44,28 +41,37 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    // Changement ici : Remplacer le champ unique role par une collection de rôles
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role; // Ajout du champ rôle
+    private Set<Role> roles = new HashSet<>();
+
+    // Méthode pratique pour ajouter plusieurs rôles
+    public void addRoles(Set<Role> rolesToAdd) {
+        this.roles.addAll(rolesToAdd);
+    }
+
+    // Dans la classe User
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .collect(Collectors.toList());
+    }
+
+    // Les autres méthodes restent inchangées
+    public String getEmail() {
+        return email;
+    }
 
     public User setEmail(String email) {
         this.email = email;
         return this;
-    }
-
-
-    public Role getRole() {
-        return role;
-    }
-
-    public User setRole(Role role) {
-        this.role = role;
-        return this;
-    }
-
-
-    public String getEmail() {
-        return email;
     }
 
     public User setFullName(String fullName) {
@@ -82,14 +88,7 @@ public class User implements UserDetails {
         return this;
     }
 
-
-
-
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
     public String getPassword() {
         return password;
     }
@@ -118,10 +117,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-    // Getters and setters
-
-
-
-
 }

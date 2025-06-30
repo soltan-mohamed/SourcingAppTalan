@@ -1,8 +1,11 @@
 package tn.talan.backendapp.responses;
 
+
 import lombok.Getter;
 import lombok.Setter;
 import tn.talan.backendapp.entity.Role;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -10,7 +13,7 @@ public class LoginResponse {
     private String token;
     private long expiresIn;
     private String fullName;
-    private Role role;
+    private Set<Role> roles; // Changé de Role à Set<Role>
 
     public String getToken() {
         return token;
@@ -27,9 +30,14 @@ public class LoginResponse {
         return this;
     }
 
-    public LoginResponse setRole(Role role) {
-        this.role = role;
+    // Getters et setters
+    public LoginResponse setRoles(Set<Role> roles) {
+        this.roles = roles;
         return this;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
     }
 
     public LoginResponse setToken(String token) {

@@ -7,6 +7,6 @@ export class User {
   password!: string;
   createdAt!: Date;
   updatedAt!: Date;
-  role!: Role;
+  roles!: Role[]; // Changé de 'role' à 'roles' (array)
   token!: string;
 }
