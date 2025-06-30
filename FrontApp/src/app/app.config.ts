@@ -42,7 +42,8 @@ export const appConfig: ApplicationConfig = {
           useFactory: createTranslateLoader,
           deps: [HttpClient],
         },
-      })
+      }),
+      FeatherModule.pick(allIcons)
     ),
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
     {

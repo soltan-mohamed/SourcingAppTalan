@@ -1,0 +1,52 @@
+<div class="interview-container">
+  <div class="header">
+    <h2 class="title">
+    Interviews List
+    <button class="add-btn" mat-icon-button matTooltip="Add Interview" (click)="addInterview()">
+      <feather-icon name="plus"></feather-icon>
+    </button>
+    </h2>
+    <div class="search-bar">
+      <input [(ngModel)]="searchDate" placeholder="Search by date (e.g., 2025-07-01)" />
+    </div>
+  </div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <ng-container matColumnDef="candidate">
+      <th mat-header-cell *matHeaderCellDef> Candidate </th>
+      <td mat-cell *matCellDef="let element"> {{element.candidate}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef> Date </th>
+      <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="time">
+      <th mat-header-cell *matHeaderCellDef> Time </th>
+      <td mat-cell *matCellDef="let element"> {{element.time}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef> Type </th>
+      <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="evaluator">
+      <th mat-header-cell *matHeaderCellDef> Evaluator </th>
+      <td mat-cell *matCellDef="let element"> {{element.evaluator}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-icon-button color="primary" matTooltip="Edit interview" (click)="editInterview(element)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
