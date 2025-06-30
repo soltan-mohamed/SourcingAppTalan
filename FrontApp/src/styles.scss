@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-@import "tailwindcss";
+/*@import "tailwindcss";
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -41,14 +41,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   --border-color: #e7e7eee8;
 }
 
-/* Change the border color */
 .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
 .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
 .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
   border-color: var(--border-color) !important;
 }
 
-/* Change the border width */
 .mdc-text-field--outlined:not(.mdc-text-field--disabled)
   .mdc-notched-outline
   .mdc-notched-outline__leading,
@@ -61,7 +59,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   border-width: 2px !important;
 }
 
-/* Change the border focused color */
 .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused
   .mdc-notched-outline__leading,
 .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused
@@ -71,7 +68,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   border-color: var(--color-primary) !important;
 }
 
-/* Change the border hover color */
 .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover
   .mdc-notched-outline
   .mdc-notched-outline__leading,
@@ -82,4 +78,4 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   .mdc-notched-outline
   .mdc-notched-outline__trailing {
   border-color: var(--color-primary) !important;
-}
+}*/
