@@ -53,7 +53,7 @@ export class AuthService {
   }
 
   private redirectBasedOnRoles(roles: Role[]): void {
-    console.log('User roles:', roles);
+    //console.log('User roles:', roles);
     
     // Priorité des redirections (si l'utilisateur a plusieurs rôles)
     if (roles.includes(Role.MANAGER)) {
@@ -63,7 +63,7 @@ export class AuthService {
     } else if (roles.includes(Role.RECRUTEUR)) {
       this.router.navigate(['/recruteur/dashboard/main']);
     } else {
-      console.error('No valid role found, redirecting to signin');
+      //console.error('No valid role found, redirecting to signin');
       this.router.navigate(['/authentication/signin']);
     }
   }
@@ -88,7 +88,7 @@ export class AuthService {
       
       return JSON.parse(userJson) as User;
     } catch (error) {
-      console.error('Error parsing user data:', error);
+      //console.error('Error parsing user data:', error);
       this.clearAuthData();
       return null;
     }

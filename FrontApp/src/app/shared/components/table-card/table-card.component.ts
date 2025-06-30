@@ -46,13 +46,13 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    console.log('ngOnInit - dataSource:', this.dataSource);
-    console.log('ngOnInit - columnDefinitions:', this.columnDefinitions);
+    //console.log('ngOnInit - dataSource:', this.dataSource);
+    //console.log('ngOnInit - columnDefinitions:', this.columnDefinitions);
     this.initializeTable();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('ngOnChanges called:', changes);
+    //console.log('ngOnChanges called:', changes);
     if (changes['dataSource'] && this.dataSource) {
       this.updateDataSource();
     }
@@ -62,15 +62,15 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log('ngAfterViewInit - sort:', this.sort);
-    console.log('ngAfterViewInit - dataSourceTable:', this.dataSourceTable);
+    //console.log('ngAfterViewInit - sort:', this.sort);
+    //console.log('ngAfterViewInit - dataSourceTable:', this.dataSourceTable);
     
     setTimeout(() => {
       if (this.dataSourceTable && this.sort) {
         this.dataSourceTable.sort = this.sort;
-        console.log('Sort assigned successfully');
+        //console.log('Sort assigned successfully');
       } else {
-        console.error('Failed to assign sort - missing dependencies');
+        //console.error('Failed to assign sort - missing dependencies');
       }
     }, 0);
   }
@@ -78,7 +78,7 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   private initializeTable() {
     this.dataSourceTable = new MatTableDataSource(this.dataSource);
     this.setDisplayedColumns();
-    console.log('Table initialized with displayedColumns:', this.displayedColumns);
+    //console.log('Table initialized with displayedColumns:', this.displayedColumns);
   }
 
   private updateDataSource() {
@@ -92,7 +92,7 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     setTimeout(() => {
       if (this.sort) {
         this.dataSourceTable.sort = this.sort;
-        console.log('Sort re-assigned after data update');
+        //console.log('Sort re-assigned after data update');
       }
     }, 0);
   }
@@ -104,16 +104,16 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
       .map(col => col.def);
     
     this.displayedColumns = [...dynamicColumns, 'actions'];
-    console.log('displayedColumns set to:', this.displayedColumns);
+    //console.log('displayedColumns set to:', this.displayedColumns);
   }
 
   // Test method to manually trigger sort
   testSort() {
     if (this.dataSourceTable && this.sort) {
-      console.log('Manual sort test - current sort:', this.sort.active, this.sort.direction);
+      //console.log('Manual sort test - current sort:', this.sort.active, this.sort.direction);
       this.dataSourceTable.sort = this.sort;
     } else {
-      console.error('Cannot test sort - missing dependencies');
+      //console.error('Cannot test sort - missing dependencies');
     }
   }
 
@@ -133,7 +133,7 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
 
   onContextMenu(event: MouseEvent, row: T) {
     event.preventDefault();
-    console.log('Context menu for row:', row);
+    //console.log('Context menu for row:', row);
   }
 
   getProgressBarColor(value: number): string {
@@ -156,9 +156,9 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     // Handle the dialog result
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Dialog was closed with data:', result);
+        //console.log('Dialog was closed with data:', result);
       } else {
-        console.log('Dialog was closed without saving');
+        //console.log('Dialog was closed without saving');
       }
     });
   }
@@ -173,10 +173,10 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     // Handle the dialog result
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Dialog was closed with data:', result);
+        //console.log('Dialog was closed with data:', result);
         // Handle the updated candidate data
       } else {
-        console.log('Dialog was closed without saving');
+        //console.log('Dialog was closed without saving');
       }
     });
   }
@@ -191,10 +191,10 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     // Handle the dialog result
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Dialog was closed with data:', result);
+        //console.log('Dialog was closed with data:', result);
         // Handle the updated candidate data
       } else {
-        console.log('Dialog was closed without saving');
+        //console.log('Dialog was closed without saving');
       }
     });
   }
