@@ -1,20 +1,22 @@
 package tn.talan.backendapp.service;
 
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import tn.talan.backendapp.entity.Role;
 import tn.talan.backendapp.entity.User;
+
 
 @Service
 public class JwtService {
@@ -33,12 +35,14 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof User) {
-            claims.put("role", ((User) userDetails).getRole());
-            claims.put("fullName", ((User) userDetails).getFullName());
+            User user = (User) userDetails;
+            claims.put("roles", user.getRoles().stream()
+                    .map(Enum::name)
+                    .collect(Collectors.toList()));
+            claims.put("fullName", user.getFullName());
         }
         return generateToken(claims, userDetails);
     }
@@ -49,6 +53,19 @@ public class JwtService {
 
     public long getExpirationTime() {
         return jwtExpiration;
+    }
+
+    // Méthode pour extraire les rôles du token
+    @SuppressWarnings("unchecked")
+    public Set<Role> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        List<String> roles = claims.get("roles", List.class);
+        if (roles == null) {
+            return Collections.emptySet();
+        }
+        return roles.stream()
+                .map(Role::valueOf)
+                .collect(Collectors.toSet());
     }
 
     private String buildToken(

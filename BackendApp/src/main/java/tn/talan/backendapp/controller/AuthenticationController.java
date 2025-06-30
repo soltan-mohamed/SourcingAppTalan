@@ -1,5 +1,6 @@
 package tn.talan.backendapp.controller;
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +12,7 @@ import tn.talan.backendapp.entity.User;
 import tn.talan.backendapp.responses.LoginResponse;
 import tn.talan.backendapp.service.AuthenticationService;
 import tn.talan.backendapp.service.JwtService;
+
 
 @RequestMapping("/auth")
 @RestController
@@ -25,6 +27,11 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
+        // Validation optionnelle des rôles
+        if (registerUserDto.getRoles() == null || registerUserDto.getRoles().isEmpty()) {
+            throw new IllegalArgumentException("At least one role must be specified");
+        }
+
         User registeredUser = authenticationService.signup(registerUserDto);
         return ResponseEntity.ok(registeredUser);
     }
@@ -38,8 +45,9 @@ public class AuthenticationController {
                 .setToken(jwtToken)
                 .setExpiresIn(jwtService.getExpirationTime())
                 .setFullName(authenticatedUser.getFullName())
-                .setRole(authenticatedUser.getRole());
+                .setRoles(authenticatedUser.getRoles()); // Utilisez getRoles() au lieu de getRole()
 
         return ResponseEntity.ok(loginResponse);
     }
+
 }
