@@ -1,0 +1,334 @@
+<div class="bg-white rounded-xl shadow-lg max-h-[90vh] overflow-hidden flex flex-col">
+    
+    <!-- Header -->
+    <div class="flex justify-between bg-gradient-to-r from-lime-700 to-blue-700 px-8 py-6">
+        <h2 class="text-2xl font-serif text-white font-medium tracking-wide flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 0112 15a9 9 0 016.879 2.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Edit Candidate
+        </h2>
+        <button class="hover:cursor-pointer" (click)="onClose()">
+            <mat-icon class="mt-2! text-white!" >close</mat-icon>
+        </button>
+    </div>
+
+    <div class="px-6 py-6 !overflow-y-scroll flex-1">
+        <form [formGroup]="CandidateForm" (ngSubmit)="onSubmit()" class="space-y-10">
+
+            <!-- Progress indicator -->
+            <div class="w-full bg-gray-100 rounded-full h-1.5 mb-6">
+            <div class="bg-blue-700 h-1.5 rounded-full transition-all duration-300"
+                    [style.width]="getFormProgress() + '%'"></div>
+            </div>
+
+            <!-- Surname and lastname fields -->
+            <div class="flex justify-between gap-2">
+            
+                <!-- Surname Field -->
+                <div class="relative">
+                <label for="nom" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
+                    Last name<span class="text-red-500">*</span>
+                </label>
+                <input 
+                    id="nom"
+                    type="text"
+                    formControlName="nom"
+                    placeholder="Enter last name"
+                    class="mt-1 block w-full px-4 py-3 border-2 rounded-lg focus:ring-0 transition duration-200
+                        {{CandidateForm.get('nom')?.invalid && CandidateForm.get('nom')?.touched ? 
+                            'border-red-400 focus:border-red-500' : 
+                            'border-gray-200 focus:border-red-600'}}"
+                >
+                <p *ngIf="CandidateForm.get('nom')?.invalid && CandidateForm.get('nom')?.touched" 
+                    class="mt-1 text-sm text-red-600 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Please provide the last name of the candidate
+                </p>
+                </div>
+
+                <!-- Firstname Field -->
+                <div class="relative">
+                <label for="prenom" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
+                    First name<span class="text-red-500">*</span>
+                </label>
+                <input 
+                    id="prenom"
+                    type="text"
+                    formControlName="prenom"
+                    placeholder="Enter first name"
+                    class="mt-1 block w-full px-4 py-3 border-2 rounded-lg focus:ring-0 transition duration-200
+                        {{CandidateForm.get('prenom')?.invalid && CandidateForm.get('prenom')?.touched ? 
+                            'border-red-400 focus:border-red-500' : 
+                            'border-gray-200 focus:border-red-600'}}"
+                >
+                <p *ngIf="CandidateForm.get('prenom')?.invalid && CandidateForm.get('prenom')?.touched" 
+                    class="mt-1 text-sm text-red-600 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Please provide the first name of the candidate
+                </p>
+                </div>
+
+            </div>
+
+            <div class="flex gap-2 relative" [ngSwitch]="data['status']">
+                <span>Latest status : </span>
+                <div *ngSwitchCase="'accepted'">
+                    <span class="badge badge-solid-green">{{ data['status'] }}</span>
+                </div>
+                                
+                <div *ngSwitchCase="'KO'">
+                    <span class="badge badge-solid-red">{{ data['status'] }}</span>
+                </div>
+                                
+                <div *ngSwitchCase="'scheduled'">
+                    <span class="badge badge-solid-orange">{{ data['status'] }}</span>
+                </div>
+
+                                
+                <div *ngSwitchCase="'vivier'">
+                    <span class="badge badge-solid-blue">{{ data['status'] }}</span>
+                </div>
+
+                <div *ngSwitchCase="'contacted'">
+                    <span class="badge badge-solid-notsched">{{ data['status'] }}</span>
+                </div>
+            </div>
+            
+            <!-- Num tel Field -->
+            <div class="relative">
+                <label for="telephone" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
+                    Phone number<span class="text-red-500">*</span>
+                </label>
+                <input 
+                    id="telephone"
+                    type="text"
+                    formControlName="telephone"
+                    placeholder="Enter phone number of candidate "
+                    class="mt-1 block w-full px-4 py-3 border-2 rounded-lg focus:ring-0 transition duration-200
+                        {{CandidateForm.get('telephone')?.invalid && CandidateForm.get('telephone')?.touched ? 
+                            'border-red-400 focus:border-red-500' : 
+                            'border-gray-200 focus:border-red-600'}}"
+                >
+                <p *ngIf="CandidateForm.get('telephone')?.invalid && CandidateForm.get('telephone')?.touched" 
+                    class="mt-1 text-sm text-red-600 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Please provide a correct phone number
+                </p>
+            </div>
+
+            <!-- email Field -->
+            <div class="relative">
+            <label for="email" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
+                Email address<span class="text-red-500">*</span>
+            </label>
+            <input 
+                id="email"
+                type="text"
+                formControlName="email"
+                placeholder="Enter email address"
+                class="mt-1 block w-full px-4 py-3 border-2 rounded-lg focus:ring-0 transition duration-200
+                    {{CandidateForm.get('email')?.invalid && CandidateForm.get('email')?.touched ? 
+                        'border-red-400 focus:border-red-500' : 
+                        'border-gray-200 focus:border-red-600'}}"
+            >
+            <p *ngIf="CandidateForm.get('email')?.invalid && CandidateForm.get('email')?.touched" 
+                class="mt-1 text-sm text-red-600 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Please provide a correct address
+            </p>
+            </div>
+
+            
+            <!-- Author Information -->
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-medium text-gray-700">Responsible Information</h3>
+                </div>
+            
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="flex flex-wrap gap-4">
+                    <div class="flex items-center bg-white rounded-md px-3 py-2 shadow-sm border border-gray-200">
+                        <div class="flex-shrink-0 h-8 w-8 bg-red-200 rounded-full flex items-center justify-center text-red-700 font-medium">
+                        SM
+                        </div>
+                        <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900">Me</p>
+                        <p class="text-xs text-gray-500">Primary responsible</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Example co-author chip -->
+                    <!--div class="flex items-center bg-white rounded-md px-3 py-2 shadow-sm border border-gray-200">
+                        <div class="flex-shrink-0 h-8 w-8 bg-blue-200 rounded-full flex items-center justify-center text-blue-700 font-medium">
+                        JS
+                        </div>
+                        <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900">John Smith</p>
+                        <p class="text-xs text-gray-500">Co-author</p>
+                        </div>
+                        <button type="button" class="ml-2 text-gray-400 hover:text-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        </button>
+                    </div-->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Keywords -->
+            <div class="flex flex-col gap-1 relative">
+                <label for="keywords" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
+                    Skills
+                </label>
+                <div class="flex items-center border-2 border-gray-200 rounded-lg focus-within:border-blue-600 overflow-hidden">
+                    <input 
+                    id="keywords"
+                    type="text" 
+                    placeholder="Add up to 5 keywords (press Enter to add)"
+                    class="flex-grow px-4 py-3 focus:outline-none"
+                    #keywordInput
+                    (keydown.enter)="addKeyword(keywordInput.value); keywordInput.value = ''; $event.preventDefault()"
+                    >
+                    <button 
+                    type="button"
+                    class="px-3 py-3 text-gray-500 hover:text-blue-700"
+                    (click)="addKeyword(keywordInput.value); keywordInput.value = ''"
+                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    </button>
+                </div>
+                <div *ngIf="keywords.length > 0">
+                    <mat-chip-grid #chipGrid aria-label="Enter skill">
+                        @for (keyword of keywords; track keyword) {
+                        <mat-chip-row
+                            (removed)="removeKeyword(keyword)"
+                            [editable]="true"
+                            [aria-description]="'press enter to edit ' + keyword"
+                        >
+                            {{keyword}}
+                            <button matChipRemove [attr.aria-label]="'remove ' + keyword">
+                            <mat-icon class="text-red-700!" >cancel</mat-icon>
+                            </button>
+                        </mat-chip-row>
+                        }
+                        <!--input
+                        placeholder="New fruit..."
+                        [matChipInputFor]="chipGrid"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                        [matChipInputAddOnBlur]="addOnBlur"
+                        (matChipInputTokenEnd)="add($event)"
+                        /-->
+                    </mat-chip-grid>
+                </div>
+
+            </div>
+            
+            <!-- CV File Upload -->
+            <div class="mt-8">
+            <h3 class="text-sm font-medium text-gray-700 mb-2">CV PDF</h3>
+            <div 
+                class="border-2 rounded-lg p-8 text-center transition-all duration-300 cursor-pointer group"
+                [class.border-gray-300]="!isDragging && !fileError && !selectedFile"
+                [class.border-red-500]="fileError"
+                [class.bg-red-50]="fileError"
+                [class.border-blue-300]="isDragging && !fileError"
+                [class.bg-blue-50]="isDragging && !fileError"
+                [class.border-green-300]="selectedFile && !fileError"
+                [class.bg-green-50]="selectedFile && !fileError"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)"
+                (click)="fileInput.click()"
+            >
+                @if (!selectedFile) {
+                <div class="space-y-3">
+                    <div class="flex justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 group-hover:text-red-500 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    </div>
+                    <div>
+                    <p class="text-gray-700 font-medium">Upload the CV PDF file</p>
+                    <p class="text-gray-500 text-sm mt-1">Drag and drop the CV here, or click to browse</p>
+                    </div>
+                    <p class="text-xs text-gray-500">Maximum file size: 10MB</p>
+                </div>
+                } @else {
+                <div class="flex flex-col items-center">
+                    <!-- PDF icon and file info -->
+                    <div class="h-16 w-16 flex items-center justify-center bg-red-100 rounded-lg mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    </div>
+                    <div class="flex flex-col items-center">
+                    <span class="text-lg font-medium text-gray-800 truncate max-w-xs">{{ selectedFile.name }}</span>
+                    <span class="text-sm text-gray-500">{{ formatFileSize(selectedFile.size) }}</span>
+                    <button 
+                        type="button"
+                        class="mt-4 px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                        (click)="removeFile(); $event.stopPropagation()"
+                    >
+                        Remove File
+                    </button>
+                    </div>
+                </div>
+                }
+                
+                @if (fileError) {
+                <p class="text-red-600 mt-3 text-sm flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    {{ fileErrorMessage }}
+                </p>
+                }
+            </div>
+            
+            <input 
+                #fileInput 
+                type="file" 
+                accept="application/pdf" 
+                class="hidden" 
+                (change)="onFileSelected($event)"
+            >
+            </div>
+            
+            <div class="flex justify-end space-x-4 pt-8 border-t border-gray-100">
+            <button 
+                type="button" 
+                class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
+                (click)="closeForm()"
+            >
+                Cancel
+            </button>
+            <button 
+                type="submit" 
+                class="px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-800 to-blue-600 rounded-lg hover:from-blue-900 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center"
+                [disabled]="CandidateForm.invalid || !selectedFile || isSubmitting"
+            >
+                <span *ngIf="!isSubmitting">Update</span>
+                <span *ngIf="isSubmitting" class="flex items-center">
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                </span>
+            </button>
+            </div>
+        </form>
+    </div>
+</div>

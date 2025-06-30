@@ -10,3 +10,11 @@
 :host ::ng-deep .mat-column-name {
   min-width: 150px;
 }
+
+.column-label{
+  color: white;
+}
+
+mat-header-cell{
+  background-color: #235dba !important;
+}

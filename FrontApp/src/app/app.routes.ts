@@ -6,6 +6,8 @@ import { Page404Component } from './authentication/page404/page404.component';
 //import { Role } from '../app/models/role';
 //import { Home } from './components/home/home';
 //import { Candidates } from './components/candidates/candidates';
+import { Home } from './components/home/home';
+import { Candidates } from './components/candidates/candidates';
 import { Role } from '../app/models/role';
 
 export const APP_ROUTE: Route[] = [
@@ -35,6 +37,13 @@ export const APP_ROUTE: Route[] = [
       {path : 'list-candidates', component : Candidates }
     ]
   },*/
+  {
+    path: 'home',
+    component: Home,
+    children : [
+      {path : 'list-candidates', component : Candidates }
+    ]
+  },
   {
     path: 'authentication',
     component: AuthLayoutComponent,

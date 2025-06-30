@@ -1,6 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, AfterViewInit, ViewChild, SimpleChanges } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -8,68 +8,132 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { FeatherIconsComponent } from '../feather-icons/feather-icons.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-//import { rowsAnimation } from '@shared/table.animations';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { EditCandidat } from 'app/components/edit-candidat/edit-candidat';
+import { CreateRecrutement } from 'app/components/create-recrutement/create-recrutement';
+import { CandidateHistory } from 'app/components/candidate-history/candidate-history';
 
 @Component({
-    selector: 'app-table-card',
-    //animations: [rowsAnimation],
-    imports: [
-        MatTableModule,
-        MatSortModule,
-        MatCheckboxModule,
-        MatIconModule,
-        CommonModule,
-        MatProgressBarModule,
-        MatTooltipModule,
-        MatButtonModule,
-        FeatherIconsComponent,
-    ],
-    templateUrl: './table-card.component.html',
-    styleUrl: './table-card.component.scss'
+  selector: 'app-table-card',
+  imports: [
+    MatTableModule,
+    MatSortModule,
+    MatCheckboxModule,
+    MatIconModule,
+    CommonModule,
+    MatProgressBarModule,
+    MatTooltipModule,
+    MatButtonModule,
+    FeatherIconsComponent,
+    MatDialogModule
+  ],
+  templateUrl: './table-card.component.html',
+  styleUrl: './table-card.component.scss'
 })
-export class TableCardComponent<T> implements OnInit {
+export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   @Input() dataSource: T[] = [];
   @Input() columnDefinitions: any[] = [];
+  
   selection = new SelectionModel<T>(true, []);
   dataSourceTable!: MatTableDataSource<T>;
-  displayedColumns: string[] = []; // New property for displayed columns
+  displayedColumns: string[] = [];
 
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatSort, { static: false }) sort!: MatSort;
+
+  constructor(
+    private dialog: MatDialog,
+  ) {}
 
   ngOnInit() {
-    this.dataSourceTable = new MatTableDataSource(this.dataSource);
-    this.setDisplayedColumns(); // Initialize displayed columns
+    console.log('ngOnInit - dataSource:', this.dataSource);
+    console.log('ngOnInit - columnDefinitions:', this.columnDefinitions);
+    this.initializeTable();
+  }
 
-    this.dataSourceTable.sort = this.sort; // Assign the MatSort to the data source
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('ngOnChanges called:', changes);
+    if (changes['dataSource'] && this.dataSource) {
+      this.updateDataSource();
+    }
+    if (changes['columnDefinitions'] && this.columnDefinitions) {
+      this.setDisplayedColumns();
+    }
+  }
+
+  ngAfterViewInit() {
+    console.log('ngAfterViewInit - sort:', this.sort);
+    console.log('ngAfterViewInit - dataSourceTable:', this.dataSourceTable);
+    
+    setTimeout(() => {
+      if (this.dataSourceTable && this.sort) {
+        this.dataSourceTable.sort = this.sort;
+        console.log('Sort assigned successfully');
+      } else {
+        console.error('Failed to assign sort - missing dependencies');
+      }
+    }, 0);
+  }
+
+  private initializeTable() {
+    this.dataSourceTable = new MatTableDataSource(this.dataSource);
+    this.setDisplayedColumns();
+    console.log('Table initialized with displayedColumns:', this.displayedColumns);
+  }
+
+  private updateDataSource() {
+    if (this.dataSourceTable) {
+      this.dataSourceTable.data = this.dataSource;
+    } else {
+      this.dataSourceTable = new MatTableDataSource(this.dataSource);
+    }
+    
+    // Re-assign sort after data update
+    setTimeout(() => {
+      if (this.sort) {
+        this.dataSourceTable.sort = this.sort;
+        console.log('Sort re-assigned after data update');
+      }
+    }, 0);
   }
 
   setDisplayedColumns() {
-    this.displayedColumns = [...this.columnDefinitions.map((col) => col.def)];
+    // Create displayed columns array
+    const dynamicColumns = this.columnDefinitions
+      .filter(col => col.type !== 'check' && col.type !== 'actionBtn')
+      .map(col => col.def);
+    
+    this.displayedColumns = [...dynamicColumns, 'actions'];
+    console.log('displayedColumns set to:', this.displayedColumns);
+  }
+
+  // Test method to manually trigger sort
+  testSort() {
+    if (this.dataSourceTable && this.sort) {
+      console.log('Manual sort test - current sort:', this.sort.active, this.sort.direction);
+      this.dataSourceTable.sort = this.sort;
+    } else {
+      console.error('Cannot test sort - missing dependencies');
+    }
   }
 
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.dataSourceTable.data.length;
+    const numRows = this.dataSourceTable?.data?.length || 0;
     return numSelected === numRows;
   }
 
   masterToggle() {
-    this.isAllSelected()
-      ? this.selection.clear()
-      : this.dataSourceTable.data.forEach((row) => this.selection.select(row));
-  }
-
-  editCall(row: T) {
-    // Logic for editing
-  }
-
-  deleteItem(row: T) {
-    // Logic for deleting
+    if (this.isAllSelected()) {
+      this.selection.clear();
+    } else {
+      this.dataSourceTable.data.forEach((row) => this.selection.select(row));
+    }
   }
 
   onContextMenu(event: MouseEvent, row: T) {
-    // Context menu logic (if needed)
+    event.preventDefault();
+    console.log('Context menu for row:', row);
   }
 
   getProgressBarColor(value: number): string {
@@ -80,5 +144,58 @@ export class TableCardComponent<T> implements OnInit {
     } else {
       return 'primary';
     }
+  }
+
+  newHiringProcess(row: T): void {
+    const dialogRef = this.dialog.open(CreateRecrutement, {
+      width: '800px',
+      disableClose: false,
+      data: row 
+    });
+
+    // Handle the dialog result
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Dialog was closed with data:', result);
+      } else {
+        console.log('Dialog was closed without saving');
+      }
+    });
+  }
+
+  openHistory(row: T): void {
+    const dialogRef = this.dialog.open(CandidateHistory, {
+      width: '3000px',
+      disableClose: false,
+      data: row 
+    });
+
+    // Handle the dialog result
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Dialog was closed with data:', result);
+        // Handle the updated candidate data
+      } else {
+        console.log('Dialog was closed without saving');
+      }
+    });
+  }
+
+  editCall(row: T): void {
+    const dialogRef = this.dialog.open(EditCandidat, {
+      width: '800px',
+      disableClose: false,
+      data: row 
+    });
+
+    // Handle the dialog result
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Dialog was closed with data:', result);
+        // Handle the updated candidate data
+      } else {
+        console.log('Dialog was closed without saving');
+      }
+    });
   }
 }
