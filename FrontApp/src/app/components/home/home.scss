@@ -1,3 +1,4 @@
+/* Main container */
 .example-container {
     position: absolute;
     top: 0;
@@ -6,35 +7,47 @@
     right: 0;
     height: 100vh;
     width: 100vw;
-  }
+}
 
-  .bg {
-    background-color: #1157c7; 
-    //background-image: url('/images/talan-logo2.png');
-    // background-blend-mode: multiply;
-    // background-size: cover;
-    // background-position: center;
-    // background-repeat: no-repeat;
-  }
+/* Fixed sidebar styles */
+.fixed-sidebar {
+    position: fixed;
+    height: 100vh;
+    overflow: hidden;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
 
-  ::ng-deep .mat-drawer-inner-container {
-    overflow: hidden !important;
-  }
+/* Content area styles */
+.content-wrapper {
+    height: calc(100vh - 50px); /* Subtract header height */
+    overflow-y: auto;
+}
 
-  /* Active menu item styles */
-  .active-menu-item {
+/* Background for sidebar */
+.bg {
+    background-color: #1157c7;
+}
+
+/* Active menu item styles */
+.active-menu-item {
     background-color: white;
     color: #52da03;
-    border-radius: 0.375rem; 
-    border-color: #374151;
+    border-radius: 0.375rem;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  }
+}
 
-  ::ng-deep .mat-drawer-content {
+/* Angular Material overrides */
+::ng-deep .mat-drawer-inner-container {
+    overflow: hidden !important;
+}
+
+::ng-deep .mat-drawer-content {
+    margin-left: 20% !important; /* Match sidebar width */
     transition: margin-left 0.3s ease;
     overflow-x: hidden !important;
-  }
+}
 
-  ::ng-deep .mat-drawer {
+::ng-deep .mat-drawer {
     z-index: 100;
-  }
+    transform: none !important; /* Prevent transform issues */
+}

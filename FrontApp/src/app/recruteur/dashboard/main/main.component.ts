@@ -35,6 +35,8 @@ import { EmpStatusComponent } from '@shared/components/emp-status/emp-status.com
 import { ChartCard1Component } from '@shared/components/chart-card1/chart-card1.component';
 import { EmpStatus1Component } from '@shared/components/emp-status1/emp-status1.component';
 import { AuthService } from '@core';
+import { Router, RouterLink } from '@angular/router';
+import { NgClass, NgIf } from '@angular/common';
 export type chartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -74,9 +76,20 @@ export type chartOptions = {
     EmpStatusComponent,
     EmpStatus1Component,
     ChartCard1Component,
+    RouterLink,
+    NgClass,
+    NgIf
+
   ],
 })
 export class MainComponent implements OnInit {
+
+  role : string = "";
+  sideBarOpened: boolean = true; // Set to true to keep sidebar open by default
+  activeItem: string = 'home';
+  currentUser: any;
+  isAuthenticated: boolean = true;
+
   @ViewChild('chart') chart!: ChartComponent;
   public performanceRateChartOptions!: Partial<chartOptions>;
 
@@ -90,15 +103,30 @@ export class MainComponent implements OnInit {
       active: 'Dashboard 1',
     },
   ];
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.chart3();
+
+        const currentUrl = this.router.url;
+    if (currentUrl.includes('/home/list')) {
+      this.activeItem = 'home';
+    } else if (currentUrl.includes('/home/my-account')) {
+      this.activeItem = 'manage-accounts';
+    } else if (currentUrl.includes('/home/my-publications')) {
+      this.activeItem = 'my-publications';
+    } else {
+      this.activeItem = 'home';
+    }
   }
 
     logout() {
     this.authService.logout();
   }
+
+  
 
   // Events
   events = [
@@ -366,5 +394,7 @@ export class MainComponent implements OnInit {
     { def: 'actions', label: 'Actions', type: 'actionBtn' },
   ];
 
+
+  
   // New Student List start
 }
