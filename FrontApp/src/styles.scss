@@ -56,7 +56,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mdc-text-field--outlined:not(.mdc-text-field--disabled)
   .mdc-notched-outline
   .mdc-notched-outline__trailing {
-  border-width: 2px !important;
+  border-width: 2px ;
 }
 
 .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused
