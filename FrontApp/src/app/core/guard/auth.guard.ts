@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot, CanActivate } from '@angular/router';
 
 import { AuthService } from '../service/auth.service';
+import { Role } from '@core/models/role';
 
 @Injectable({
   providedIn: 'root'
@@ -10,27 +11,27 @@ export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
-    const requiredRole = route.data['role'];
+    const requiredRoles = route.data['roles'] as Role[];
     const user = this.authService.currentUserValue;
     
-    console.log('AuthGuard checking:', {
+    /*console.log('AuthGuard checking:', {
       path: route.routeConfig?.path,
-      requiredRole,
-      userRole: user?.role,
+      requiredRoles,
+      userRoles: user?.roles,
       isAuthenticated: this.authService.isAuthenticated()
-    });
+    });*/
 
-    // If no specific role required, just check authentication
-    if (!requiredRole) {
+    // Si aucune restriction de rôle
+    if (!requiredRoles) {
       return this.authService.isAuthenticated();
     }
 
-    // Check if user has the required role
-    if (user && user.role === requiredRole) {
+    // Vérifie si l'utilisateur a au moins un des rôles requis
+    if (user && this.authService.hasAnyRole(requiredRoles)) {
       return true;
     }
     
-    // If not authorized, redirect to login
+    // Si non autorisé, redirige vers login
     this.authService.logout();
     this.router.navigate(['/authentication/signin']);
     return false;

@@ -12,7 +12,7 @@ interface LoginResponse {
   token: string;
   expiresIn: number;
   fullName: string;
-  role: Role;
+  roles: Role[]; // Changé de 'role' à 'roles' (array)
 }
 
 @Injectable({ providedIn: 'root' })
@@ -36,51 +36,42 @@ export class AuthService {
     this.currentUserSubject.next(user);
   }
 
-login(email: string, password: string): Observable<User> {
-  return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { email, password })
-    .pipe(
-      map(response => {
-        const user = this.createUserFromResponse(response);
-        this.storeAuthData(user, response.token);
-        this.redirectBasedOnRole(user.role); // Add this line
-        return user;
-      }),
-      catchError(error => {
-        this.clearAuthData();
-        return throwError(() => error);
-      })
-    );
-}
+  login(email: string, password: string): Observable<User> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { email, password })
+      .pipe(
+        map(response => {
+          const user = this.createUserFromResponse(response);
+          this.storeAuthData(user, response.token);
+          this.redirectBasedOnRoles(user.roles); // Modifié pour gérer plusieurs rôles
+          return user;
+        }),
+        catchError(error => {
+          this.clearAuthData();
+          return throwError(() => error);
+        })
+      );
+  }
 
-private redirectBasedOnRole(role: Role): void {
-  console.log('Attempting redirect for role:', role);
-  
-  const routes = {
-    [Role.RECRUTEUR]: '/recruteur', // Juste '/recruteur' car la redirection est gérée dans RECRUTEUR_ROUTE
-    [Role.EVALUATEUR]: '/evaluateur',
-    [Role.MANAGER]: '/manager'
-  };
-
-  const targetRoute = routes[role] || '/recruteur';
-  
-  console.log('Navigating to:', targetRoute);
-  this.router.navigateByUrl(targetRoute)
-    .then(success => {
-      if (!success) {
-        console.error('Navigation failed, falling back to dashboard');
-        this.router.navigate(['/recruteur']);  /// hna l'mochkla !!!!!!
-      }
-    })
-    .catch(err => {
-      console.error('Navigation error:', err);
-      this.router.navigate(['/dashboard']);
-    });
-}
+  private redirectBasedOnRoles(roles: Role[]): void {
+    //console.log('User roles:', roles);
+    
+    // Priorité des redirections (si l'utilisateur a plusieurs rôles)
+    if (roles.includes(Role.MANAGER)) {
+      this.router.navigate(['/manager/dashboard']);
+    } else if (roles.includes(Role.EVALUATEUR)) {
+      this.router.navigate(['/evaluateur/dashboard']);
+    } else if (roles.includes(Role.RECRUTEUR)) {
+      this.router.navigate(['/recruteur/dashboard/main']);
+    } else {
+      //console.error('No valid role found, redirecting to signin');
+      this.router.navigate(['/authentication/signin']);
+    }
+  }
   private createUserFromResponse(response: LoginResponse): User {
     const user = new User();
     user.email = response.email;
     user.fullName = response.fullName;
-    user.role = response.role;
+    user.roles = response.roles; // Changé pour stocker un tableau
     user.token = response.token;
     return user;
   }
@@ -97,7 +88,7 @@ private redirectBasedOnRole(role: Role): void {
       
       return JSON.parse(userJson) as User;
     } catch (error) {
-      console.error('Error parsing user data:', error);
+      //console.error('Error parsing user data:', error);
       this.clearAuthData();
       return null;
     }
@@ -142,6 +133,15 @@ private redirectBasedOnRole(role: Role): void {
 
   hasRole(requiredRole: Role): boolean {
     const user = this.currentUserValue;
-    return user?.role === requiredRole;
+    return user?.roles?.includes(requiredRole) ?? false;
   }
+
+    hasAnyRole(requiredRoles: Role[]): boolean {
+    const user = this.currentUserValue;
+    return requiredRoles.some(role => user?.roles?.includes(role)) ?? false;
+  }
+  getCurrentUserRoles(): Role[] {
+    const user = this.currentUserValue;
+    return user && user.roles ? user.roles.map((role: Role) => role.toUpperCase() as Role) : [];
+}
 }

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService, Role, User } from '@core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { finalize } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field'; // This includes error messages
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -22,7 +22,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatFormFieldModule,
+    MatFormFieldModule, // This is all you need for error messages
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -60,9 +60,13 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
 
     // Redirect if already logged in
     if (this.authService.currentUserValue) {
-      this.redirectBasedOnRole(this.authService.currentUserValue.role);
+      this.redirectBasedOnRoles(this.authService.currentUserValue.roles);
     }
   }
+
+  navigateToForgotPassword() {
+  this.router.navigate(['/authentication/forgot-password']);
+}
 
 onSubmit() {
   if (this.authForm.invalid) {
@@ -100,30 +104,25 @@ onSubmit() {
   }
 
   private handleSuccessfulLogin(user: User) {
-    if (!user?.role) {
-      console.error('User role is undefined'); // Debug log
-      this.error = 'Invalid user role';
+    if (!user?.roles?.length) {
+      console.error('User has no roles');
+      this.error = 'Invalid user roles';
       return;
     }
-    this.redirectBasedOnRole(user.role);
+    this.redirectBasedOnRoles(user.roles);
   }
 
-private redirectBasedOnRole(role: Role) {
-  const roleRoutes = {
-    [Role.RECRUTEUR]: '/recruteur', // Changé pour correspondre à la structure des routes
-    [Role.EVALUATEUR]: '/evaluateur',
-    [Role.MANAGER]: '/manager'
-  };
-
-  const targetRoute = roleRoutes[role] || '/recruteur/dashboard/main';
-  this.router.navigateByUrl(targetRoute)
-    .then(success => {
-      if (!success) {
-        console.error(`Failed to navigate to ${targetRoute}`);
-        this.router.navigate(['/recruteur/dashboard/main']);
-      }
-    });
-}
+  private redirectBasedOnRoles(roles: Role[]): void {
+    if (roles.includes(Role.MANAGER)) {
+      this.router.navigate(['/manager/dashboard']);
+    } else if (roles.includes(Role.EVALUATEUR)) {
+      this.router.navigate(['/evaluateur/dashboard']);
+    } else if (roles.includes(Role.RECRUTEUR)) {
+      this.router.navigate(['/recruteur/dashboard/main']);
+    } else {
+      this.router.navigate(['/authentication/signin']);
+    }
+  }
 
   private handleLoginError(error: any) {
     this.error = this.getErrorMessage(error);
@@ -140,6 +139,7 @@ private redirectBasedOnRole(role: Role) {
       return 'Network error. Please check your connection.';
     }
     return 'An unexpected error occurred. Please try again later.';
+    
   }
 
 }
