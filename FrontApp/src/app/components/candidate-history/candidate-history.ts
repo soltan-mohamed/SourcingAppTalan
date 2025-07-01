@@ -5,6 +5,12 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { FeatherModule } from 'angular-feather';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { AddInterviewComponent } from '../interviews/add-interview/add-interview';
+
 
 
 type EvaluationStatus = 'pending' | 'passed' | 'failed' | 'in-progress' | 'scheduled' | 'KO' | 'accepted';
@@ -56,7 +62,9 @@ interface FlatNode {
     CommonModule,
     MatTreeModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    FeatherModule,
+    MatDialogModule
   ],
   templateUrl: './candidate-history.html',
   styleUrl: './candidate-history.scss'
@@ -113,8 +121,13 @@ export class CandidateHistory implements OnInit {
 
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
-  constructor(private dialogRef: MatDialogRef<CandidateHistory>) {}
+  // Merged constructor - includes both MatDialogRef and MatDialog
+  constructor(
+    private dialogRef: MatDialogRef<CandidateHistory>,
+    private dialog: MatDialog
+  ) {}
   
+  // Methods from Editable-status branch
   toggleDropdown(event: Event, evalData : Evaluation) {
     event.stopPropagation();
     this.editingEval = evalData
@@ -342,6 +355,11 @@ export class CandidateHistory implements OnInit {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
+    });
+  }
+   addInterview() {
+    const dialogRef = this.dialog.open(AddInterviewComponent,{
+      panelClass: 'add-interview-dialog-panel'
     });
   }
 }
