@@ -6,6 +6,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
 
+
+type EvaluationStatus = 'pending' | 'passed' | 'failed' | 'in-progress' | 'scheduled' | 'KO' | 'accepted';
+
 interface RecrutementEvaluation {
   candidate?: Candidate;
   poste?: string;
@@ -15,11 +18,12 @@ interface RecrutementEvaluation {
 interface Evaluation {
   id: string;
   type?: string;
-  status: 'pending' | 'passed' | 'failed' | 'in-progress' | 'scheduled' | 'KO' | 'accepted' ;
+  status: EvaluationStatus ;
   date?: Date;
   score?: number;
   notes?: string;
   evaluator?: string;
+  editing : boolean;
 }
 
 interface Candidate {
@@ -33,7 +37,7 @@ interface Candidate {
     name: string;
     email: string;
   };
-  currentStatus: 'applied' | 'screening' | 'interview' | 'technical' | 'final' | 'accepted' | 'rejected' | 'withdrawn';
+  currentStatus: EvaluationStatus;
   position: string;
   evaluationHistory?: Evaluation[];
 }
@@ -61,6 +65,9 @@ export class CandidateHistory implements OnInit {
   candidate: Candidate | null = null;
   recruitementData: RecrutementEvaluation[] = [];
   loading = false;
+  editingEval! : Evaluation;
+
+  availableStatuses : EvaluationStatus[] = ['accepted' ,  'scheduled' , 'KO'];
 
   // Tree control setup
   private _transformer = (node: RecrutementEvaluation | Evaluation, level: number): FlatNode => {
@@ -107,6 +114,37 @@ export class CandidateHistory implements OnInit {
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
   constructor(private dialogRef: MatDialogRef<CandidateHistory>) {}
+  
+  toggleDropdown(event: Event, evalData : Evaluation) {
+    event.stopPropagation();
+    this.editingEval = evalData
+    this.editingEval.editing = true;
+  }
+  
+  closeDropdown() {
+    this.editingEval.editing = false;
+  }
+  
+  changeStatus(newStatus: EvaluationStatus, eval_id : number) {
+    const evalu = this.recruitementData
+      .flatMap(item => item.evaluations)
+      .find(evaluation => evaluation!.id === String(eval_id));  
+    if (evalu) {
+      evalu.status = newStatus;
+      console.log("Updated evaluation ! ");
+      console.log("evalu : ",evalu);
+    // candidate.candidate.currentStatus = newStatus;
+    }
+    
+    // Close the dropdown
+    this.closeDropdown();    
+    // Optional: Emit an event or call a service to save the change
+    // this.onStatusChange.emit({
+    //   node: this.node,
+    //   oldStatus: this.node.data.status,
+    //   newStatus: newStatus
+    // });
+  }
 
   onClose(): void {
     this.dialogRef.close();
@@ -146,7 +184,7 @@ export class CandidateHistory implements OnInit {
             name: 'Sarah Johnson',
             email: 'sarah.johnson@company.com'
           },
-          currentStatus: 'technical',
+          currentStatus: 'passed',
           position: 'Senior Frontend Developer'
         },
         poste: "Senior Software Engineer",
@@ -157,7 +195,8 @@ export class CandidateHistory implements OnInit {
             status: 'passed',
             date: new Date('2024-01-16'),
             evaluator: 'Sarah Johnson',
-            notes: 'Good communication skills, relevant experience'
+            notes: 'Good communication skills, relevant experience',
+            editing: false
           },
           {
             id: '2',
@@ -166,7 +205,8 @@ export class CandidateHistory implements OnInit {
             date: new Date('2024-01-20'),
             score: 85,
             evaluator: 'Mike Chen',
-            notes: 'Cultural fit confirmed, salary expectations aligned'
+            notes: 'Cultural fit confirmed, salary expectations aligned',
+            editing: false
           },
           {
             id: '3',
@@ -175,7 +215,8 @@ export class CandidateHistory implements OnInit {
             date: new Date('2024-01-25'),
             score: 92,
             evaluator: 'Tech Team',
-            notes: 'Excellent problem-solving skills, clean code structure'
+            notes: 'Excellent problem-solving skills, clean code structure',
+            editing: false
           },
           {
             id: '4',
@@ -183,7 +224,8 @@ export class CandidateHistory implements OnInit {
             status: 'KO',
             date: new Date('2024-01-30'),
             evaluator: 'Lead Developer',
-            notes: 'Scheduled for system design discussion'
+            notes: 'Scheduled for system design discussion',
+            editing: false
           }
         ]
       }];
@@ -202,7 +244,7 @@ export class CandidateHistory implements OnInit {
           name: 'Sarah Johnson',
           email: 'sarah.johnson@company.com'
         },
-        currentStatus: 'technical',
+        currentStatus: 'passed',
         position: 'Senior Frontend Developer',
         evaluationHistory: [
           {
@@ -211,7 +253,9 @@ export class CandidateHistory implements OnInit {
             status: 'passed',
             date: new Date('2024-01-16'),
             evaluator: 'Sarah Johnson',
-            notes: 'Good communication skills, relevant experience'
+            notes: 'Good communication skills, relevant experience',
+            editing: false
+
           },
           {
             id: '2',
@@ -220,7 +264,9 @@ export class CandidateHistory implements OnInit {
             date: new Date('2024-01-20'),
             score: 85,
             evaluator: 'Mike Chen',
-            notes: 'Cultural fit confirmed, salary expectations aligned'
+            notes: 'Cultural fit confirmed, salary expectations aligned',
+            editing: false
+
           },
           {
             id: '3',
@@ -229,7 +275,9 @@ export class CandidateHistory implements OnInit {
             date: new Date('2024-01-25'),
             score: 92,
             evaluator: 'Tech Team',
-            notes: 'Excellent problem-solving skills, clean code structure'
+            notes: 'Excellent problem-solving skills, clean code structure',
+            editing: false,
+
           },
           {
             id: '4',
@@ -237,13 +285,16 @@ export class CandidateHistory implements OnInit {
             status: 'in-progress',
             date: new Date('2024-01-30'),
             evaluator: 'Lead Developer',
-            notes: 'Scheduled for system design discussion'
+            notes: 'Scheduled for system design discussion',
+            editing: false
           },
           {
             id: '5',
             type: 'Final Interview',
             status: 'pending',
-            evaluator: 'CTO'
+            evaluator: 'CTO',
+            editing: false
+
           }
         ]
       };
@@ -274,6 +325,7 @@ export class CandidateHistory implements OnInit {
   getStatusIcon(status: string): string {
     const icons: { [key: string]: string } = {
       'scheduled': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+      'accepted': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
       'passed': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
       'KO': 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z',
       'in-progress': 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'

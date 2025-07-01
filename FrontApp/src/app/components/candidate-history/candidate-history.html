@@ -127,17 +127,45 @@
                                     <h6 class="font-semibold text-gray-900 text-base">
                                         {{ node.data.type || 'Evaluation Step' }}
                                     </h6>
-                                    <div class="flex items-center mt-1">
-                                        <span [class]="'px-2 py-1 rounded-full text-xs font-medium flex items-center ' + getStatusColor(node.data.status)">
+
+                                    <div class="flex items-center mt-1 relative">
+                                        <span [class]="'px-2 py-1 rounded-full text-xs font-medium flex items-center cursor-pointer ' + getStatusColor(node.data.status)"
+                                                (click)="toggleDropdown($event, node.data)">
                                             <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                      [attr.d]="getStatusIcon(node.data.status)"></path>
+                                                        [attr.d]="getStatusIcon(node.data.status)"></path>
                                             </svg>
-                                            {{ node.data.status }}
+                                            <span>{{ node.data.status }}</span>
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="hover:cursor-pointer ml-1">
+                                                <path d="M8 4L5 7H11L8 4Z" fill="currentColor"/>
+                                                <path d="M8 12L11 9H5L8 12Z" fill="currentColor"/>
+                                            </svg>
                                         </span>
+
+                                        <!-- Dropdown Menu -->
+                                        <div *ngIf="node.data.editing" 
+                                            class="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-[120px]"
+                                            (click)="$event.stopPropagation()">
+                                            <div *ngFor="let status of availableStatuses" 
+                                                class="px-3 py-2 text-xs hover:bg-gray-100 cursor-pointer flex items-center"
+                                                (click)="changeStatus(status, node.data.id)"
+                                                [class.bg-blue-50]="status === node.data.status">
+                                                    <svg  [class]="'stroke-' + getStatusColor(status)" class="h-3 w-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                            [attr.d]="getStatusIcon(status)"></path>
+                                                    </svg>
+                                                    <span>{{ status }}</span>
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                        <!-- close dropdown when clicking -->
+                                        <div *ngIf="node.data.editing" 
+                                            class="hover:cursor-pointer fixed inset-0 z-5" 
+                                            (click)="closeDropdown()">
+                                        </div>         
                                     </div>
                                 </div>
-                            </div>
                             
                             <!-- Score Badge (if available) -->
                             <!--div *ngIf="node.data.score" 
