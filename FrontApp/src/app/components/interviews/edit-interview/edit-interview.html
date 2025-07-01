@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Edit Interview</h2>
+
+<form [formGroup]="interviewForm" class="dialog-form" (ngSubmit)="save()">
+
+  <input formControlName="candidate" name="candidate" placeholder="Candidate" required />
+
+  <input formControlName="date" name="date" type="date" required />
+
+  <input formControlName="time" name="time" type="time" required />
+
+    <mat-select formControlName="type" placeholder="Type" required appearance="fill">
+      <mat-option value="Technique">Technique</mat-option>
+      <mat-option value="RH">RH</mat-option>
+      <mat-option value="Managerial">Managerial</mat-option>
+    </mat-select>
+
+    <mat-select formControlName="evaluator" required appearance="fill">
+      <mat-option value="Anouar Khemeja">Anouar Khemeja</mat-option>
+      <mat-option value="Safouane Chabchoub">Safouane Chabchoub</mat-option>
+      <mat-option value="Alice Johnson">Alice Johnson</mat-option>
+    </mat-select>
+
+    <input matInput formControlName="position" appearance="fill" />
+
+  <div class="dialog-actions">
+    <button mat-button type="submit">Save</button>
+    <button mat-button (click)="close()">Cancel</button>
+  </div>
+</form>
