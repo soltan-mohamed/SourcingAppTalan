@@ -8,8 +8,7 @@ import { Page404Component } from './authentication/page404/page404.component';
 //import { Candidates } from './components/candidates/candidates';
 import { Home } from './components/home/home';
 import { Candidates } from './components/candidates/candidates';
-import { Role } from '../app/models/role';
-
+import { InterviewsComponent } from './components/interviews/interviews';
 export const APP_ROUTE: Route[] = [
   {
     path: '',
@@ -41,7 +40,9 @@ export const APP_ROUTE: Route[] = [
     path: 'home',
     component: Home,
     children : [
-      {path : 'list-candidates', component : Candidates }
+      {path : 'list-candidates', component : Candidates },
+      { path: 'my-interviews', component: InterviewsComponent }
+
     ]
   },
   {

@@ -5,6 +5,12 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { FeatherModule } from 'angular-feather';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { AddInterviewComponent } from '../interviews/add-interview/add-interview';
+
 
 interface RecrutementEvaluation {
   candidate?: Candidate;
@@ -52,7 +58,9 @@ interface FlatNode {
     CommonModule,
     MatTreeModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    FeatherModule,
+    MatDialogModule
   ],
   templateUrl: './candidate-history.html',
   styleUrl: './candidate-history.scss'
@@ -106,7 +114,11 @@ export class CandidateHistory implements OnInit {
 
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
-  constructor(private dialogRef: MatDialogRef<CandidateHistory>) {}
+
+  constructor(
+    private dialogRef: MatDialogRef<CandidateHistory>,
+    private dialog: MatDialog
+  ) {}
 
   onClose(): void {
     this.dialogRef.close();
@@ -292,4 +304,10 @@ export class CandidateHistory implements OnInit {
       day: 'numeric'
     });
   }
+   addInterview() {
+    const dialogRef = this.dialog.open(AddInterviewComponent,{
+      panelClass: 'add-interview-dialog-panel'
+    });}
+  
+
 }
