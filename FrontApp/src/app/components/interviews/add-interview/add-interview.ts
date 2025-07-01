@@ -23,7 +23,11 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-option value="Managerial">Managerial</mat-option>
       </mat-select>
 
-      <input [(ngModel)]="interview.evaluator" name="evaluator" placeholder="Evaluator" required />
+      <mat-select [(ngModel)]="interview.evaluator" name="evaluator" placeholder="Evaluator" required >
+        <mat-option value="Anouar Khemeja">Anouar Khemeja</mat-option>
+        <mat-option value="Safouane Chabchoub">Safouane Chabchoub</mat-option>
+        <mat-option value="Alice Johnson">Alice Johnson</mat-option>
+      </mat-select>
 
       <div class="dialog-actions">
         <button mat-button type="submit">Save</button>

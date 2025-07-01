@@ -28,22 +28,24 @@ export class InterviewsComponent implements OnInit {
   
    searchDate: string = '';
   
-  displayedColumns: string[] = ['candidate', 'date', 'time', 'type', 'evaluator','actions'];
+  displayedColumns: string[] = ['candidate', 'date', 'time', 'type','position','evaluator','days left','actions'];
 
   interviews = [
     {
       candidate: 'Abir Omezine',
-      date: '2025-06-16',
+      date: '2025-08-16',
       time: '10:00',
+      position: 'ai Engineer',
       type: 'Technique',
-      evaluator: 'Mr. Salah',
+      evaluator: 'Anouar Khemeja',
     },
     {
       candidate: 'Maya Kefi',
-      date: '2020-07-01',
+      date: '2025-09-01',
       time: '11:00',
+      position: 'java developer',
       type: 'RH',
-      evaluator: 'Mme. Yosra',
+      evaluator: 'Safouane Chabchoub',
     }
   ];
 
@@ -70,6 +72,12 @@ export class InterviewsComponent implements OnInit {
     }
   });
 }
+  calculateDaysLeft(date: Date): number {
+  const today = new Date();
+  const interviewDate = new Date(date);
+  const timeDiff = interviewDate.getTime() - today.getTime();
+  return Math.ceil(timeDiff / (1000 * 3600 * 24));
+  }
 
  
 

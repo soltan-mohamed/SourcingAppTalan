@@ -85,8 +85,8 @@
                     <h4 class="text-lg font-semibold text-gray-900">Evaluation History</h4>
                 </div>
                 <div class="flex justify-center items-center">
-                    <button (click)="openNewInterview()" matIconButton aria-label="Add interview">
-                        <mat-icon>add</mat-icon>
+                    <button class="add-btn" mat-icon-button matTooltip="Add Interview" (click)="addInterview()">
+                    <feather-icon name="plus"></feather-icon>
                     </button>
                 </div>
             </div>
