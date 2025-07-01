@@ -1,10 +1,8 @@
 package tn.talan.backendapp.service;
 
-
 import org.springframework.stereotype.Service;
 import tn.talan.backendapp.entity.User;
 import tn.talan.backendapp.repository.UserRepository;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,3 +23,4 @@ public class UserService {
         return users;
     }
 }
+
