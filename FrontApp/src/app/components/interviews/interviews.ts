@@ -8,6 +8,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FeatherModule } from 'angular-feather';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AddInterviewComponent } from './add-interview/add-interview';
+import { EditInterviewComponent } from './edit-interview/edit-interview';
+
+
 
 
 @Component({
@@ -36,7 +39,7 @@ export class InterviewsComponent implements OnInit {
       date: '2025-08-16',
       time: '10:00',
       position: 'ai Engineer',
-      type: 'Technique',
+      type: 'RH',
       evaluator: 'Anouar Khemeja',
     },
     {
@@ -44,7 +47,7 @@ export class InterviewsComponent implements OnInit {
       date: '2025-09-01',
       time: '11:00',
       position: 'java developer',
-      type: 'RH',
+      type: 'managerial',
       evaluator: 'Safouane Chabchoub',
     }
   ];
@@ -55,10 +58,7 @@ export class InterviewsComponent implements OnInit {
       : this.interviews;
   }
 
-  editInterview(interview: any) {
-    console.log('Edit interview:', interview);
-    // Logic to navigate or open edit modal
-  }
+  // Removed duplicate editInterview function
 
   constructor(private dialog: MatDialog) {}
   addInterview() {
@@ -78,6 +78,19 @@ export class InterviewsComponent implements OnInit {
   const timeDiff = interviewDate.getTime() - today.getTime();
   return Math.ceil(timeDiff / (1000 * 3600 * 24));
   }
+
+  editInterview(interview: any): void {
+  const dialogRef = this.dialog.open(EditInterviewComponent, {
+    width: '500px',
+    data: { interview } // pass the current interview
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      // Update your interviews list with the edited data if needed
+    }
+  });
+}
 
  
 
