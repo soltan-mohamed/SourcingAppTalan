@@ -37,6 +37,7 @@ import { EmpStatus1Component } from '@shared/components/emp-status1/emp-status1.
 import { AuthService } from '@core';
 import { Router, RouterLink } from '@angular/router';
 import { NgClass, NgIf } from '@angular/common';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 export type chartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -63,6 +64,8 @@ export type chartOptions = {
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
   imports: [
+    SidebarComponent, // Add this import
+
     MatButtonModule,
     MatMenuModule,
     MatCardModule,
@@ -76,9 +79,7 @@ export type chartOptions = {
     EmpStatusComponent,
     EmpStatus1Component,
     ChartCard1Component,
-    RouterLink,
-    NgClass,
-    NgIf
+
 
   ],
 })
@@ -126,7 +127,10 @@ export class MainComponent implements OnInit {
     this.authService.logout();
   }
 
-  
+  // Add this method to your MainComponent class
+setActiveItem(item: string) {
+  this.activeItem = item;
+}
 
   // Events
   events = [

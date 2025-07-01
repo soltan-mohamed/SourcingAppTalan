@@ -1,0 +1,49 @@
+<!-- sidebar.component.html -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h2><span>Recruteur</span></h2>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="http://localhost:4200/#/recruteur/dashboard/main" class="nav-item active">
+      <i class="material-icons">dashboard</i>
+      <span>Dashboard</span>
+    </a>
+    <div *ngIf="isAuthenticated" class="nav-item flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
+        [ngClass]="{
+            'active-menu-item': activeItem === 'candidates',
+            'text-white hover:bg-white/10': activeItem !== 'candidates'
+        }"
+        [routerLink]="['/home/list-candidates']"
+        (click)="activeItem = 'candidates'">
+        
+        <i class="material-icons" 
+           [ngClass]="{ 'text-red-500': activeItem === 'candidates', 'text-white': activeItem !== 'candidates' }">
+            people
+        </i>
+        
+        <span class="ml-2">Candidates</span>
+    </div>
+    <a href="#" class="nav-item">
+      <i class="material-icons">assignment</i>
+      <span>Interviews</span>
+    </a>
+    <a href="#" class="nav-item">
+      <i class="material-icons">settings</i>
+      <span>Settings</span>
+    </a>
+    <!-- Logout Button -->
+    <button class="logout-btn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-profile">
+      <div class="profile-img" style="background-image: url(assets/images/talan-logo2.png);"></div>
+      <div class="profile-info">
+        <span class="profile-name">{{userName}}</span>
+        <span class="profile-role">{{userRole}}</span>
+      </div>
+    </div>
+  </div>
+</div>
