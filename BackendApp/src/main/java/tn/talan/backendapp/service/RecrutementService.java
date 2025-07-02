@@ -2,50 +2,36 @@ package tn.talan.backendapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tn.talan.backendapp.entity.candidat;
-import tn.talan.backendapp.entity.recrutement;
-import tn.talan.backendapp.dao.recrutementRepository;
+import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.entity.Recrutement;
+import tn.talan.backendapp.repository.RecrutementRepository;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class recrutementService {
+public class RecrutementService {
     @Autowired
-    private final recrutementRepository repository;
+    private final RecrutementRepository repository;
 
 
-    public recrutementService(recrutementRepository repository) {
+    public RecrutementService(RecrutementRepository repository) {
         this.repository = repository;
     }
 
-    public List<recrutement> getAll() {
+    public List<Recrutement> getAll() {
         return repository.findAll();
     }
 
-    public recrutement getById(Long id) {
+    public Recrutement getById(Long id) {
         return repository.findById(id).orElse(null);
     }
 
-    public List<recrutement> searchByDemandeurAndResponsableAndDate(Long demandeurId, Long responsableId, Date date) {
-        return repository.findByDemandeur_IdAndResponsable_IdAndDate(demandeurId, responsableId, date);
-    }
-
-    public List<recrutement> getRecrutementsByDate(Date date) {
-        return repository.findByDate(date);
-    }
-
-    public List<candidat> getCandidatsByResponsable(Long responsableId) {
-        List<recrutement> recrutements = repository.findByResponsable_Id(responsableId);
-        return recrutements.stream()
-                .map(recrutement::getCandidat)
-                .distinct()
-                .collect(Collectors.toList());
-    }
 
 
-    public recrutement save(recrutement r) {
+
+    public Recrutement save(Recrutement r) {
         return repository.save(r);
     }
 
@@ -53,14 +39,13 @@ public class recrutementService {
         repository.deleteById(id);
     }
 
-    public recrutement update(Long id, recrutement updated) {
-        recrutement r = repository.findById(id).orElse(null);
+    public Recrutement update(Long id, Recrutement updated) {
+        Recrutement r = repository.findById(id).orElse(null);
         if (r != null) {
-            r.setSkills(updated.getSkills());
-            r.setDate(updated.getDate());
-            r.setCandidat(updated.getCandidat());
+            r.setPosition(updated.getPosition());
             r.setDemandeur(updated.getDemandeur());
-            r.setResponsable(updated.getResponsable());
+            r.setStatut(updated.getStatut());
+
             return repository.save(r);
         }
         return null;

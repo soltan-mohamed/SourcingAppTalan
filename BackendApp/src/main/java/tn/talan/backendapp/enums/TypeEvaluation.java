@@ -1,7 +1,7 @@
 package tn.talan.backendapp.enums;
 
-public enum typeEvaluation {
-    rh,
-    technique,
-    managerial
+public enum TypeEvaluation {
+    RH,
+    MANAGERIAL,
+    TECHNIQUE
 }

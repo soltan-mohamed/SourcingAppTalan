@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import tn.talan.backendapp.enums.Role;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,6 +46,15 @@ public class User implements UserDetails {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "responsable", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // Avoid infinite recursion during serialization
+    private List<Candidate> candidates = new ArrayList<>();
+
+    @OneToMany(mappedBy = "evaluateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // Prevent infinite recursion during serialization
+    private List<Evaluation> evaluations = new ArrayList<>();
 
     // Méthode pratique pour ajouter plusieurs rôles
     public void addRoles(Set<Role> rolesToAdd) {

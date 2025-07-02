@@ -3,9 +3,9 @@ package tn.talan.backendapp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import tn.talan.backendapp.entity.candidat;
-import tn.talan.backendapp.entity.recrutement;
-import tn.talan.backendapp.service.recrutementService;
+import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.entity.Recrutement;
+import tn.talan.backendapp.service.RecrutementService;
 
 import java.util.Date;
 import java.util.List;
@@ -13,50 +13,34 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/recrutements")
 @CrossOrigin(origins = "*")
-public class recrutementController {
+public class RecrutementController {
 
-    private final recrutementService service;
+    private final RecrutementService service;
 
     @Autowired
-    public recrutementController(recrutementService service) {
+    public RecrutementController(RecrutementService service) {
         this.service = service;
     }
 
     @GetMapping
-    public List<recrutement> getAll() {
+    public List<Recrutement> getAll() {
         return service.getAll();
     }
 
-    @GetMapping("/search")
-    public List<recrutement> search(
-            @RequestParam Long demandeurId,
-            @RequestParam Long responsableId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
-        return service.searchByDemandeurAndResponsableAndDate(demandeurId, responsableId, date);
-    }
 
-    @GetMapping("/candidats/responsable/{id}")
-    public List<candidat> getCandidatsByResponsable(@PathVariable Long id) {
-        return service.getCandidatsByResponsable(id);
-    }
-
-    @GetMapping("/recrutements/date")
-    public List<recrutement> getRecrutementsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
-        return service.getRecrutementsByDate(date);
-    }
 
     @GetMapping("/{id}")
-    public recrutement getById(@PathVariable Long id) {
+    public Recrutement getById(@PathVariable Long id) {
         return service.getById(id);
     }
 
     @PostMapping
-    public recrutement create(@RequestBody recrutement recrutement) {
+    public Recrutement create(@RequestBody Recrutement recrutement) {
         return service.save(recrutement);
     }
 
     @PutMapping("/{id}")
-    public recrutement update(@PathVariable Long id, @RequestBody recrutement r) {
+    public Recrutement update(@PathVariable Long id, @RequestBody Recrutement r) {
         return service.update(id, r);
     }
 

@@ -2,7 +2,7 @@ package tn.talan.backendapp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import tn.talan.backendapp.entity.Candidat;
+import tn.talan.backendapp.entity.Candidate;
 
 import java.util.Date;
 import java.util.List;
@@ -10,6 +10,5 @@ import java.util.List;
 
 @Repository
 
-public interface CandidatRepository extends JpaRepository<Candidat,Long> {
-    List<Candidat> findByDate(Date date);
+public interface CandidateRepository extends JpaRepository<Candidate,Long> {
 }

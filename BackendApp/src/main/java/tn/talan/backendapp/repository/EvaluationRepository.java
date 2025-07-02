@@ -1,14 +1,18 @@
-package tn.talan.backendapp.dao;
+package tn.talan.backendapp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import tn.talan.backendapp.entity.Evaluation;
 import tn.talan.backendapp.enums.Statut;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-public interface evaluationActionRepository extends JpaRepository<Evaluation, Long> {
-    List<Evaluation> findByStatutAndEvaluateur_Id(Statut statut, Long evaluateurId);
-    List<Evaluation> findByDate(Date date);
+
+@Repository
+
+public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
+
 
 }

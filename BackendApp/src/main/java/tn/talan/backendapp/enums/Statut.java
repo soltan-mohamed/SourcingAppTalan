@@ -1,8 +1,11 @@
 package tn.talan.backendapp.enums;
 
-public enum statut {
-    non_evalue,
-    scheduled,
-    accepte,
-    refuse
+public enum Statut {
+    CONTACTED,
+    SCHEDULED,
+    CANCELLED,
+    ACCEPTED,
+    REJECTED,
+    IN_PROGRESS,
+    VIVIER
 }

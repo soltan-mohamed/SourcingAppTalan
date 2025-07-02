@@ -3,18 +3,19 @@ package tn.talan.backendapp.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.talan.backendapp.entity.Evaluation;
-import tn.talan.backendapp.dao.evaluationActionRepository;
+import tn.talan.backendapp.repository.EvaluationRepository;
 import tn.talan.backendapp.enums.Statut;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 @Service
-public class evaluationActionService {
-    private final evaluationActionRepository repository;
+public class EvaluationService {
+    private final EvaluationRepository repository;
 
     @Autowired
-    public evaluationActionService(evaluationActionRepository repository) {
+    public EvaluationService(EvaluationRepository repository) {
         this.repository = repository;
     }
 
@@ -26,13 +27,7 @@ public class evaluationActionService {
         return repository.findById(id).orElse(null);
     }
 
-    public List<Evaluation> getEvaluationActionsByDate(Date date) {
-        return repository.findByDate(date);
-    }
 
-    public List<Evaluation> getScheduledEvaluationsByUserId(Long userId) {
-        return repository.findByStatutAndEvaluateur_Id(Statut.scheduled, userId);
-    }
 
 
     public Evaluation save(Evaluation e) {

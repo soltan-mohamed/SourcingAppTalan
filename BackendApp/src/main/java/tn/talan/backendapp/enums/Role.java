@@ -1,4 +1,4 @@
-package tn.talan.backendapp.entity;
+package tn.talan.backendapp.enums;
 
 public enum Role {
     RECRUTEUR,

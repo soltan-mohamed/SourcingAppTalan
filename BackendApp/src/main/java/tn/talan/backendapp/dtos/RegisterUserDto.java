@@ -4,7 +4,7 @@ package tn.talan.backendapp.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
-import tn.talan.backendapp.entity.Role;
+import tn.talan.backendapp.enums.Role;
 
 import java.util.HashSet;
 import java.util.Set;

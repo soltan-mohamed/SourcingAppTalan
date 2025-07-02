@@ -1,32 +1,30 @@
 package tn.talan.backendapp.service;
 
-import tn.talan.backendapp.entity.Candidat;
-import tn.talan.backendapp.repository.CandidatRepository;
+import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.repository.CandidateRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 
 @Service
-public class CandidatService {
-    private final CandidatRepository repository;
+public class CandidateService {
+    private final CandidateRepository repository;
 
-    public CandidatService(CandidatRepository repository) {
+    public CandidateService(CandidateRepository repository) {
         this.repository = repository;
     }
 
-    public List<Candidat> getAll() {
+    public List<Candidate> getAll() {
         return repository.findAll();
     }
 
-    public Candidat getById(Long id) {
+    public Candidate getById(Long id) {
         return repository.findById(id).orElse(null);
     }
 
-    public List<Candidat> getCandidatsByDate(Date date) {
-        return repository.findByDate(date);
-    }
-    public Candidat save(Candidat c) {
+
+    public Candidate save(Candidate c) {
         return repository.save(c);
     }
 
@@ -34,8 +32,8 @@ public class CandidatService {
         repository.deleteById(id);
     }
 
-    public Candidat update(Long id, Candidat updated) {
-        Candidat c = repository.findById(id).orElse(null);
+    public Candidate update(Long id, Candidate updated) {
+        Candidate c = repository.findById(id).orElse(null);
         if (c != null) {
             c.setNom(updated.getNom());
             c.setPrenom(updated.getPrenom());

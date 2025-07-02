@@ -3,7 +3,7 @@ package tn.talan.backendapp.responses;
 
 import lombok.Getter;
 import lombok.Setter;
-import tn.talan.backendapp.entity.Role;
+import tn.talan.backendapp.enums.Role;
 
 import java.util.Set;
 

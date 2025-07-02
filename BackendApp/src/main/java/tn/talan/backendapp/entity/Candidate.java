@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "candidat")
+@Table(name = "candidate")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"recrutements"})
-public class Candidat {
+public class Candidate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ public class Candidat {
     private Statut statut;
 
     @ElementCollection
-    @CollectionTable(name = "candidat_skills", joinColumns = @JoinColumn(name = "candidat_id"))
+    @CollectionTable(name = "candidate_skills", joinColumns = @JoinColumn(name = "candidate_id"))
     @Column(name = "skill")
     private List<String> skills = new ArrayList<>();
 
@@ -53,6 +53,6 @@ public class Candidat {
     @JoinColumn(name = "responsable_id")
     private User responsable;
 
-    @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recrutement> recrutements;
 }

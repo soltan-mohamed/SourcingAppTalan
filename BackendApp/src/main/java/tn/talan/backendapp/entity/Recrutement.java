@@ -1,46 +1,42 @@
 package tn.talan.backendapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import java.util.Date;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import tn.talan.backendapp.enums.StatutRecrutement;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "recrutement")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class recrutement {
+public class Recrutement {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "skills")
-    private String skills;
+    @Column(name = "position", nullable = false)
+    private String position;
 
-    @Temporal(TemporalType.DATE)
-    private Date date;
-
-    @ManyToOne
-    @JoinColumn(name = "responsable_id")
-    private Utilisateur responsable;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statut", nullable = false)
+    private StatutRecrutement statut;
 
     @ManyToOne
     @JoinColumn(name = "demandeur_id")
-    private Utilisateur demandeur;
+    private User demandeur;
 
     @ManyToOne
-    @JoinColumn(name = "candidat_id")
-    private candidat candidat;
+    @JoinColumn(name = "candidate_id")
+    private Candidate candidate;
 
-    @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<evaluationAction> evaluations;
-
-
+    @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Evaluation> evaluations = new ArrayList<>();
 }

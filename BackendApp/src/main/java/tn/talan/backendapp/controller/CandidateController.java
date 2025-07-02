@@ -1,8 +1,8 @@
 package tn.talan.backendapp.controller;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import tn.talan.backendapp.entity.Candidat;
-import tn.talan.backendapp.service.CandidatService;
+import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.service.CandidateService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -11,37 +11,33 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/candidats")
 @CrossOrigin(origins = "*")
-public class CandidatController {
-    private final CandidatService service;
+public class CandidateController {
+    private final CandidateService service;
 
-    public CandidatController(CandidatService service) {
+    public CandidateController(CandidateService service) {
         this.service = service;
     }
 
     @GetMapping
-    public List<Candidat> getAll() {
+    public List<Candidate> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    public Candidat getById(@PathVariable Long id) {
+    public Candidate getById(@PathVariable Long id) {
         return service.getById(id);
     }
 
-    @GetMapping("/date")
-    public List<Candidat> getCandidatsByDate(
-            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
-        return service.getCandidatsByDate(date);
-    }
+
 
     @PostMapping
-    public Candidat create(@RequestBody Candidat candidat) {
-        return service.save(candidat);
+    public Candidate create(@RequestBody Candidate candidate) {
+        return service.save(candidate);
     }
 
     @PutMapping("/{id}")
-    public Candidat update(@PathVariable Long id, @RequestBody Candidat candidat) {
-        return service.update(id, candidat);
+    public Candidate update(@PathVariable Long id, @RequestBody Candidate candidate) {
+        return service.update(id, candidate);
     }
 
     @DeleteMapping("/{id}")

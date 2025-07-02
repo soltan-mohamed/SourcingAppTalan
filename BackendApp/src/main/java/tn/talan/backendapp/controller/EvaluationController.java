@@ -4,20 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import tn.talan.backendapp.entity.Evaluation;
-import tn.talan.backendapp.service.evaluationActionService;
+import tn.talan.backendapp.service.EvaluationService;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/evaluations")
 @CrossOrigin(origins = "*")
-public class evaluationActionController {
-    private final evaluationActionService service;
+public class EvaluationController {
+    private final EvaluationService service;
 
 
     @Autowired
-    public evaluationActionController(evaluationActionService service) {
+    public EvaluationController(EvaluationService service) {
         this.service = service;
     }
 
@@ -32,15 +33,7 @@ public class evaluationActionController {
         return service.getById(id);
     }
 
-    @GetMapping("/scheduled/evaluateur/{id}")
-    public List<Evaluation> getScheduledByEvaluateur(@PathVariable Long id) {
-        return service.getScheduledEvaluationsByUserId(id);
-    }
 
-    @GetMapping("/date")
-    public List<Evaluation> getEvaluationActionsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
-        return service.getEvaluationActionsByDate(date);
-    }
 
     @PostMapping
     public Evaluation create(@RequestBody Evaluation e) {
