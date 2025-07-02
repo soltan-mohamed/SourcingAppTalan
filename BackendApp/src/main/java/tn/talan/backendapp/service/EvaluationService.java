@@ -2,9 +2,9 @@ package tn.talan.backendapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tn.talan.backendapp.entity.evaluationAction;
+import tn.talan.backendapp.entity.Evaluation;
 import tn.talan.backendapp.dao.evaluationActionRepository;
-import tn.talan.backendapp.enums.statut;
+import tn.talan.backendapp.enums.Statut;
 
 import java.util.Date;
 import java.util.List;
@@ -18,29 +18,29 @@ public class evaluationActionService {
         this.repository = repository;
     }
 
-    public List<evaluationAction> getAll() {
+    public List<Evaluation> getAll() {
         return repository.findAll();
     }
 
-    public evaluationAction getById(Long id) {
+    public Evaluation getById(Long id) {
         return repository.findById(id).orElse(null);
     }
 
-    public List<evaluationAction> getEvaluationActionsByDate(Date date) {
+    public List<Evaluation> getEvaluationActionsByDate(Date date) {
         return repository.findByDate(date);
     }
 
-    public List<evaluationAction> getScheduledEvaluationsByUserId(Long userId) {
-        return repository.findByStatutAndEvaluateur_Id(statut.scheduled, userId);
+    public List<Evaluation> getScheduledEvaluationsByUserId(Long userId) {
+        return repository.findByStatutAndEvaluateur_Id(Statut.scheduled, userId);
     }
 
 
-    public evaluationAction save(evaluationAction e) {
+    public Evaluation save(Evaluation e) {
         return repository.save(e);
     }
 
-    public evaluationAction update(Long id, evaluationAction updated) {
-        evaluationAction e = repository.findById(id).orElse(null);
+    public Evaluation update(Long id, Evaluation updated) {
+        Evaluation e = repository.findById(id).orElse(null);
         if (e != null) {
             e.setDate(updated.getDate());
             e.setType(updated.getType());

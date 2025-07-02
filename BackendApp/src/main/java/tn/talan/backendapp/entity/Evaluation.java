@@ -36,5 +36,5 @@ public class evaluationAction {
     @ManyToOne
     @JoinColumn(name = "recrutement_id")
     @JsonIgnoreProperties({"candidat", "responsable", "demandeur"})
-    private recrutement recrutement;
+    private Recrutement recrutement;
 }
