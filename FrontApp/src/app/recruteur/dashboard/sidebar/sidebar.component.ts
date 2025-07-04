@@ -7,12 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core/service/auth.service';
-import { AttendanceChartComponent } from '@shared/components/attendance-chart/attendance-chart.component';
+/*import { AttendanceChartComponent } from '@shared/components/attendance-chart/attendance-chart.component';
 import { ChartCard1Component } from '@shared/components/chart-card1/chart-card1.component';
 import { ChartCard4Component } from '@shared/components/chart-card4/chart-card4.component';
 import { EmpStatusComponent } from '@shared/components/emp-status/emp-status.component';
 import { EmpStatus1Component } from '@shared/components/emp-status1/emp-status1.component';
-import { ScheduleCardComponent } from '@shared/components/schedule-card/schedule-card.component';
+import { ScheduleCardComponent } from '@shared/components/schedule-card/schedule-card.component';*/
 import { TableCardComponent } from '@shared/components/table-card/table-card.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { NgScrollbar } from 'ngx-scrollbar';

@@ -28,7 +28,7 @@
                 <!-- Surname Field -->
                 <div class="relative">
                 <label for="nom" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
-                    Last name<span class="text-red-500">*</span>
+                    Nom<span class="text-red-500">*</span>
                 </label>
                 <input 
                     id="nom"
@@ -52,7 +52,7 @@
                 <!-- Firstname Field -->
                 <div class="relative">
                 <label for="prenom" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
-                    First name<span class="text-red-500">*</span>
+                    Prenom<span class="text-red-500">*</span>
                 </label>
                 <input 
                     id="prenom"
@@ -75,34 +75,12 @@
 
             </div>
             
-            <!-- Num tel Field -->
-            <div class="relative">
-                <label for="telephone" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
-                    Phone number<span class="text-red-500">*</span>
-                </label>
-                <input 
-                    id="telephone"
-                    type="text"
-                    formControlName="telephone"
-                    placeholder="Enter phone number of candidate "
-                    class="mt-1 block w-full px-4 py-3 border-2 rounded-lg focus:ring-0 transition duration-200
-                        {{CandidateForm.get('telephone')?.invalid && CandidateForm.get('telephone')?.touched ? 
-                            'border-red-400 focus:border-red-500' : 
-                            'border-gray-200 focus:border-red-600'}}"
-                >
-                <p *ngIf="CandidateForm.get('telephone')?.invalid && CandidateForm.get('telephone')?.touched" 
-                    class="mt-1 text-sm text-red-600 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    Please provide a correct phone number
-                </p>
-            </div>
+
 
             <!-- email Field -->
             <div class="relative">
             <label for="email" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
-                Email address<span class="text-red-500">*</span>
+                Email<span class="text-red-500">*</span>
             </label>
             <input 
                 id="email"
@@ -121,6 +99,30 @@
                 </svg>
                 Please provide a correct address
             </p>
+            </div>
+
+                        <!-- Num tel Field -->
+            <div class="relative">
+                <label for="telephone" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
+                    Telephone<span class="text-red-500">*</span>
+                </label>
+                <input 
+                    id="telephone"
+                    type="text"
+                    formControlName="telephone"
+                    placeholder="Enter phone number of candidate "
+                    class="mt-1 block w-full px-4 py-3 border-2 rounded-lg focus:ring-0 transition duration-200
+                        {{CandidateForm.get('telephone')?.invalid && CandidateForm.get('telephone')?.touched ? 
+                            'border-red-400 focus:border-red-500' : 
+                            'border-gray-200 focus:border-red-600'}}"
+                >
+                <p *ngIf="CandidateForm.get('telephone')?.invalid && CandidateForm.get('telephone')?.touched" 
+                    class="mt-1 text-sm text-red-600 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Please provide a correct phone number
+                </p>
             </div>
 
             

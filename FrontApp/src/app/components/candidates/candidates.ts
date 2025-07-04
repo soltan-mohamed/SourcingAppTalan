@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+/*import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { TableCardComponent } from '@shared/components/table-card/table-card.component';
@@ -135,3 +135,4 @@ export class Candidates {
   }
 
 }
+*/

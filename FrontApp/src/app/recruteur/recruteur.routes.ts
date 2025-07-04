@@ -2,6 +2,8 @@ import { Route } from '@angular/router';
 import { Page404Component } from 'app/authentication/page404/page404.component';
 import { MainComponent } from './dashboard/main/main.component';
 import { SidebarComponent } from './dashboard/sidebar/sidebar.component';
+import { CandidateListComponent } from './dashboard/candidates/list/list.component';
+import { AddCandidateComponent } from './dashboard/candidates/add/add.component';
 
 export const RECRUTEUR_ROUTE: Route[] = [
   {
@@ -12,11 +14,29 @@ export const RECRUTEUR_ROUTE: Route[] = [
         children: [
           {
             path: 'main',
-            component: MainComponent 
+            component: MainComponent
           },
-                    {
+          {
             path: 'sidebar',
-            component: SidebarComponent 
+            component: SidebarComponent
+          }
+        ]
+      },
+      {
+        path: 'candidates',
+        children: [
+          {
+            path: 'list',
+            component: CandidateListComponent
+          },
+          {
+            path: 'add',
+            component: AddCandidateComponent
+          },
+          {
+            path: '',
+            redirectTo: 'list',
+            pathMatch: 'full'
           }
         ]
       },
@@ -27,6 +47,8 @@ export const RECRUTEUR_ROUTE: Route[] = [
       }
     ]
   },
-  { path: '**', component: Page404Component }
+  { 
+    path: '**',
+    component: Page404Component 
+  }
 ];
-

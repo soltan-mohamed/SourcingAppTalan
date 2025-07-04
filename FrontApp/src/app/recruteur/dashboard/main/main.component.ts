@@ -23,17 +23,18 @@ import { NgScrollbar } from 'ngx-scrollbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { StatisticCard2Component } from '@shared/components/statistic-card2/statistic-card2.component';
+import { TableCardComponent } from '@shared/components/table-card/table-card.component';
+
+//import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+//import { StatisticCard2Component } from '@shared/components/statistic-card2/statistic-card2.component';
 import { MatCardModule } from '@angular/material/card';
-import { AttendanceChartComponent } from '@shared/components/attendance-chart/attendance-chart.component';
+/*import { AttendanceChartComponent } from '@shared/components/attendance-chart/attendance-chart.component';
 import { ChartCard4Component } from '@shared/components/chart-card4/chart-card4.component';
 import { EventCardComponent } from '@shared/components/event-card/event-card.component';
 import { ScheduleCardComponent } from '@shared/components/schedule-card/schedule-card.component';
-import { TableCardComponent } from '@shared/components/table-card/table-card.component';
 import { EmpStatusComponent } from '@shared/components/emp-status/emp-status.component';
 import { ChartCard1Component } from '@shared/components/chart-card1/chart-card1.component';
-import { EmpStatus1Component } from '@shared/components/emp-status1/emp-status1.component';
+import { EmpStatus1Component } from '@shared/components/emp-status1/emp-status1.component';*/
 import { AuthService } from '@core';
 import { Router, RouterLink } from '@angular/router';
 import { NgClass, NgIf } from '@angular/common';
@@ -72,13 +73,14 @@ export type chartOptions = {
     MatIconModule,
     NgApexchartsModule,
     NgScrollbar,
-    AttendanceChartComponent,
+    TableCardComponent,
+
+    /*AttendanceChartComponent,
     ChartCard4Component,
     ScheduleCardComponent,
-    TableCardComponent,
     EmpStatusComponent,
     EmpStatus1Component,
-    ChartCard1Component,
+    ChartCard1Component,*/
 
 
   ],

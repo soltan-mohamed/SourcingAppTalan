@@ -1,47 +1,96 @@
 package tn.talan.backendapp.controller;
 
-import org.springframework.format.annotation.DateTimeFormat;
-import tn.talan.backendapp.entity.Candidate;
-import tn.talan.backendapp.service.CandidateService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.enums.Statut;
+import tn.talan.backendapp.exceptions.ResourceNotFoundException;
+import tn.talan.backendapp.service.CandidateService;
+import tn.talan.backendapp.service.FileStorageService;
 
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/candidats")
+@RequestMapping("/api/candidates")
 @CrossOrigin(origins = "*")
 public class CandidateController {
-    private final CandidateService service;
 
-    public CandidateController(CandidateService service) {
-        this.service = service;
+    private final CandidateService candidateService;
+    private final FileStorageService fileStorageService;
+
+    public CandidateController(CandidateService candidateService,
+                               FileStorageService fileStorageService) {
+        this.candidateService = candidateService;
+        this.fileStorageService = fileStorageService;
     }
 
+
+
+    // CandidateController.java
     @GetMapping
-    public List<Candidate> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<Candidate>> getAllCandidates() {
+        List<Candidate> candidates = candidateService.getAllCandidatesWithRelations();
+        return ResponseEntity.ok(candidates);
     }
 
     @GetMapping("/{id}")
-    public Candidate getById(@PathVariable Long id) {
-        return service.getById(id);
+    public ResponseEntity<Candidate> getCandidateById(@PathVariable Long id) {
+        Candidate candidate = candidateService.getCandidateById(id);
+        return ResponseEntity.ok(candidate);
     }
 
-
-
     @PostMapping
-    public Candidate create(@RequestBody Candidate candidate) {
-        return service.save(candidate);
+    public ResponseEntity<Candidate> createCandidate(@RequestBody Candidate candidate) {
+        Candidate createdCandidate = candidateService.createCandidate(candidate);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCandidate);
     }
 
     @PutMapping("/{id}")
-    public Candidate update(@PathVariable Long id, @RequestBody Candidate candidate) {
-        return service.update(id, candidate);
+    public ResponseEntity<Candidate> updateCandidate(
+            @PathVariable Long id,
+            @RequestBody Candidate candidateDetails) {
+        Candidate updatedCandidate = candidateService.updateCandidate(id, candidateDetails);
+        return ResponseEntity.ok(updatedCandidate);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    public ResponseEntity<Void> deleteCandidate(@PathVariable Long id) {
+        candidateService.deleteCandidate(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Candidate>> getCandidatesByStatus(
+            @PathVariable("status") String status) {
+        List<Candidate> candidates = candidateService.getCandidatesByStatus(Statut.valueOf(status));
+        return ResponseEntity.ok(candidates);
+    }
+
+    @PostMapping("/{id}/upload-cv")
+    public ResponseEntity<?> uploadCv(
+            @PathVariable Long id,
+            @RequestParam("cv") MultipartFile file) {
+        try {
+            String fileName = fileStorageService.storeFile(file);
+            String filePath = "/uploads/" + fileName;
+            Map<String, Object> response = candidateService.uploadCv(id, filePath);
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to store file", "details", e.getMessage()));
+        }
+    }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

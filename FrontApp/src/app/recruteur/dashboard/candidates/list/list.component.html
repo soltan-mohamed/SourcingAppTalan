@@ -1,0 +1,179 @@
+<!-- app/candidates/list/list.component.html -->
+<div class="bg-white rounded-xl shadow-lg max-h-[90vh] overflow-hidden flex flex-col">
+    
+  <!-- Header -->
+  <div class="flex justify-between bg-gradient-to-r from-lime-700 to-blue-700 px-7 py-6">
+    <h2 class="text-2xl font-serif text-white font-medium tracking-wide flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      Candidates List
+    </h2>
+    <div class="flex items-center space-x-4">
+      <button (click)="openAddCandidate()" mat-raised-button color="primary" class="!bg-white !text-blue-800 hover:!bg-gray-50">
+        <mat-icon class="mr-1">add</mat-icon>
+        Add Candidate
+      </button>
+      <button class="hover:cursor-pointer text-white" mat-icon-button aria-label="Refresh list" (click)="loadCandidates()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Content Container -->
+  <div class="px-6 py-6 overflow-y-auto flex-1">
+    <!-- Search and Filters -->
+    <div class="mb-8">
+      <div class="relative max-w-md">
+        <!-- Search Icon -->
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-lime-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        
+        <!-- Search Input -->
+        <input 
+          type="text" 
+          placeholder="Search candidates..."
+          class="w-full pl-10 pr-12 py-3 border-2 rounded-lg transition duration-200
+                border-gray-200 focus:border-blue-600 focus:outline-none
+                hover:border-lime-300 placeholder-lime-400 text-gray-700 bg-white shadow-sm"
+          (keyup.enter)="applySearch()"
+          [(ngModel)]="searchQuery">
+        
+        <!-- Clear Button -->
+        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+          <button 
+            type="button"
+            class="text-red-400 hover:text-lime-600 focus:outline-none transition-colors duration-150"
+            (click)="clearSearch()"
+          >
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Status Filter Chips -->
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button 
+          *ngFor="let status of statuses"
+          class="px-3 py-1 rounded-full text-xs font-medium transition-colors duration-200"
+          [class.bg-blue-100]="activeStatusFilter === status"
+          [class.text-blue-800]="activeStatusFilter === status"
+          [class.bg-gray-100]="activeStatusFilter !== status"
+          [class.text-gray-800]="activeStatusFilter !== status"
+          (click)="filterByStatus(status)"
+        >
+          {{ status }}
+        </button>
+        <button 
+          class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200"
+          (click)="clearStatusFilter()"
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="errorMessage" class="p-4 mb-4 text-red-700 bg-red-100 rounded-lg flex items-center">
+      <mat-icon class="mr-2">error</mat-icon>
+      {{ errorMessage }}
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && !errorMessage && candidates.length === 0" class="text-center py-12">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3 class="mt-2 text-lg font-medium text-gray-900">No candidates found</h3>
+      <p class="mt-1 text-sm text-gray-500">Try adjusting your search or add a new candidate</p>
+      <button (click)="openAddCandidate()" mat-raised-button color="primary" class="mt-4 !bg-blue-700 !text-white">
+        <mat-icon class="mr-1">add</mat-icon>
+        Add Candidate
+      </button>
+    </div>
+
+    <!-- Candidates Table -->
+    <ng-container *ngIf="!isLoading && !errorMessage && candidates.length > 0">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3">Name</th>
+              <th scope="col" class="px-6 py-3">Email</th>
+              <th scope="col" class="px-6 py-3">Phone</th>
+              <th scope="col" class="px-6 py-3">Status</th>
+              <th scope="col" class="px-6 py-3">Responsable</th>
+              <th scope="col" class="px-6 py-3">CV</th>
+              <th scope="col" class="px-6 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let candidate of candidates" class="bg-white border-b hover:bg-gray-50">
+              <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                {{ candidate.nom }} {{ candidate.prenom }}
+              </td>
+              <td class="px-6 py-4">{{ candidate.email }}</td>
+              <td class="px-6 py-4">{{ candidate.telephone }}</td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-1 rounded-full text-xs font-medium"
+                  [ngClass]="{
+                    'bg-blue-100 text-blue-800': candidate.statut === 'CONTACTED',
+                    'bg-red-100 text-red-800': candidate.statut === 'SCHEDULED'
+                  }">
+                  {{ candidate.statut }}
+                </span>
+              </td>
+<td class="px-6 py-4">
+  <div *ngIf="candidate.responsable" class="flex items-center">
+    <div class="flex-shrink-0 h-8 w-8 bg-red-200 rounded-full flex items-center justify-center text-red-700 font-medium">
+      {{ getResponsableDisplay(candidate.responsable) | initials }}
+    </div>
+    <div class="ml-3">
+      <p class="text-sm font-medium text-gray-900">{{ getResponsableDisplay(candidate.responsable) }}</p>
+      <p class="text-xs text-gray-500">Primary responsible</p>
+    </div>
+  </div>
+</td>
+              <td class="px-6 py-4">
+                <a *ngIf="candidate.cv" [href]="candidate.cv" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                  <mat-icon class="mr-1">picture_as_pdf</mat-icon>
+                  View CV
+                </a>
+                <span *ngIf="!candidate.cv" class="text-gray-400">No CV</span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Actions menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="viewCandidate(candidate.id!)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>View</span>
+                  </button>
+                  <button mat-menu-item (click)="editCandidate(candidate.id!)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button mat-menu-item (click)="deleteCandidate(candidate.id!)" class="text-red-600">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </div>
+</div>

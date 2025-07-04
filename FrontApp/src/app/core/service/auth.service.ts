@@ -98,12 +98,25 @@ export class AuthService {
     return this.jwtHelper.isTokenExpired(token);
   }
 
-  private storeAuthData(user: User, token: string): void {
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    localStorage.setItem('token', token);
-    this.currentUserSubject.next(user);
+// auth.service.ts
+private storeAuthData(user: User, token: string): void {
+  // Verify token format before storing
+  if (!this.isValidToken(token)) {
+    console.error('Invalid token format:', token);
+    throw new Error('Invalid token format');
   }
+  
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  localStorage.setItem('token', token);
+  this.currentUserSubject.next(user);
+}
 
+// auth.service.ts
+public isValidToken(token: string): boolean {
+  if (!token) return false;
+  const parts = token.split('.');
+  return parts.length === 3; // Valid JWT has 3 parts
+}
   logout(): void {
     this.clearAuthData();
     this.router.navigate(['/authentication/signin']);
