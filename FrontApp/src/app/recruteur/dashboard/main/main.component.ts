@@ -19,11 +19,11 @@ import {
   ApexNonAxisChartSeries,
   NgApexchartsModule,
 } from 'ng-apexcharts';
-import { NgScrollbar } from 'ngx-scrollbar';
+//import { NgScrollbar } from 'ngx-scrollbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { TableCardComponent } from '@shared/components/table-card/table-card.component';
+//import { TableCardComponent } from '@shared/components/table-card/table-card.component';
 
 //import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 //import { StatisticCard2Component } from '@shared/components/statistic-card2/statistic-card2.component';
@@ -65,22 +65,17 @@ export type chartOptions = {
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
   imports: [
-    SidebarComponent, // Add this import
+    SidebarComponent,
 
     MatButtonModule,
     MatMenuModule,
     MatCardModule,
     MatIconModule,
     NgApexchartsModule,
-    NgScrollbar,
-    TableCardComponent,
+   // NgScrollbar,
+   // TableCardComponent,
 
-    /*AttendanceChartComponent,
-    ChartCard4Component,
-    ScheduleCardComponent,
-    EmpStatusComponent,
-    EmpStatus1Component,
-    ChartCard1Component,*/
+
 
 
   ],
@@ -88,7 +83,7 @@ export type chartOptions = {
 export class MainComponent implements OnInit {
 
   role : string = "";
-  sideBarOpened: boolean = true; // Set to true to keep sidebar open by default
+  sideBarOpened: boolean = true;
   activeItem: string = 'home';
   currentUser: any;
   isAuthenticated: boolean = true;
@@ -106,9 +101,15 @@ export class MainComponent implements OnInit {
       active: 'Dashboard 1',
     },
   ];
-  constructor(private authService: AuthService,
+  constructor(public authService: AuthService,
     private router: Router
   ) {}
+
+  activeSidebarItem = 'dashboard';
+  
+  onSidebarItemChange(item: string) {
+    this.activeSidebarItem = item;
+  }
 
   ngOnInit() {
     this.chart3();
@@ -129,7 +130,6 @@ export class MainComponent implements OnInit {
     this.authService.logout();
   }
 
-  // Add this method to your MainComponent class
 setActiveItem(item: string) {
   this.activeItem = item;
 }
@@ -402,5 +402,4 @@ setActiveItem(item: string) {
 
 
   
-  // New Student List start
 }

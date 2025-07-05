@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class UserService {
-    private apiUrl = 'http://localhost:9090/talan/users'; // Adjust the URL as per your backend API
+    private apiUrl = 'http://localhost:9090/talan/users';
 
 
   constructor(private http: HttpClient,     private authService: AuthService

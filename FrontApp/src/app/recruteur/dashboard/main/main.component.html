@@ -9,14 +9,12 @@
 <body>
   <div class="dashboard-container">
     <!-- Sidebar -->
-    <app-sidebar 
-      [activeItem]="activeItem"
-      [isAuthenticated]="isAuthenticated"
-      [userName]="currentUser?.name || 'Anouar Khemeja'"
-      [userRole]="currentUser?.role || 'Recruteur'"
-      (logoutEvent)="logout()"
-      (activeItemChange)="setActiveItem($event)">
-    </app-sidebar>
+<app-sidebar 
+  [activeItem]="activeSidebarItem"
+  (activeItemChange)="onSidebarItemChange($event)"
+  (logoutEvent)="authService.logout()"
+  class="w-64 flex-shrink-0">
+</app-sidebar>
 
     <!-- Main Content -->
     <section class="content">

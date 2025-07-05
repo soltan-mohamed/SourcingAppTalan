@@ -5,7 +5,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { FeatherIconsComponent } from '../feather-icons/feather-icons.component';
+//import { FeatherIconsComponent } from '../feather-icons/feather-icons.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -25,7 +25,7 @@ import { CandidateHistory } from 'app/components/candidate-history/candidate-his
     MatProgressBarModule,
     MatTooltipModule,
     MatButtonModule,
-    FeatherIconsComponent,
+   // FeatherIconsComponent,
     MatDialogModule
   ],
   templateUrl: './table-card.component.html',

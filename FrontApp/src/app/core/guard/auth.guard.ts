@@ -13,13 +13,7 @@ export class AuthGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot): boolean {
     const requiredRoles = route.data['roles'] as Role[];
     const user = this.authService.currentUserValue;
-    
-    /*console.log('AuthGuard checking:', {
-      path: route.routeConfig?.path,
-      requiredRoles,
-      userRoles: user?.roles,
-      isAuthenticated: this.authService.isAuthenticated()
-    });*/
+
 
     // Si aucune restriction de rôle
     if (!requiredRoles) {

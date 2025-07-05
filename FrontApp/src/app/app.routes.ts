@@ -15,12 +15,12 @@ export const APP_ROUTE: Route[] = [
   path: 'recruteur',
   canActivate: [AuthGuard],
   data: {
-    role: 'RECRUTEUR'  // Use string literal to ensure exact match
+    role: 'RECRUTEUR' 
   },
   loadChildren: () =>
     import('./recruteur/recruteur.routes').then((m) => m.RECRUTEUR_ROUTE),
 },
-      // ... autres routes
+      
     ],
   },
 

@@ -6,7 +6,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { finalize } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field'; // This includes error messages
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -22,7 +22,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatFormFieldModule, // This is all you need for error messages
+    MatFormFieldModule,
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -35,7 +35,7 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   error = '';
   hide = true;
   rememberMe = false;
-  selectedRole: Role | null = null; // Add this line
+  selectedRole: Role | null = null;
 
 
   constructor(
@@ -93,7 +93,6 @@ onSubmit() {
         console.error('Login error:', error);
         this.handleLoginError(error);
       }
-      // Removed the next handler since AuthService now handles navigation
     });
 }
 

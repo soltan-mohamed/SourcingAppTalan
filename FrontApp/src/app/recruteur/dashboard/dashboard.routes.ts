@@ -11,10 +11,6 @@ export const DASHBOARD_ROUTE: Route[] = [
     redirectTo: 'main',
     pathMatch: 'full'
   },
-  /*{
-    path: 'main',
-    component: MainComponent
-  },*/
   {
     path: 'sidebar',
     component: SidebarComponent

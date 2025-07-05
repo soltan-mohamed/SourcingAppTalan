@@ -13,12 +13,13 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TableCardComponent } from '@shared/components/table-card/table-card.component';
+//import { TableCardComponent } from '@shared/components/table-card/table-card.component';
 import { MatTableModule } from '@angular/material/table';
-import { InitialsPipe } from '@core/pipes/initials.pipe';
+//import { InitialsPipe } from '@core/pipes/initials.pipe';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { SidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-candidate-list',
@@ -31,12 +32,14 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     MatButtonModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    TableCardComponent,
+   // TableCardComponent,
     MatTableModule,
-    InitialsPipe,
+   // InitialsPipe,
     MatSelectModule,
     MatOptionModule, 
-    ScrollingModule
+    ScrollingModule,
+    SidebarComponent
+
   ],
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss']
@@ -59,6 +62,13 @@ export class CandidateListComponent implements OnInit {
   ngOnInit() {
     console.log('Initializing CandidateListComponent');
     this.loadCandidates();
+  }
+
+  activeSidebarItem = 'candidates';
+  
+
+  onSidebarItemChange(item: string) {
+    this.activeSidebarItem = item;
   }
 
   loadCandidates() {

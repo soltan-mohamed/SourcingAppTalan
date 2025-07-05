@@ -12,7 +12,7 @@ interface LoginResponse {
   token: string;
   expiresIn: number;
   fullName: string;
-  roles: Role[]; // Changé de 'role' à 'roles' (array)
+  roles: Role[]; 
 }
 
 @Injectable({ providedIn: 'root' })
@@ -53,7 +53,6 @@ export class AuthService {
   }
 
   private redirectBasedOnRoles(roles: Role[]): void {
-    //console.log('User roles:', roles);
     
     // Priorité des redirections (si l'utilisateur a plusieurs rôles)
     if (roles.includes(Role.MANAGER)) {
@@ -63,7 +62,6 @@ export class AuthService {
     } else if (roles.includes(Role.RECRUTEUR)) {
       this.router.navigate(['/recruteur/dashboard/main']);
     } else {
-      //console.error('No valid role found, redirecting to signin');
       this.router.navigate(['/authentication/signin']);
     }
   }
@@ -101,7 +99,6 @@ private createUserFromResponse(response: LoginResponse): User {
       
       return JSON.parse(userJson) as User;
     } catch (error) {
-      //console.error('Error parsing user data:', error);
       this.clearAuthData();
       return null;
     }
@@ -111,7 +108,6 @@ private createUserFromResponse(response: LoginResponse): User {
     return this.jwtHelper.isTokenExpired(token);
   }
 
-// auth.service.ts
 private storeAuthData(user: User, token: string): void {
   // Verify token format before storing
   if (!this.isValidToken(token)) {
@@ -126,7 +122,6 @@ private storeAuthData(user: User, token: string): void {
 
 
 
-// auth.service.ts
 public isValidToken(token: string): boolean {
   if (!token) return false;
   const parts = token.split('.');
@@ -140,6 +135,7 @@ public isValidToken(token: string): boolean {
   clearAuthData(): void {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
+    
     // Check if currentUserSubject exists before calling next
     if (this.currentUserSubject) {
       this.currentUserSubject.next(null);
