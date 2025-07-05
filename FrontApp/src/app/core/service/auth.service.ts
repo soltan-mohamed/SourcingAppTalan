@@ -67,14 +67,27 @@ export class AuthService {
       this.router.navigate(['/authentication/signin']);
     }
   }
-  private createUserFromResponse(response: LoginResponse): User {
-    const user = new User();
-    user.email = response.email;
-    user.fullName = response.fullName;
-    user.roles = response.roles; // Changé pour stocker un tableau
-    user.token = response.token;
-    return user;
+private createUserFromResponse(response: LoginResponse): User {
+  const user = new User();
+  user.email = response.email;
+  user.fullName = response.fullName;
+  user.roles = response.roles;
+  user.token = response.token;
+  
+  // Ensure ID is properly extracted from JWT
+  if (response.token) {
+    const decoded = this.jwtHelper.decodeToken(response.token);
+    user.id = decoded.userId || decoded.sub;
+    
+    // Convert to number if needed
+    if (typeof user.id === 'string' && !isNaN(Number(user.id))) {
+      user.id = Number(user.id);
+    }
   }
+  
+  console.log('Created user from response:', user);
+  return user;
+}
 
   private getUserFromStorage(): User | null {
     try {
@@ -110,6 +123,8 @@ private storeAuthData(user: User, token: string): void {
   localStorage.setItem('token', token);
   this.currentUserSubject.next(user);
 }
+
+
 
 // auth.service.ts
 public isValidToken(token: string): boolean {

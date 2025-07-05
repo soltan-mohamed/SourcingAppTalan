@@ -18,7 +18,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Add this line
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Candidate {
 
     @Id
@@ -42,20 +42,23 @@ public class Candidate {
     @Column(name = "statut")
     private Statut statut;
 
-    @ElementCollection(fetch = FetchType.LAZY) // Explicitly set to LAZY (optional)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "candidate_skills", joinColumns = @JoinColumn(name = "candidate_id"))
     @Column(name = "skill")
-    @JsonIgnore // Add this to prevent serialization of skills in this endpoint
+    @JsonIgnore
     private List<String> skills = new ArrayList<>();
 
     @Column(name = "cv")
     private String cv;
 
+    @Transient
+    private boolean editable;
+
     @ManyToOne
     @JoinColumn(name = "responsable_id")
     private User responsable;
 
-    @JsonIgnore // Add this to prevent serialization of skills in this endpoint
+    @JsonIgnore
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recrutement> recrutements;
 }

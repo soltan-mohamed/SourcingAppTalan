@@ -1,7 +1,7 @@
-// candidate.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpEvent } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Candidate, Statut } from '../models/candidate.model';
 import { AuthService } from './auth.service';
 
@@ -15,6 +15,93 @@ export class CandidateService {
     private http: HttpClient,
     private authService: AuthService
   ) {}
+
+// candidate.service.ts
+getAllCandidates(): Observable<Candidate[]> {
+  return this.http.get<Candidate[]>(this.apiUrl, {
+    headers: this.getAuthHeaders()
+  }).pipe(
+    tap(candidates => {
+      console.log('API Response:', candidates);
+      console.log('Current Auth User:', this.authService.currentUserValue);
+    }),
+    map(candidates => {
+      const currentUser = this.authService.currentUserValue;
+      return candidates.map(c => ({
+        ...c,
+        isEditable: c.responsable?.id === currentUser?.id
+      }));
+    })
+  );
+}
+  getCandidateById(id: number): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      catchError(error => {
+        if (error.status === 403) {
+          return throwError(() => new Error('You are not authorized to view this candidate'));
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  createCandidate(candidateData: any, id: number): Observable<Candidate> {
+    return this.http.post<Candidate>(this.apiUrl, candidateData, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  updateCandidate(id: number, candidateData: any): Observable<Candidate> {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}`, candidateData, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      catchError(error => {
+        if (error.status === 403) {
+          return throwError(() => new Error('You are not authorized to edit this candidate'));
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deleteCandidate(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      catchError(error => {
+        if (error.status === 403) {
+          return throwError(() => new Error('You are not authorized to delete this candidate'));
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  uploadCv(candidateId: number, file: File): Observable<HttpEvent<any>> {
+    const formData = new FormData();
+    formData.append('cv', file);
+
+    return this.http.post(`${this.apiUrl}/${candidateId}/upload-cv`, formData, {
+      headers: this.getAuthHeadersForFileUpload(),
+      reportProgress: true,
+      observe: 'events'
+    }).pipe(
+      catchError(error => {
+        if (error.status === 403) {
+          return throwError(() => new Error('You are not authorized to upload CV for this candidate'));
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getStatuses(): Statut[] {
+    return Object.values(Statut);
+  }
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.token;
@@ -34,63 +121,11 @@ export class CandidateService {
     }
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`
-      // Don't set Content-Type for FormData - browser will set it automatically
     });
   }
 
-// candidate.service.ts
-getAllCandidates(): Observable<Candidate[]> {
-    return this.http.get<Candidate[]>(this.apiUrl, {
-        headers: this.getAuthHeaders()
-    }).pipe(
-        catchError(error => {
-            console.error('Error fetching candidates:', error);
-            return throwError(() => new Error('Failed to load candidates'));
-        })
-    );
-}
-
-  getCandidateById(id: number): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  createCandidate(candidateData: any, responsableId: number): Observable<Candidate> {
-    const dataWithResponsable = {
-      ...candidateData,
-      responsable: { id: responsableId }
-    };
-    
-    return this.http.post<Candidate>(this.apiUrl, dataWithResponsable, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  uploadCv(candidateId: number, file: File): Observable<HttpEvent<any>> {
-    const formData = new FormData();
-    formData.append('cv', file);
-
-    return this.http.post(`${this.apiUrl}/${candidateId}/upload-cv`, formData, {
-      headers: this.getAuthHeadersForFileUpload(),
-      reportProgress: true,
-      observe: 'events'
-    });
-  }
-
-  updateCandidate(id: number, candidateData: any): Observable<Candidate> {
-    return this.http.put<Candidate>(`${this.apiUrl}/${id}`, candidateData, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  deleteCandidate(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  getStatuses(): Statut[] {
-    return Object.values(Statut);
+  private handleError(error: any) {
+    console.error('An error occurred:', error);
+    return throwError(() => new Error(error.message || 'Server error'));
   }
 }

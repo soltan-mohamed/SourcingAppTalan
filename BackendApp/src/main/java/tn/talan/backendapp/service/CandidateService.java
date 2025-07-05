@@ -1,9 +1,13 @@
 package tn.talan.backendapp.service;
 
 import org.hibernate.Hibernate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.entity.User;
 import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.exceptions.ResourceNotFoundException;
+import tn.talan.backendapp.exceptions.UnauthorizedAccessException;
 import tn.talan.backendapp.repository.CandidateRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +25,25 @@ public class CandidateService {
         this.repository = repository;
     }
 
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User) {
+            return (User) authentication.getPrincipal();
+        }
+        throw new UnauthorizedAccessException("User not authenticated");
+    }
+
     public List<Candidate> getAllCandidates() {
-        return repository.findAll();
+        User currentUser = getCurrentUser();
+        List<Candidate> allCandidates = repository.findAll();
+
+        allCandidates.forEach(candidate -> {
+            boolean isEditable = candidate.getResponsable() != null &&
+                    candidate.getResponsable().getId().equals(currentUser.getId());
+            candidate.setEditable(isEditable);
+        });
+
+        return allCandidates;
     }
 
     public Candidate getCandidateById(Long id) {
@@ -31,27 +52,25 @@ public class CandidateService {
     }
 
     public Candidate createCandidate(Candidate candidate) {
-        // Add any business validation logic here
+        User currentUser = getCurrentUser();
+        System.out.println("Assigning responsable: " + currentUser.getId()); // Debug log
+        candidate.setResponsable(currentUser);
+
         if (repository.existsByEmail(candidate.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
         return repository.save(candidate);
     }
 
-    @Transactional
-    public Candidate getCandidateByIdWithSkills(Long id) {
-        Candidate candidate = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Candidate not found with id: " + id));
-        // Initialize the skills collection
-        candidate.getSkills().size(); // This forces initialization
-        return candidate;
-    }
-
     public Candidate updateCandidate(Long id, Candidate candidateDetails) {
         Candidate candidate = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate not found with id: " + id));
 
-        // Update only non-null fields
+        User currentUser = getCurrentUser();
+        if (!candidate.getResponsable().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedAccessException("You can only edit your own candidates");
+        }
+
         if (candidateDetails.getNom() != null) {
             candidate.setNom(candidateDetails.getNom());
         }
@@ -83,17 +102,26 @@ public class CandidateService {
     public void deleteCandidate(Long id) {
         Candidate candidate = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate not found with id: " + id));
+
+        User currentUser = getCurrentUser();
+        if (!candidate.getResponsable().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedAccessException("You can only delete your own candidates");
+        }
+
         repository.delete(candidate);
     }
 
     @Transactional
     public Map<String, Object> uploadCv(Long id, String cvPath) {
-        Candidate candidate = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Candidate not found with id: " + id));
+        Candidate candidate = getCandidateById(id);
+        User currentUser = getCurrentUser();
+        if (!candidate.getResponsable().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedAccessException("You can only upload CV for your own candidates");
+        }
+
         candidate.setCv(cvPath);
         Candidate saved = repository.save(candidate);
 
-        // Return only what you need in the response
         return Map.of(
                 "id", saved.getId(),
                 "nom", saved.getNom(),
@@ -103,46 +131,7 @@ public class CandidateService {
         );
     }
 
-    // CandidateService.java
-    @Transactional
-    public List<Candidate> getAllCandidatesWithRelations() {
-        List<Candidate> candidates = repository.findAll();
-        // Initialize necessary relationships
-        candidates.forEach(candidate -> {
-            Hibernate.initialize(candidate.getSkills());
-            if (candidate.getResponsable() != null) {
-                Hibernate.initialize(candidate.getResponsable().getFullName());
-            }
-        });
-        return candidates;
-    }
-
     public List<Candidate> getCandidatesByStatus(Statut status) {
         return repository.findByStatut(status);
-    }
-
-    public Candidate save(Candidate candidate) {
-        // Validate candidate before saving
-        if (candidate == null) {
-            throw new IllegalArgumentException("Candidate cannot be null");
-        }
-
-        // Check for duplicate email if this is a new candidate
-        if (candidate.getId() == null && repository.existsByEmail(candidate.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
-        }
-
-        // Check for duplicate email if email is being updated
-        if (candidate.getId() != null) {
-            Candidate existing = repository.findById(candidate.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Candidate not found"));
-
-            if (!existing.getEmail().equals(candidate.getEmail()) &&
-                    repository.existsByEmail(candidate.getEmail())) {
-                throw new IllegalArgumentException("Email already exists");
-            }
-        }
-
-        return repository.save(candidate);
     }
 }

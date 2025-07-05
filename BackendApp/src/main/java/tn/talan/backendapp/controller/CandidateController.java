@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.exceptions.ResourceNotFoundException;
+import tn.talan.backendapp.exceptions.UnauthorizedAccessException;
 import tn.talan.backendapp.service.CandidateService;
 import tn.talan.backendapp.service.FileStorageService;
 
@@ -28,12 +29,9 @@ public class CandidateController {
         this.fileStorageService = fileStorageService;
     }
 
-
-
-    // CandidateController.java
     @GetMapping
     public ResponseEntity<List<Candidate>> getAllCandidates() {
-        List<Candidate> candidates = candidateService.getAllCandidatesWithRelations();
+        List<Candidate> candidates = candidateService.getAllCandidates();
         return ResponseEntity.ok(candidates);
     }
 
@@ -84,6 +82,7 @@ public class CandidateController {
                     .body(Map.of("error", "Failed to store file", "details", e.getMessage()));
         }
     }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -92,5 +91,10 @@ public class CandidateController {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<String> handleUnauthorizedAccess(UnauthorizedAccessException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 }
