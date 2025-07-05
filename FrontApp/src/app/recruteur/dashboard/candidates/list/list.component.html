@@ -22,19 +22,26 @@
     <div class="mb-6 flex flex-col sm:flex-row gap-4">
       <mat-form-field appearance="outline" class="flex-grow">
         <mat-label>Search</mat-label>
-        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="applySearch()">
-        <button matSuffix mat-icon-button (click)="applySearch()">
+        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="applySearch()" placeholder="Search by name or email">
+        <button matSuffix mat-icon-button (click)="applySearch()" matTooltip="Search">
           <mat-icon>search</mat-icon>
+        </button>
+        <button matSuffix mat-icon-button *ngIf="searchQuery" (click)="clearSearch()" matTooltip="Clear search">
+          <mat-icon>close</mat-icon>
         </button>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Status</mat-label>
         <mat-select [(value)]="activeStatusFilter" (selectionChange)="filterByStatus(activeStatusFilter!)">
+          <mat-option [value]="null">All Statuses</mat-option>
           <mat-option *ngFor="let status of statuses" [value]="status">
             {{ status }}
           </mat-option>
         </mat-select>
+        <button matSuffix mat-icon-button *ngIf="activeStatusFilter" (click)="clearStatusFilter()" matTooltip="Clear filter">
+          <mat-icon>close</mat-icon>
+        </button>
       </mat-form-field>
     </div>
 
@@ -43,7 +50,8 @@
       <mat-spinner diameter="50"></mat-spinner>
     </div>
 
-    <div *ngIf="errorMessage" class="p-4 mb-4 bg-red-100 text-red-700 rounded-lg">
+    <div *ngIf="errorMessage" class="p-4 mb-4 bg-red-100 text-red-700 rounded-lg flex items-center">
+      <mat-icon class="mr-2">error</mat-icon>
       {{ errorMessage }}
     </div>
 
@@ -68,7 +76,7 @@
             <div class="flex items-center">
               <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
                 <span class="text-blue-800 font-medium">
-                  {{ candidate.prenom.charAt(0) }}{{ candidate.nom.charAt(0) }}
+                  {{ candidate.prenom?.charAt(0) || '' }}{{ candidate.nom?.charAt(0) || '' }}
                 </span>
               </div>
               <div>
@@ -85,7 +93,7 @@
         <ng-container matColumnDef="email">
           <th mat-header-cell *matHeaderCellDef>Email</th>
           <td mat-cell *matCellDef="let candidate">
-            <a href="mailto:{{ candidate.email }}" class="text-blue-600 hover:underline">
+            <a href="mailto:{{ candidate.email }}" class="text-blue-600 hover:underline" matTooltip="Send email">
               {{ candidate.email }}
             </a>
           </td>
@@ -95,7 +103,7 @@
         <ng-container matColumnDef="telephone">
           <th mat-header-cell *matHeaderCellDef>Phone</th>
           <td mat-cell *matCellDef="let candidate">
-            <a href="tel:{{ candidate.telephone }}" class="hover:text-blue-600">
+            <a href="tel:{{ candidate.telephone }}" class="hover:text-blue-600" matTooltip="Call">
               {{ candidate.telephone }}
             </a>
           </td>
@@ -121,7 +129,7 @@
         <ng-container matColumnDef="cv">
           <th mat-header-cell *matHeaderCellDef>CV</th>
           <td mat-cell *matCellDef="let candidate">
-            <button *ngIf="candidate.cv" mat-icon-button color="primary" (click)="downloadCv(candidate.cv)">
+            <button *ngIf="candidate.cv" mat-icon-button color="primary" (click)="downloadCv(candidate.cv)" matTooltip="Download CV">
               <mat-icon>picture_as_pdf</mat-icon>
             </button>
             <span *ngIf="!candidate.cv" class="text-gray-400">None</span>
@@ -133,32 +141,33 @@
 <ng-container matColumnDef="actions">
   <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
   <td mat-cell *matCellDef="let candidate" class="text-right">
-    <!-- Debug visibility -->
-    <div *ngIf="false" style="color: red">
-      Debug: 
-      UserID: {{currentUser?.id}}
-      ResponsableID: {{candidate.responsable?.id}} |
-      isEditable: {{isEditable(candidate)}}
+    <div class="flex justify-end gap-1">
+      <!-- View Button - Always visible -->
+      <button mat-icon-button color="primary" (click)="viewCandidate(candidate.id!)" matTooltip="View">
+        <mat-icon>visibility</mat-icon>
+      </button>
+      
+      <!-- Edit Button - Conditionally visible -->
+      <button *ngIf="isEditable(candidate)" 
+              mat-icon-button 
+              color="accent" 
+              (click)="editCandidate(candidate.id!)"
+              matTooltip="Edit">
+        <mat-icon>edit</mat-icon>
+      </button>
+      
+      <!-- Delete Button - Conditionally visible -->
+      <button *ngIf="isDeleteable(candidate)" 
+              mat-icon-button 
+              color="warn" 
+              (click)="deleteCandidate(candidate.id!)"
+              matTooltip="Delete">
+        <mat-icon>delete</mat-icon>
+      </button>
     </div>
-    
-    <button mat-icon-button color="primary" (click)="viewCandidate(candidate.id!)">
-      <mat-icon>visibility</mat-icon>
-    </button>
-    
-    <!-- Temporary force show to test rendering -->
-    <button *ngIf="true" mat-icon-button color="accent" (click)="editCandidate(candidate.id!)">
-      <mat-icon>edit</mat-icon>
-    </button>
-    
-    <!-- Real conditional -->
-    <button *ngIf="isEditable(candidate)" 
-            mat-icon-button 
-            color="warn" 
-            (click)="deleteCandidate(candidate.id!)">
-      <mat-icon>delete</mat-icon>
-    </button>
   </td>
 </ng-container>
+        
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>

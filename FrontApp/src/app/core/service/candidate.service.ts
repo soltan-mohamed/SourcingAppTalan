@@ -1,3 +1,4 @@
+// candidate.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpEvent } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -16,28 +17,36 @@ export class CandidateService {
     private authService: AuthService
   ) {}
 
-// candidate.service.ts
-getAllCandidates(): Observable<Candidate[]> {
-  return this.http.get<Candidate[]>(this.apiUrl, {
-    headers: this.getAuthHeaders()
-  }).pipe(
-    tap(candidates => {
-      console.log('API Response:', candidates);
-      console.log('Current Auth User:', this.authService.currentUserValue);
-    }),
-    map(candidates => {
-      const currentUser = this.authService.currentUserValue;
-      return candidates.map(c => ({
-        ...c,
-        isEditable: c.responsable?.id === currentUser?.id
-      }));
-    })
-  );
-}
+  getAllCandidates(): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(this.apiUrl, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      tap(candidates => {
+        console.log('API Response:', candidates);
+        console.log('Current Auth User:', this.authService.currentUserValue);
+      }),
+      map(candidates => {
+        const currentUser = this.authService.currentUserValue;
+        return candidates.map(c => ({
+          ...c,
+          isEditable: c.responsable?.id === currentUser?.id,
+          isDeleteable: c.responsable?.id === currentUser?.id
+        }));
+      })
+    );
+  }
+
   getCandidateById(id: number): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/${id}`, {
       headers: this.getAuthHeaders()
     }).pipe(
+      map(candidate => {
+        const currentUser = this.authService.currentUserValue;
+        return {
+          ...candidate,
+          isEditable: candidate.responsable?.id === currentUser?.id
+        };
+      }),
       catchError(error => {
         if (error.status === 403) {
           return throwError(() => new Error('You are not authorized to view this candidate'));

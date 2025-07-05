@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CandidateService } from '../../../../core/service/candidate.service';
 import { Candidate, Statut } from '../../../../core/models/candidate.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { AddCandidateComponent } from '../add/add.component';
 import { AuthService } from '@core/service/auth.service';
 
@@ -13,7 +13,6 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { NgScrollbarModule } from 'ngx-scrollbar/public-api';
 import { TableCardComponent } from '@shared/components/table-card/table-card.component';
 import { MatTableModule } from '@angular/material/table';
 import { InitialsPipe } from '@core/pipes/initials.pipe';
@@ -28,16 +27,14 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     CommonModule,
     FormsModule,
     MatCardModule,
-    MatIconModule,  // <-- Add this line
+    MatIconModule,
     MatButtonModule,
-    MatInputModule,
     MatInputModule,
     MatProgressSpinnerModule,
     TableCardComponent,
-    MatDialogModule,
     MatTableModule,
     InitialsPipe,
-        MatSelectModule,  // <-- Add this line
+    MatSelectModule,
     MatOptionModule, 
     ScrollingModule
   ],
@@ -59,55 +56,33 @@ export class CandidateListComponent implements OnInit {
     public authService: AuthService
   ) {}
 
-ngOnInit() {
-  console.log('Initializing CandidateListComponent');
-  
-  // Verify authentication state
-  console.log('Initial Auth State:', {
-    isAuthenticated: this.authService.isAuthenticated(),
-    currentUser: this.authService.currentUserValue,
-    token: this.authService.token
-  });
+  ngOnInit() {
+    console.log('Initializing CandidateListComponent');
+    this.loadCandidates();
+  }
 
-  this.loadCandidates();
-}
-
-loadCandidates() {
-  this.isLoading = true;
-  this.candidateService.getAllCandidates().subscribe({
-    next: (candidates) => {
-      this.candidates = candidates;
-      this.isLoading = false;
-      
-      // Debug first candidate
-      if (candidates.length > 0) {
-        console.log('First candidate:', candidates[0]);
-        console.log('First candidate editable:', this.isEditable(candidates[0]));
+  loadCandidates() {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.candidateService.getAllCandidates().subscribe({
+      next: (candidates) => {
+        this.candidates = candidates;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading candidates:', err);
+        this.errorMessage = err.message || 'Failed to load candidates';
+        this.isLoading = false;
       }
-    },
-    error: (err) => {
-      console.error('Error loading candidates:', err);
-      this.isLoading = false;
-    }
-  });
-}
-
-
+    });
+  }
 
 isEditable(candidate: Candidate): boolean {
-  // TEMPORARY OVERRIDE - FOR TESTING ONLY
-  //console.log('FORCE EDITABLE TRUE - DEBUG MODE');
-  return true;
+  return true; 
 }
 
-// In your component class
 isDeleteable(candidate: Candidate): boolean {
-  console.log('Checking deletable:', {
-    user: this.currentUser?.id,
-    responsable: candidate.responsable?.id,
-    equal: this.currentUser?.id === candidate.responsable?.id
-  });
-  return this.isEditable(candidate); // Or custom delete logic
+  return true; 
 }
 
   get currentUser() {
@@ -123,7 +98,9 @@ isDeleteable(candidate: Candidate): boolean {
   }
 
   applySearch(): void {
-    this.loadCandidates();
+    if (this.searchQuery.trim()) {
+      this.loadCandidates();
+    }
   }
 
   clearSearch(): void {
@@ -143,13 +120,40 @@ isDeleteable(candidate: Candidate): boolean {
 
   viewCandidate(id: number): void {
     console.log('View candidate:', id);
+    // Implement view logic here
   }
 
   editCandidate(id: number): void {
-    console.log('Edit candidate:', id);
+    const candidate = this.candidates.find(c => c.id === id);
+    if (!candidate) return;
+
+    if (!this.isEditable(candidate)) {
+      this.showError('You are not authorized to edit this candidate');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(AddCandidateComponent, {
+      width: '800px',
+      data: { candidate }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.showSuccess('Candidate updated successfully');
+        this.loadCandidates();
+      }
+    });
   }
 
   deleteCandidate(id: number): void {
+    const candidate = this.candidates.find(c => c.id === id);
+    if (!candidate) return;
+
+    if (!this.isDeleteable(candidate)) {
+      this.showError('You are not authorized to delete this candidate');
+      return;
+    }
+
     if (confirm('Are you sure you want to delete this candidate?')) {
       this.candidateService.deleteCandidate(id).subscribe({
         next: () => {
