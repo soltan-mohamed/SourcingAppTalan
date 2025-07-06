@@ -4,6 +4,7 @@ import { Page404Component } from 'app/authentication/page404/page404.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { CandidateListComponent } from '../dashboard/candidates/list/list.component';
 import { AddCandidateComponent } from '../dashboard/candidates/add/add.component';
+import { AddRecruitmentComponent } from './candidates/recrutement/add.component';
 
 export const DASHBOARD_ROUTE: Route[] = [
   {
@@ -25,6 +26,10 @@ export const DASHBOARD_ROUTE: Route[] = [
       {
         path: 'add',
         component: AddCandidateComponent
+      },
+            {
+        path: 'recrutement',
+        component: AddRecruitmentComponent
       },
       {
         path: '',

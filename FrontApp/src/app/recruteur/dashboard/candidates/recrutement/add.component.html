@@ -1,0 +1,51 @@
+<!-- add.component.html -->
+<h2 mat-dialog-title>Start Recruitment Process</h2>
+<mat-dialog-content>
+  <form [formGroup]="recruitmentForm" class="flex flex-col gap-4">
+    <mat-form-field appearance="outline">
+      <mat-label>Position</mat-label>
+      <input matInput formControlName="position" required>
+      <mat-error *ngIf="recruitmentForm.get('position')?.hasError('required')">
+        Position is required
+      </mat-error>
+      <mat-error *ngIf="recruitmentForm.get('position')?.hasError('maxlength')">
+        Position must be less than 100 characters
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" *ngIf="!isFetchingManagers">
+      <mat-label>Assign to Manager</mat-label>
+      <mat-select formControlName="managerId" required>
+        <mat-option *ngFor="let manager of managers" [value]="manager.id">
+          {{ manager.fullName }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="recruitmentForm.get('managerId')?.hasError('required')">
+        Please select a manager
+      </mat-error>
+    </mat-form-field>
+
+    <div *ngIf="isFetchingManagers" class="flex items-center gap-2">
+      <mat-spinner diameter="20"></mat-spinner>
+      <span>Loading managers...</span>
+    </div>
+
+    <div class="text-sm text-gray-500">
+      <p>Candidate: {{data.candidate.prenom}} {{data.candidate.nom}}</p>
+      <p>Status will be automatically set to "IN_PROGRESS"</p>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button 
+          color="primary" 
+          (click)="onSubmit()" 
+          [disabled]="recruitmentForm.invalid || isLoading || isFetchingManagers">
+    <span *ngIf="!isLoading">Start Process</span>
+    <span *ngIf="isLoading" class="flex items-center">
+      <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+      Processing...
+    </span>
+  </button>
+</mat-dialog-actions>

@@ -20,6 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SidebarComponent } from '../../sidebar/sidebar.component';
+import { AddRecruitmentComponent } from '../recrutement/add.component';
 
 @Component({
   selector: 'app-candidate-list',
@@ -211,4 +212,35 @@ isDeleteable(candidate: Candidate): boolean {
       panelClass: ['error-snackbar']
     });
   }
+
+// In your candidate list component
+openAddRecruitmentDialog(candidate: Candidate): void {
+  const dialogRef = this.dialog.open(AddRecruitmentComponent, {
+    width: '500px',
+    data: { candidate }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      // Refresh data or show success message
+    }
+  });
+}
+
+// Add this method to your component class
+startRecruitmentProcess(candidate: Candidate): void {
+  const dialogRef = this.dialog.open(AddRecruitmentComponent, {
+    width: '500px',
+    data: { candidate }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.showSuccess('Recruitment process started successfully');
+      // Optional: Refresh your candidate list if needed
+      // this.loadCandidates();
+    }
+  });
+}
+
 }

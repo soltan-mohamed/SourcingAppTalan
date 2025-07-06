@@ -4,6 +4,7 @@ import { MainComponent } from './dashboard/main/main.component';
 import { SidebarComponent } from './dashboard/sidebar/sidebar.component';
 import { CandidateListComponent } from './dashboard/candidates/list/list.component';
 import { AddCandidateComponent } from './dashboard/candidates/add/add.component';
+import { AddRecruitmentComponent } from './dashboard/candidates/recrutement/add.component';
 
 export const RECRUTEUR_ROUTE: Route[] = [
   {
@@ -33,6 +34,10 @@ export const RECRUTEUR_ROUTE: Route[] = [
             path: 'add',
             component: AddCandidateComponent
           },
+                      {
+                  path: 'recrutement',
+                  component: AddRecruitmentComponent
+                },
           {
             path: '',
             redirectTo: 'list',

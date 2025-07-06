@@ -1,53 +1,79 @@
 package tn.talan.backendapp.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.Recrutement;
+import tn.talan.backendapp.entity.User;
+import tn.talan.backendapp.enums.Role;
+import tn.talan.backendapp.enums.StatutRecrutement;
+import tn.talan.backendapp.exceptions.ResourceNotFoundException;
+import tn.talan.backendapp.exceptions.UnauthorizedAccessException;
+import tn.talan.backendapp.repository.CandidateRepository;
 import tn.talan.backendapp.repository.RecrutementRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import tn.talan.backendapp.repository.UserRepository;
 
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class RecrutementService {
-    @Autowired
-    private final RecrutementRepository repository;
+
+    private final RecrutementRepository recrutementRepository;
+    private final CandidateRepository candidateRepository;
+    private final UserRepository userRepository;
 
 
-    public RecrutementService(RecrutementRepository repository) {
-        this.repository = repository;
+    public RecrutementService(RecrutementRepository recrutementRepository,
+                              CandidateRepository candidateRepository, UserRepository userRepository) {
+        this.recrutementRepository = recrutementRepository;
+        this.candidateRepository = candidateRepository;
+        this.userRepository = userRepository;
     }
 
-    public List<Recrutement> getAll() {
-        return repository.findAll();
-    }
+    public Recrutement createRecrutement(Long candidateId, String position, Long managerId) {
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate not found with id: " + candidateId));
 
-    public Recrutement getById(Long id) {
-        return repository.findById(id).orElse(null);
-    }
+        User currentUser = getCurrentUser();
 
+        User manager = userRepository.findById(Math.toIntExact(managerId))
+                .orElseThrow(() -> new ResourceNotFoundException("Manager not found with id: " + managerId));
 
-
-
-    public Recrutement save(Recrutement r) {
-        return repository.save(r);
-    }
-
-    public void delete(Long id) {
-        repository.deleteById(id);
-    }
-
-    public Recrutement update(Long id, Recrutement updated) {
-        Recrutement r = repository.findById(id).orElse(null);
-        if (r != null) {
-            r.setPosition(updated.getPosition());
-            r.setDemandeur(updated.getDemandeur());
-            r.setStatut(updated.getStatut());
-
-            return repository.save(r);
+        // Verify the user is actually a manager using the new method
+        if (!userRepository.findByRolesContaining(Role.MANAGER).contains(manager)) {
+            throw new IllegalArgumentException("The selected user is not a manager");
         }
-        return null;
+
+        Recrutement recrutement = new Recrutement();
+        recrutement.setPosition(position);
+        recrutement.setStatut(StatutRecrutement.IN_PROGRESS);
+        recrutement.setDemandeur(currentUser);
+        recrutement.setManager(manager);
+        recrutement.setCandidate(candidate);
+
+        return recrutementRepository.save(recrutement);
+    }
+
+    public List<Recrutement> getRecrutementsByCandidate(Long candidateId) {
+        return recrutementRepository.findByCandidateId(candidateId);
+    }
+
+    public Recrutement updateRecrutementStatus(Long recrutementId, StatutRecrutement newStatus) {
+        Recrutement recrutement = recrutementRepository.findById(recrutementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recrutement not found with id: " + recrutementId));
+
+        recrutement.setStatut(newStatus);
+        return recrutementRepository.save(recrutement);
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User) {
+            return (User) authentication.getPrincipal();
+        }
+        throw new UnauthorizedAccessException("User not authenticated");
     }
 }

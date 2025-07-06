@@ -34,6 +34,10 @@ public class Recrutement {
     private User demandeur;
 
     @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private User manager;
+
+    @ManyToOne
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 

@@ -1,0 +1,19 @@
+/* src/app/dashboard/candidates/recruitment/add.component.scss */
+:host {
+  display: block;
+  width: 100%;
+}
+
+mat-dialog-content {
+  min-width: 400px;
+}
+
+.success-snackbar {
+  background-color: #4caf50;
+  color: white;
+}
+
+.error-snackbar {
+  background-color: #f44336;
+  color: white;
+}

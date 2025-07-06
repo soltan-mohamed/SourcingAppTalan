@@ -1,51 +1,48 @@
 package tn.talan.backendapp.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.Recrutement;
+import tn.talan.backendapp.enums.StatutRecrutement;
 import tn.talan.backendapp.service.RecrutementService;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/recrutements")
 @CrossOrigin(origins = "*")
 public class RecrutementController {
 
-    private final RecrutementService service;
+    private final RecrutementService recrutementService;
 
-    @Autowired
-    public RecrutementController(RecrutementService service) {
-        this.service = service;
+    public RecrutementController(RecrutementService recrutementService) {
+        this.recrutementService = recrutementService;
     }
 
-    @GetMapping
-    public List<Recrutement> getAll() {
-        return service.getAll();
+    // In RecrutementController.java
+    @PostMapping("/candidate/{candidateId}")
+    public ResponseEntity<Recrutement> createRecrutement(
+            @PathVariable Long candidateId,
+            @RequestBody Map<String, String> request) {
+        String position = request.get("position");
+        Long managerId = Long.parseLong(request.get("managerId"));
+        Recrutement recrutement = recrutementService.createRecrutement(candidateId, position, managerId);
+        return ResponseEntity.ok(recrutement);
     }
 
-
-
-    @GetMapping("/{id}")
-    public Recrutement getById(@PathVariable Long id) {
-        return service.getById(id);
+    @GetMapping("/candidate/{candidateId}")
+    public ResponseEntity<List<Recrutement>> getRecrutementsByCandidate(
+            @PathVariable Long candidateId) {
+        List<Recrutement> recrutements = recrutementService.getRecrutementsByCandidate(candidateId);
+        return ResponseEntity.ok(recrutements);
     }
 
-    @PostMapping
-    public Recrutement create(@RequestBody Recrutement recrutement) {
-        return service.save(recrutement);
-    }
-
-    @PutMapping("/{id}")
-    public Recrutement update(@PathVariable Long id, @RequestBody Recrutement r) {
-        return service.update(id, r);
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    @PutMapping("/{recrutementId}/status")
+    public ResponseEntity<Recrutement> updateRecrutementStatus(
+            @PathVariable Long recrutementId,
+            @RequestParam StatutRecrutement newStatus) {
+        Recrutement recrutement = recrutementService.updateRecrutementStatus(recrutementId, newStatus);
+        return ResponseEntity.ok(recrutement);
     }
 }

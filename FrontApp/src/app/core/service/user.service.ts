@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { User } from '../models/user';
 import { AuthService } from './auth.service';
+import { Role } from '@core/models/role';
 
 @Injectable({
   providedIn: 'root'
@@ -33,5 +34,23 @@ getCurrentUser(): Observable<User> {
       return throwError(() => error);
     })
   );
+}
+
+getManagers(): Observable<User[]> {
+  return this.http.get<User[]>(`${this.apiUrl}/`, { 
+    headers: this.getAuthHeaders() 
+  }).pipe(
+    map(users => users.filter(user => user.roles.includes(Role.MANAGER))
+  ));
+}
+
+private getAuthHeaders(): HttpHeaders {
+  const token = this.authService.token;
+  if (!token) {
+    throw new Error('No authentication token available');
+  }
+  return new HttpHeaders({
+    'Authorization': `Bearer ${token}`
+  });
 }
 }
