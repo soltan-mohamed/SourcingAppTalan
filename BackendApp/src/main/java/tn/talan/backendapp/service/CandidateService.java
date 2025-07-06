@@ -59,6 +59,10 @@ public class CandidateService {
         if (repository.existsByEmail(candidate.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
+        Candidate savedCandidate = repository.save(candidate);
+
+        Hibernate.initialize(savedCandidate.getSkills());
+
         return repository.save(candidate);
     }
 
@@ -95,6 +99,10 @@ public class CandidateService {
         if (candidateDetails.getStatut() != null) {
             candidate.setStatut(candidateDetails.getStatut());
         }
+
+        Candidate savedCandidate = repository.save(candidate);
+
+        Hibernate.initialize(savedCandidate.getSkills());
 
         return repository.save(candidate);
     }

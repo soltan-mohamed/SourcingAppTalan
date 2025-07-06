@@ -42,10 +42,10 @@ public class Candidate {
     @Column(name = "statut")
     private Statut statut;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER) // Changed to EAGER
     @CollectionTable(name = "candidate_skills", joinColumns = @JoinColumn(name = "candidate_id"))
     @Column(name = "skill")
-    @JsonIgnore
+    //@JsonIgnore
     private List<String> skills = new ArrayList<>();
 
     @Column(name = "cv")
