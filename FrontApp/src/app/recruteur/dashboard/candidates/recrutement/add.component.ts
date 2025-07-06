@@ -93,7 +93,7 @@ export class AddRecruitmentComponent implements OnInit {
         error: (err) => {
           this.isLoading = false;
           this.snackBar.open(
-            err.error?.message || 'Failed to start recruitment process',
+            err.error?.message || 'You can only recruit your own candidates',
             'Close',
             {
               duration: 5000,

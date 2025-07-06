@@ -1,10 +1,7 @@
 package tn.talan.backendapp.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import tn.talan.backendapp.enums.StatutRecrutement;
 
 import java.util.ArrayList;
@@ -14,33 +11,42 @@ import java.util.List;
 @Table(name = "recrutement")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Recrutement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "position", nullable = false)
+    @Column(nullable = false)
     private String position;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "statut", nullable = false)
+    @Column(nullable = false)
     private StatutRecrutement statut;
 
     @ManyToOne
-    @JoinColumn(name = "demandeur_id")
-    private User demandeur;
+    @JoinColumn(name = "recruteur_id", nullable = false)
+    private User recruteur;
 
     @ManyToOne
-    @JoinColumn(name = "manager_id")
+    @JoinColumn(name = "manager_id", nullable = false)
     private User manager;
 
     @ManyToOne
-    @JoinColumn(name = "candidate_id")
+    @JoinColumn(name = "candidate_id", nullable = false)
     private Candidate candidate;
 
     @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Evaluation> evaluations = new ArrayList<>();
+
+    @Transient
+    private boolean editable;
+
+    // Helper method to check if current user can edit
+    public boolean isEditable(User currentUser) {
+        return this.recruteur.getId().equals(currentUser.getId()) ||
+                this.manager.getId().equals(currentUser.getId());
+    }
 }
