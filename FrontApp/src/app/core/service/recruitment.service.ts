@@ -1,4 +1,3 @@
-// src/app/core/service/recruitment.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -16,11 +15,10 @@ export class RecruitmentService {
     private authService: AuthService
   ) {}
 
-// src/app/core/service/recruitment.service.ts
 createRecruitment(candidateId: number, position: string, managerId: number): Observable<any> {
   return this.http.post(
     `${this.apiUrl}/candidate/${candidateId}`,
-    { position, managerId }, // Send both position and managerId
+    { position, managerId },
     { headers: this.getAuthHeaders() }
   );
 }

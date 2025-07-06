@@ -131,7 +131,6 @@ isDeleteable(candidate: Candidate): boolean {
 
   viewCandidate(id: number): void {
     console.log('View candidate:', id);
-    // Implement view logic here
   }
 
   editCandidate(id: number): void {
@@ -213,7 +212,6 @@ isDeleteable(candidate: Candidate): boolean {
     });
   }
 
-// In your candidate list component
 openAddRecruitmentDialog(candidate: Candidate): void {
   const dialogRef = this.dialog.open(AddRecruitmentComponent, {
     width: '500px',
@@ -222,12 +220,10 @@ openAddRecruitmentDialog(candidate: Candidate): void {
 
   dialogRef.afterClosed().subscribe(result => {
     if (result) {
-      // Refresh data or show success message
     }
   });
 }
 
-// Add this method to your component class
 startRecruitmentProcess(candidate: Candidate): void {
   const dialogRef = this.dialog.open(AddRecruitmentComponent, {
     width: '500px',
@@ -237,8 +233,7 @@ startRecruitmentProcess(candidate: Candidate): void {
   dialogRef.afterClosed().subscribe(result => {
     if (result) {
       this.showSuccess('Recruitment process started successfully');
-      // Optional: Refresh your candidate list if needed
-      // this.loadCandidates();
+
     }
   });
 }

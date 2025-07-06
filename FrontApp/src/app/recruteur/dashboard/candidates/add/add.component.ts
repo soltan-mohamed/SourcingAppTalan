@@ -215,7 +215,7 @@ export class AddCandidateComponent implements OnInit {
     this.candidateService.uploadCv(candidateId, file)
       .subscribe({
         next: (event) => {
-          if (event.type === 4) { // HttpResponse
+          if (event.type === 4) {
             this.showSuccess(this.isEditMode ? 'Candidate and CV updated successfully' : 'Candidate and CV uploaded successfully');
             this.dialogRef.close(true);
           }
@@ -227,7 +227,6 @@ export class AddCandidateComponent implements OnInit {
       });
   }
 
-  // File handling methods (keep all existing methods)
   onFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {

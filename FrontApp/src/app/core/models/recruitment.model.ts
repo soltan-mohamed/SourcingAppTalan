@@ -1,4 +1,3 @@
-// src/app/core/models/recruitment.model.ts
 export interface Recruitment {
   id: number;
   position: string;

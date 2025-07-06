@@ -5,7 +5,7 @@ export interface Candidate {
   email: string;
   telephone: string;
   statut?: Statut;
-  skills: string[];  // Changed from optional to required
+  skills: string[];
   cv?: string;
   responsable?: {
     id: number;
