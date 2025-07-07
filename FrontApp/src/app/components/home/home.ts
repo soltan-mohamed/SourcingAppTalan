@@ -25,6 +25,7 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class Home implements OnInit {
   role : string = "";
+  fullName : string = "";
   sideBarOpened: boolean = true; // Set to true to keep sidebar open by default
   activeItem: string = 'home';
   currentUser: any;
@@ -36,9 +37,9 @@ export class Home implements OnInit {
 
   ngOnInit() {
 
-    console.log("HOme works !!!!! ");
-
-   
+    const userString = localStorage.getItem("currentUser")
+    this.currentUser = userString ? JSON.parse(userString) : null ;
+    this.fullName = this.currentUser.fullName;
 
     // Set active item based on current route
     const currentUrl = this.router.url;
