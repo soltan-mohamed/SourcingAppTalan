@@ -2,6 +2,7 @@ package tn.talan.backendapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import tn.talan.backendapp.enums.Role;
 import tn.talan.backendapp.enums.StatutRecrutement;
 
 import java.util.ArrayList;
@@ -44,8 +45,10 @@ public class Recrutement {
     @Transient
     private boolean editable;
 
-    // Helper method to check if current user can edit
     public boolean isEditable(User currentUser) {
+        if (currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER)) {
+            return true;
+        }
         return this.recruteur.getId().equals(currentUser.getId()) ||
                 this.manager.getId().equals(currentUser.getId());
     }

@@ -1,4 +1,6 @@
 export interface Candidate {
+  isDeleteable: boolean;
+  isEditable: boolean;
   id: number;
   nom: string;
   prenom: string;

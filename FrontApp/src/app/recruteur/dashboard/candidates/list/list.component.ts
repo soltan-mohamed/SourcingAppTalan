@@ -21,6 +21,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SidebarComponent } from '../../sidebar/sidebar.component';
 import { AddRecruitmentComponent } from '../recrutement/add.component';
+import { Role } from '@core/models/role';
 
 @Component({
   selector: 'app-candidate-list',
@@ -46,6 +47,8 @@ import { AddRecruitmentComponent } from '../recrutement/add.component';
   styleUrls: ['./list.component.scss']
 })
 export class CandidateListComponent implements OnInit {
+    Role = Role;
+
   candidates: Candidate[] = [];
   isLoading = false;
   errorMessage = '';
@@ -88,12 +91,25 @@ export class CandidateListComponent implements OnInit {
     });
   }
 
+/*isEditable(candidate: Candidate): boolean {
+  const currentUser = this.authService.currentUserValue;
+  if (!currentUser) return false;
+  
+  return this.authService.hasRole(Role.RECRUTEUR_MANAGER) ||
+         candidate.responsable?.id === currentUser.id;
+}*/
+
 isEditable(candidate: Candidate): boolean {
   return true; 
 }
 
-isDeleteable(candidate: Candidate): boolean {
+/*isDeleteable(candidate: Candidate): boolean {
   return true; 
+}*/
+
+isDeleteable(candidate: Candidate): boolean {
+  return candidate.isDeleteable || 
+         this.authService.hasRole(Role.RECRUTEUR_MANAGER);
 }
 
   get currentUser() {

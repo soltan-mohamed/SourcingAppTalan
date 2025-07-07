@@ -59,7 +59,7 @@ export class AuthService {
       this.router.navigate(['/manager/dashboard']);
     } else if (roles.includes(Role.EVALUATEUR)) {
       this.router.navigate(['/evaluateur/dashboard']);
-    } else if (roles.includes(Role.RECRUTEUR)) {
+  } else if (roles.includes(Role.RECRUTEUR) || roles.includes(Role.RECRUTEUR_MANAGER)) {
       this.router.navigate(['/recruteur/dashboard/main']);
     } else {
       this.router.navigate(['/authentication/signin']);

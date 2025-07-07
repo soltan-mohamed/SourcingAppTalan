@@ -42,7 +42,7 @@ public class Candidate {
     @Column(name = "statut")
     private Statut statut;
 
-    @ElementCollection(fetch = FetchType.EAGER) // Changed to EAGER
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "candidate_skills", joinColumns = @JoinColumn(name = "candidate_id"))
     @Column(name = "skill")
     //@JsonIgnore

@@ -27,24 +27,22 @@ public class RecrutementService {
         this.userRepo = userRepo;
     }
 
-    // RecrutementService.java
     public Recrutement createRecrutement(Long candidateId, String position, Long managerId) {
         User currentUser = getCurrentUser();
 
-        // 1. Verify recruiter role
-        if (!currentUser.getRoles().contains(Role.RECRUTEUR)) {
+        if (!currentUser.getRoles().contains(Role.RECRUTEUR) &&
+                !currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER)) {
             throw new UnauthorizedAccessException("Only recruiters can initiate recruitment");
         }
 
         Candidate candidate = candidateRepo.findById(candidateId)
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate not found"));
 
-        // 2. Verify current user is the candidate's owner
-        if (!candidate.getResponsable().getId().equals(currentUser.getId())) {
+        if (!currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER) &&
+                !candidate.getResponsable().getId().equals(currentUser.getId())) {
             throw new UnauthorizedAccessException("You can only recruit your own candidates");
         }
 
-        // 3. Validate candidate status
         if (!List.of(Statut.CONTACTED, Statut.SCHEDULED, Statut.VIVIER).contains(candidate.getStatut())) {
             throw new IllegalStateException("Candidate must be in CONTACTED, SCHEDULED or VIVIER status");
         }
@@ -59,17 +57,19 @@ public class RecrutementService {
         Recrutement recrutement = new Recrutement();
         recrutement.setPosition(position);
         recrutement.setStatut(StatutRecrutement.IN_PROGRESS);
-        recrutement.setRecruteur(currentUser); // Set current user as recruiter
+        recrutement.setRecruteur(currentUser);
         recrutement.setManager(manager);
         recrutement.setCandidate(candidate);
 
         return recrutementRepo.save(recrutement);
     }
+
     public Recrutement updateRecrutementStatus(Long recrutementId, StatutRecrutement newStatus) {
         Recrutement recrutement = getRecrutementById(recrutementId);
         User currentUser = getCurrentUser();
 
-        if (!recrutement.isEditable(currentUser)) {
+        if (!currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER) &&
+                !recrutement.isEditable(currentUser)) {
             throw new UnauthorizedAccessException("Not authorized to update this recruitment");
         }
 
@@ -92,8 +92,9 @@ public class RecrutementService {
         Recrutement recrutement = getRecrutementById(recrutementId);
         User currentUser = getCurrentUser();
 
-        if (!recrutement.getRecruteur().getId().equals(currentUser.getId())) {
-            throw new UnauthorizedAccessException("Only the initiating recruiter can delete");
+        if (!currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER) &&
+                !recrutement.getRecruteur().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedAccessException("Only the initiating recruiter or manager can delete");
         }
 
         recrutementRepo.delete(recrutement);

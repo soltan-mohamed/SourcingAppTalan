@@ -41,29 +41,33 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    // Changement ici : Remplacer le champ unique role par une collection de rôles
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
 
-
     @OneToMany(mappedBy = "responsable", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // Avoid infinite recursion during serialization
+    @JsonIgnore
     private List<Candidate> candidates = new ArrayList<>();
 
     @OneToMany(mappedBy = "evaluateur", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // Prevent infinite recursion during serialization
+    @JsonIgnore
     private List<Evaluation> evaluations = new ArrayList<>();
 
-    // Méthode pratique pour ajouter plusieurs rôles
     public void addRoles(Set<Role> rolesToAdd) {
         this.roles.addAll(rolesToAdd);
     }
 
-    // Dans la classe User
     public void addRole(Role role) {
         this.roles.add(role);
+    }
+
+    public boolean isRecruteurManager() {
+        return this.roles.contains(Role.RECRUTEUR_MANAGER);
+    }
+
+    public boolean isRecruteur() {
+        return this.roles.contains(Role.RECRUTEUR);
     }
 
     @Override
@@ -71,30 +75,6 @@ public class User implements UserDetails {
         return this.roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.name()))
                 .collect(Collectors.toList());
-    }
-
-    // Les autres méthodes restent inchangées
-    public String getEmail() {
-        return email;
-    }
-
-    public User setEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public User setFullName(String fullName) {
-        this.fullName = fullName;
-        return this;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public User setPassword(String password) {
-        this.password = password;
-        return this;
     }
 
     @Override
@@ -125,5 +105,20 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public User setEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
+    public User setFullName(String fullName) {
+        this.fullName = fullName;
+        return this;
+    }
+
+    public User setPassword(String password) {
+        this.password = password;
+        return this;
     }
 }

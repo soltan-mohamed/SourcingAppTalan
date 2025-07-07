@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.User;
 import tn.talan.backendapp.enums.Statut;
+import tn.talan.backendapp.enums.Role;
 import tn.talan.backendapp.exceptions.ResourceNotFoundException;
 import tn.talan.backendapp.exceptions.UnauthorizedAccessException;
 import tn.talan.backendapp.repository.CandidateRepository;
@@ -38,8 +39,7 @@ public class CandidateService {
         List<Candidate> allCandidates = repository.findAll();
 
         allCandidates.forEach(candidate -> {
-            boolean isEditable = candidate.getResponsable() != null &&
-                    candidate.getResponsable().getId().equals(currentUser.getId());
+            boolean isEditable = isUserAllowedToEditCandidate(currentUser, candidate);
             candidate.setEditable(isEditable);
         });
 
@@ -53,16 +53,15 @@ public class CandidateService {
 
     public Candidate createCandidate(Candidate candidate) {
         User currentUser = getCurrentUser();
-        System.out.println("Assigning responsable: " + currentUser.getId()); // Debug log
+        if (!currentUser.isRecruteur() && !currentUser.isRecruteurManager()) {
+            throw new UnauthorizedAccessException("Only recruiters can create candidates");
+        }
+
         candidate.setResponsable(currentUser);
 
         if (repository.existsByEmail(candidate.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
-        Candidate savedCandidate = repository.save(candidate);
-
-        Hibernate.initialize(savedCandidate.getSkills());
-
         return repository.save(candidate);
     }
 
@@ -71,8 +70,8 @@ public class CandidateService {
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate not found with id: " + id));
 
         User currentUser = getCurrentUser();
-        if (!candidate.getResponsable().getId().equals(currentUser.getId())) {
-            throw new UnauthorizedAccessException("You can only edit your own candidates");
+        if (!isUserAllowedToEditCandidate(currentUser, candidate)) {
+            throw new UnauthorizedAccessException("You don't have permission to edit this candidate");
         }
 
         if (candidateDetails.getNom() != null) {
@@ -100,10 +99,6 @@ public class CandidateService {
             candidate.setStatut(candidateDetails.getStatut());
         }
 
-        Candidate savedCandidate = repository.save(candidate);
-
-        Hibernate.initialize(savedCandidate.getSkills());
-
         return repository.save(candidate);
     }
 
@@ -112,8 +107,8 @@ public class CandidateService {
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate not found with id: " + id));
 
         User currentUser = getCurrentUser();
-        if (!candidate.getResponsable().getId().equals(currentUser.getId())) {
-            throw new UnauthorizedAccessException("You can only delete your own candidates");
+        if (!isUserAllowedToEditCandidate(currentUser, candidate)) {
+            throw new UnauthorizedAccessException("You don't have permission to delete this candidate");
         }
 
         repository.delete(candidate);
@@ -123,8 +118,8 @@ public class CandidateService {
     public Map<String, Object> uploadCv(Long id, String cvPath) {
         Candidate candidate = getCandidateById(id);
         User currentUser = getCurrentUser();
-        if (!candidate.getResponsable().getId().equals(currentUser.getId())) {
-            throw new UnauthorizedAccessException("You can only upload CV for your own candidates");
+        if (!isUserAllowedToEditCandidate(currentUser, candidate)) {
+            throw new UnauthorizedAccessException("You don't have permission to upload CV for this candidate");
         }
 
         candidate.setCv(cvPath);
@@ -141,5 +136,13 @@ public class CandidateService {
 
     public List<Candidate> getCandidatesByStatus(Statut status) {
         return repository.findByStatut(status);
+    }
+
+    private boolean isUserAllowedToEditCandidate(User currentUser, Candidate candidate) {
+        if (currentUser.isRecruteurManager()) {
+            return true;
+        }
+        return candidate.getResponsable() != null &&
+                candidate.getResponsable().getId().equals(currentUser.getId());
     }
 }

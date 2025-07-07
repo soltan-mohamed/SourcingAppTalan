@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Candidate, Statut } from '../models/candidate.model';
 import { AuthService } from './auth.service';
+import { Role } from '@core/models/role';
 
 @Injectable({
   providedIn: 'root'
@@ -24,14 +25,16 @@ export class CandidateService {
         console.log('API Response:', candidates);
         console.log('Current Auth User:', this.authService.currentUserValue);
       }),
-      map(candidates => {
-        const currentUser = this.authService.currentUserValue;
-        return candidates.map(c => ({
-          ...c,
-          isEditable: c.responsable?.id === currentUser?.id,
-          isDeleteable: c.responsable?.id === currentUser?.id
-        }));
-      })
+map(candidates => {
+  const currentUser = this.authService.currentUserValue;
+  const isRecruteurManager = this.authService.hasRole(Role.RECRUTEUR_MANAGER);
+  
+  return candidates.map(c => ({
+    ...c,
+    isEditable: isRecruteurManager || c.responsable?.id === currentUser?.id,
+    isDeleteable: isRecruteurManager || c.responsable?.id === currentUser?.id
+  }));
+})
     );
   }
 

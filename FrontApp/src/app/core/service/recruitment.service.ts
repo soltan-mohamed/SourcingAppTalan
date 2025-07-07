@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Recruitment, RecruitmentStatus } from '../models/recruitment.model';
 import { AuthService } from './auth.service';
+import { Role } from '@core/models/role';
 
 @Injectable({
   providedIn: 'root'
@@ -50,4 +51,13 @@ createRecruitment(candidateId: number, position: string, managerId: number): Obs
       'Authorization': `Bearer ${token}`
     });
   }
+
+
+  canManageRecruitment(recruitment: Recruitment): boolean {
+  const currentUser = this.authService.currentUserValue;
+  if (!currentUser) return false;
+  
+  return this.authService.hasRole(Role.RECRUTEUR_MANAGER) ||
+         recruitment.demandeur.id === currentUser.id ;
+}
 }
