@@ -136,16 +136,6 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     //console.log('Context menu for row:', row);
   }
 
-  getProgressBarColor(value: number): string {
-    if (value < 50) {
-      return 'warn';
-    } else if (value >= 50 && value <= 70) {
-      return 'accent';
-    } else {
-      return 'primary';
-    }
-  }
-
   newHiringProcess(row: T): void {
     const dialogRef = this.dialog.open(CreateRecrutement, {
       width: '800px',

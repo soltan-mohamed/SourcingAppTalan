@@ -41,7 +41,7 @@ public class Candidate {
     @Column(name = "statut")
     private Statut statut;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "candidate_skills", joinColumns = @JoinColumn(name = "candidate_id"))
     @Column(name = "skill")
     private List<String> skills = new ArrayList<>();
