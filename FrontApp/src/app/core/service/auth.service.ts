@@ -8,6 +8,7 @@ import { User } from '../models/user';
 import { Role } from '@core/models/role';
 
 interface LoginResponse {
+  id : number;
   email: string;
   token: string;
   expiresIn: number;
@@ -69,6 +70,7 @@ export class AuthService {
   }
   private createUserFromResponse(response: LoginResponse): User {
     const user = new User();
+    user.id = response.id;
     user.email = response.email;
     user.fullName = response.fullName;
     user.roles = response.roles; // Changé pour stocker un tableau

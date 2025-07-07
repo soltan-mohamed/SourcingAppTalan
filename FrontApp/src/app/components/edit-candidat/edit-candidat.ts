@@ -5,15 +5,11 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipEditedEvent, MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
-interface CandidateData {
-  nom?: string;
-  prenom?: string;
-  phone?: string;
-  email?: string;
-  competences?: string[];
-  [key: string]: any;
-}
+import { Candidate } from 'app/models/candidate';
+import { CandidatesService } from 'app/services/candidates-service';
+
 
 @Component({
   selector: 'app-edit-candidat',
@@ -21,7 +17,8 @@ interface CandidateData {
     ReactiveFormsModule,
     CommonModule,
     MatIconModule,
-    MatChipsModule
+    MatChipsModule,
+    MatSnackBarModule
   ],
   templateUrl: './edit-candidat.html',
   styleUrl: './edit-candidat.scss'
@@ -43,8 +40,10 @@ export class EditCandidat implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: CandidateData,
+    @Inject(MAT_DIALOG_DATA) public data: Candidate,
     public dialogRef: MatDialogRef<EditCandidat>,
+    public candidateService : CandidatesService,
+    private snackBar : MatSnackBar
   ) {}
 
   onClose(): void {
@@ -62,7 +61,7 @@ export class EditCandidat implements OnInit {
       prenom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2)]],
       telephone: ['', [Validators.required, Validators.pattern(/^[0-9-\s]{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
-      competences: [[]],
+      skills: [[]],
     });
   }
 
@@ -70,18 +69,19 @@ export class EditCandidat implements OnInit {
     if (this.data) {
       console.log('Received data:', this.data);
       
-      let fullName = this.extractFirstWord(this.data['name'] || '');
+      //let fullName = this.extractFirstWord(this.data['name'] || '');
 
       this.CandidateForm.patchValue({
-        prenom: fullName.firstWord,
-        nom: fullName.rest,
-        telephone: this.data.phone || '',
-        email: this.data.email || ''
+        prenom: this.data.prenom,
+        nom: this.data.nom,
+        telephone: this.data.telephone || '',
+        email: this.data.email || '',
+        //statut : this.data.statut,
       });
       
       // Populate keywords/competences
-      if (this.data.competences && Array.isArray(this.data.competences)) {
-        this.keywords = [...this.data.competences];
+      if (this.data.skills && Array.isArray(this.data.skills)) {
+        this.keywords = [...this.data.skills];
       }
     }
   }
@@ -204,20 +204,52 @@ export class EditCandidat implements OnInit {
         prenom: this.CandidateForm.get('prenom')?.value,
         email: this.CandidateForm.get('email')?.value,
         telephone: this.CandidateForm.get('telephone')?.value,
-        competences: this.keywords,
-        file: this.selectedFile
+        skills: this.keywords,
+        //file: this.selectedFile
       };
       
       console.log('Submitting candidate: ...', formData);
+
+      this.candidateService.updateCandidate(this.data.id,formData)
+        .subscribe({
+          next: (response: any) => {
+            this.isSubmitting = false;
+            this.snackBar.open(
+              'Success updating candidate',
+              'Close',
+              {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                panelClass: ['success-snackbar']
+              }
+            );
+            this.dialogRef.close(response);
+          },
+          error: (error: any) => {
+            this.isSubmitting = false;
+            console.error('Error updating candidate:', error);
+
+            this.snackBar.open(
+              'Failed to update candidate: ' + (error.error?.message || 'Unknown error'),
+              'Close',
+              {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+              }
+            );
+          }
+      });
       
-      // Simulate API call delay
-      setTimeout(() => {
-        this.isSubmitting = false;
-        console.log('Candidate submitted successfully!');
+      // setTimeout(() => {
+      //   this.isSubmitting = false;
+      //   console.log('Candidate submitted successfully!');
         
-        // Close dialog and return the updated data
-        this.dialogRef.close(formData);
-      }, 2000);
+      //   // Close dialog and return the updated data
+      //   this.dialogRef.close(formData);
+      // }, 2000);
     } else {
       this.CandidateForm.markAllAsTouched();
       
