@@ -17,7 +17,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: #fff;
 }
 
-.badge-solid-green {
+.badge-solid-accepted {
   background-color: #28a745;
 }
 
@@ -35,6 +35,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .badge-solid-contacted {
   background-color: #575b75;
+}
+
+.badge-solid-in-progress {
+  background-color: #c7745b;
 }
 
 :root {

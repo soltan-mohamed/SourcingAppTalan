@@ -39,4 +39,11 @@ public class Recrutement {
 
     @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Evaluation> evaluations = new ArrayList<>();
+
+    public Recrutement(String position, StatutRecrutement statut, User demandeur, Candidate candidate) {
+        this.position = position;
+        this.statut = statut;
+        this.demandeur = demandeur;
+        this.candidate = candidate;
+    }
 }
