@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { TableCardComponent } from '@shared/components/table-card/table-card.component';
@@ -15,6 +17,7 @@ import { Candidate } from 'app/models/candidate';
 @Component({
   selector: 'app-candidates',
   imports: [
+    CommonModule,
     MatCardModule,
     NgScrollbar,
     TableCardComponent,

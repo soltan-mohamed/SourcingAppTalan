@@ -6,15 +6,14 @@ import { MatIconModule } from '@angular/material/icon';
 import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
-interface CandidateData {
-  nom?: string;
-  prenom?: string;
-  phone?: string;
-  email?: string;
-  competences?: string[];
-  [key: string]: any;
-}
+import { UsersService } from 'app/services/users-service';
+import { User } from 'app/models/user';
+import { Candidate } from 'app/models/candidate';
+import { RecrutementService } from 'app/services/recrutement-service';
+import { CandidatesService } from 'app/services/candidates-service';
+
 
 @Component({
   selector: 'app-create-recrutement',
@@ -22,23 +21,30 @@ interface CandidateData {
     CommonModule,
     MatIconModule,
     MatChipsModule,
-    MatSelectModule
+    MatSelectModule,
+    MatSnackBarModule
   ],
   templateUrl: './create-recrutement.html',
   styleUrl: './create-recrutement.scss'
 })
 export class CreateRecrutement implements OnInit {
 
-  managerList = ['Alice Johnson', 'Bob Smith', 'Charlie Davis', 'Diana Lee'];
+  users : User[] = [];
 
   recrutementForm!: FormGroup;
   
   isSubmitting: boolean = false;
 
+  errorMessage : string = "" ;
+
   constructor(
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: CandidateData,
-    private dialogRef: MatDialogRef<CreateRecrutement>
+    private snackBar : MatSnackBar,
+    @Inject(MAT_DIALOG_DATA) public data: Candidate,
+    private dialogRef: MatDialogRef<CreateRecrutement>,
+    private usersService : UsersService,
+    private recrutementService : RecrutementService,
+    private candidateService : CandidatesService
   ) {}
 
   onClose(): void {
@@ -47,59 +53,88 @@ export class CreateRecrutement implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    this.getAllManagers();
   }
 
   initializeForm(): void {
     this.recrutementForm = this.formBuilder.group({
       poste: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ]],
-      date: ['', [Validators.required ]],
+      manager: ['', [Validators.required ]],
     });
   }
 
 
   onSubmit(): void {
-    // if (this.recrutementForm.valid) {
-    //   this.isSubmitting = true;
+     if (this.recrutementForm.valid) {
+      this.isSubmitting = true;
       
-    //   const formData = {
-    //     nom: this.recrutementForm.get('nom')?.value,
-    //     prenom: this.recrutementForm.get('prenom')?.value,
-    //     email: this.recrutementForm.get('email')?.value,
-    //     telephone: this.recrutementForm.get('telephone')?.value,
-    //     competences: this.keywords,
-    //     file: this.selectedFile
-    //   };
-      
-    //   console.log('Submitting candidate: ...', formData);
-      
-    //   // Simulate API call delay
-    //   setTimeout(() => {
-    //     this.isSubmitting = false;
-    //     console.log('Candidate submitted successfully!');
-    //     this.resetForm();
-    //   }, 2000);
-    // } else {
+      const formData = {
+        position: this.recrutementForm.get('poste')?.value,
+        demandeur_id: this.recrutementForm.get('manager')?.value.id,
+        candidate_id : this.data.id,
+      };     
+
+      console.log('Submitting candidate: ...', formData);
+
+      this.recrutementService.CreateNewRecrutement(formData)
+        .subscribe({
+          next: (response: any) => {
+            this.isSubmitting = false;
+            this.candidateService.updateCandidate(this.data.id,formData)
+              .subscribe({
+                error: (error: any) => {
+                  console.error('Error updating candidate:', error);
+                }
+              });
+            this.snackBar.open(
+              'Success creating new recrutement',
+              'Close',
+              {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                panelClass: ['success-snackbar']
+              }
+            );
+            this.dialogRef.close(response);
+          },
+          error: (error: any) => {
+            this.isSubmitting = false;
+            console.error('Error creating recrutement:', error);
+
+            this.snackBar.open(
+              'Failed to create new recrutement: ' + (error.error?.message || 'Unknown error'),
+              'Close',
+              {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+              }
+            );
+          }
+      });
     //   this.recrutementForm.markAllAsTouched();
-      
-    //   // if (this.selectedDomainNames.length === 0) {
-    //   //   this.recrutementForm.get('domains')?.setErrors({ required: true });
-    //   // }
-      
-    //   if (!this.selectedFile) {
-    //     this.fileError = true;
-    //     this.fileErrorMessage = 'Please select a PDF file';
-    //   }
-    // }
+    }
   }
 
   closeForm(): void {
-    // Reset form and close modal/dialog
     this.resetForm();
-    console.log('Form closed');
   }
 
   private resetForm(): void {
     this.recrutementForm.reset();
     this.isSubmitting = false;
+  }
+  
+  getAllManagers(): void {
+    this.usersService.getAllUsersByRole("MANAGER").subscribe({
+      next: (data) => {
+        this.users = data;
+      },
+      error: (err) => {
+        this.errorMessage = "An internal server error has occurred !";
+      }
+    });
   }
 }
