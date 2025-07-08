@@ -18,5 +18,9 @@ export class CandidateService {
   getAllCandidates(): Observable<any[]> {
   return this.http.get<any[]>('http://localhost:9090/talan/api/candidats');
   }
+  updateCandidate(id: number, data: any): Observable<any> {
+  return this.http.put(`http://localhost:9090/talan/api/candidats/${id}`, data);
+}
+
 
 }
