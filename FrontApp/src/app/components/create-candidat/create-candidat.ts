@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
+import { CandidateService } from 'app/services/candidates';
+
 
 @Component({
   selector: 'app-create-candidat',
@@ -30,7 +32,10 @@ export class CreateCandidat implements OnInit {
   // Form submission state
   isSubmitting: boolean = false;
 
-  constructor(private formBuilder: FormBuilder,private dialogRef: MatDialogRef<CreateCandidat>) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private dialogRef: MatDialogRef<CreateCandidat>,
+    private candidateservice : CandidateService) {}
 
   onClose(): void {
     this.dialogRef.close();
@@ -144,40 +149,35 @@ export class CreateCandidat implements OnInit {
     
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
-
+  cvPath: string = '';
   onSubmit(): void {
-    if (this.CandidateForm.valid && this.selectedFile) {
+    if (this.CandidateForm.valid) {
       this.isSubmitting = true;
       
-      const formData = {
-        nom: this.CandidateForm.get('nom')?.value,
-        prenom: this.CandidateForm.get('prenom')?.value,
-        email: this.CandidateForm.get('email')?.value,
-        telephone: this.CandidateForm.get('telephone')?.value,
-        competences: this.keywords,
-        file: this.selectedFile
-      };
-      
-      console.log('Submitting candidate: ...', formData);
-      
-      // Simulate API call delay
-      setTimeout(() => {
+      const candidate = {
+      nom: this.CandidateForm.get('nom')?.value,
+      prenom: this.CandidateForm.get('prenom')?.value,
+      email: this.CandidateForm.get('email')?.value,
+      telephone: this.CandidateForm.get('telephone')?.value,
+      statut: 'CONTACTED',
+      skills: this.keywords,
+      cv: this.cvPath // just the string path here
+    };
+    this.candidateservice.addCandidate(candidate).subscribe({
+      next: () => {
         this.isSubmitting = false;
-        console.log('Candidate submitted successfully!');
-        this.resetForm();
-      }, 2000);
-    } else {
-      this.CandidateForm.markAllAsTouched();
-      
-      // if (this.selectedDomainNames.length === 0) {
-      //   this.CandidateForm.get('domains')?.setErrors({ required: true });
-      // }
-      
-      if (!this.selectedFile) {
-        this.fileError = true;
-        this.fileErrorMessage = 'Please select a PDF file';
+        this.dialogRef.close('refresh');
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        console.error('Erreur lors de l’envoi du candidat : ', err);
       }
-    }
+    });
+  } else {
+    this.CandidateForm.markAllAsTouched();
+  }
+  
+    this.dialogRef.close('refresh'); // pour dire au parent de recharger
   }
 
   closeForm(): void {

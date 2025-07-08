@@ -47,7 +47,7 @@
         </mat-header-cell>
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [matTooltip]="row[column.def]">
             <span class="mobile-label"></span>
-             <mat-icon class="tbl-icon material-icons-outlined col-red">mail</mat-icon>
+            
              <span class="truncate-text">
                 {{ row[column.def] }}
             </span>
