@@ -53,6 +53,7 @@ public class Candidate {
     @JoinColumn(name = "responsable_id")
     private User responsable;
 
+
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recrutement> recrutements;
 }

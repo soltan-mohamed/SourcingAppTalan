@@ -1,5 +1,6 @@
 package tn.talan.backendapp.service;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import tn.talan.backendapp.entity.User;
 import tn.talan.backendapp.repository.UserRepository;
@@ -21,6 +22,10 @@ public class UserService {
         userRepository.findAll().forEach(users::add);
 
         return users;
+    }
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }
 
