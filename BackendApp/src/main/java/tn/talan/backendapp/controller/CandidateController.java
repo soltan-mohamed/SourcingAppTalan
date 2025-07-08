@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
+import tn.talan.backendapp.dtos.CandidateDTO;
 import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.User;
 import tn.talan.backendapp.enums.Statut;
@@ -72,9 +73,11 @@ public class CandidateController {
     }
 
     @PutMapping("/{id}")
-    public Candidate update(@PathVariable Long id, @RequestBody Candidate candidate) {
-        return service.update(id, candidate);
+    public ResponseEntity<Candidate> update(@PathVariable Long id, @RequestBody CandidateDTO dto) {
+        Candidate updated = service.updateFromDTO(id, dto);
+        return ResponseEntity.ok(updated);
     }
+
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {

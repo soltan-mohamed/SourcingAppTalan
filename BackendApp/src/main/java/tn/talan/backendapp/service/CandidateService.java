@@ -1,6 +1,8 @@
 package tn.talan.backendapp.service;
 
+import tn.talan.backendapp.dtos.CandidateDTO;
 import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.repository.CandidateRepository;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +48,20 @@ public class CandidateService {
         }
         return null;
     }
+    public Candidate updateFromDTO(Long id, CandidateDTO dto) {
+        Candidate candidate = getById(id); // méthode qui fetch depuis DB
+
+        candidate.setNom(dto.getNom());
+        candidate.setPrenom(dto.getPrenom());
+        candidate.setEmail(dto.getEmail());
+        candidate.setTelephone(dto.getTelephone());
+        candidate.setCv(dto.getCv());
+        candidate.setStatut(dto.getStatut());
+
+        candidate.setSkills(dto.getSkills());
+
+        return repository.save(candidate);
+    }
+
 }
 
