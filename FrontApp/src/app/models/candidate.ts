@@ -12,4 +12,5 @@ export interface Candidate {
   statut: CandidateStatus;
   cv : string;
   responsable : User;
+  dateCreation : string;
 }

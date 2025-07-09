@@ -1,22 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTreeModule, MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA,MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FeatherModule } from 'angular-feather';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AddInterviewComponent } from '../interviews/add-interview/add-interview';
 
-
+import { Candidate } from 'app/models/candidate';
 
 type EvaluationStatus = 'pending' | 'passed' | 'failed' | 'in-progress' | 'scheduled' | 'KO' | 'accepted';
 
 interface RecrutementEvaluation {
-  candidate?: Candidate;
+  candidate?: CandidateT;
   poste?: string;
   evaluations?: Evaluation[];
 }
@@ -32,7 +32,7 @@ interface Evaluation {
   editing : boolean;
 }
 
-interface Candidate {
+interface CandidateT {
   id: string;
   firstName: string;
   lastName: string;
@@ -70,7 +70,7 @@ interface FlatNode {
   styleUrl: './candidate-history.scss'
 })
 export class CandidateHistory implements OnInit {
-  candidate: Candidate | null = null;
+  candidate: CandidateT | null = null;
   recruitementData: RecrutementEvaluation[] = [];
   loading = false;
   editingEval! : Evaluation;
@@ -123,7 +123,9 @@ export class CandidateHistory implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<CandidateHistory>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    @Inject(MAT_DIALOG_DATA) public data: Candidate,
+    
   ) {}
   
   toggleDropdown(event: Event, evalData : Evaluation) {
@@ -162,6 +164,7 @@ export class CandidateHistory implements OnInit {
   }
   
   ngOnInit(): void {
+    console.log("Received history data : ", this.data);
     this.loadCandidateData();
   }
 
@@ -348,12 +351,23 @@ export class CandidateHistory implements OnInit {
 
   }
 
-  formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+  formatContactDate(dateString: string | null | undefined): string {
+    if (!dateString) return 'N/A';
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date';
+      }
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } 
+    catch (error) {
+        return 'Invalid Date';
+    }
   }
    addInterview() {
     const dialogRef = this.dialog.open(AddInterviewComponent,{
