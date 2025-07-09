@@ -52,11 +52,14 @@ export class Candidates implements OnInit {
         this.studentData = data.map(c => ({
           id: c.id,
           name: `${c.nom} ${c.prenom}`,
+          nom: c.nom,
+          prenom: c.prenom,
           phone: c.telephone,
           email: c.email,
           position: '-', // Remplace par la vraie info si tu l'as
           statut: c.statut,
-          cv: c.cv || 'N/A'
+          cv: c.cv || 'N/A',
+          skills : c.skills
         }));
       },
       error: (err) => {

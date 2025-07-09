@@ -22,5 +22,10 @@ export class CandidateService {
   return this.http.put(`http://localhost:9090/talan/api/candidats/${id}`, data);
 }
 
+// getStatuts(): Observable<string[]> {
+//   return this.http.get<string[]>('http://localhost:9090/talan/api/statuts');
+// }
+
+
 
 }
