@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Recruitment, RecruitmentStatus } from '../models/recruitment.model';
 import { AuthService } from './auth.service';
 import { Role } from '@core/models/role';
@@ -24,12 +24,20 @@ createRecruitment(candidateId: number, position: string, managerId: number): Obs
   );
 }
 
-  getRecruitmentsByCandidate(candidateId: number): Observable<Recruitment[]> {
-    return this.http.get<Recruitment[]>(
-      `${this.apiUrl}/candidate/${candidateId}`,
-      { headers: this.getAuthHeaders() }
-    );
-  }
+getRecruitmentsByCandidate(candidateId: number): Observable<Recruitment[]> {
+  return this.http.get<Recruitment[]>(
+    `${this.apiUrl}/candidate/${candidateId}`,
+    { headers: this.getAuthHeaders() }
+  ).pipe(
+    map(recruitments => {
+      const currentUser = this.authService.currentUserValue;
+      return recruitments.map(r => ({
+        ...r,
+        editable: this.canManageRecruitment(r)
+      }));
+    })
+  );
+}
 
   updateRecruitmentStatus(recruitmentId: number, newStatus: RecruitmentStatus): Observable<Recruitment> {
     return this.http.put<Recruitment>(
@@ -53,11 +61,23 @@ createRecruitment(candidateId: number, position: string, managerId: number): Obs
   }
 
 
-  canManageRecruitment(recruitment: Recruitment): boolean {
+// recruitment.service.ts
+canManageRecruitment(recruitment: Recruitment): boolean {
+  const currentUser = this.authService.currentUserValue;
+  if (!currentUser || !recruitment) return false;
+  
+  const recruiter = recruitment.recruteur || recruitment.demandeur;
+  
+  return this.authService.hasRole(Role.RECRUTEUR_MANAGER) ||
+         (recruiter && recruiter.id === currentUser.id);
+}
+
+
+ /* canManageRecruitment(recruitment: Recruitment): boolean {
   const currentUser = this.authService.currentUserValue;
   if (!currentUser) return false;
   
   return this.authService.hasRole(Role.RECRUTEUR_MANAGER) ||
          recruitment.demandeur.id === currentUser.id ;
-}
+}*/
 }

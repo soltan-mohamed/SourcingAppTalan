@@ -22,6 +22,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SidebarComponent } from '../../sidebar/sidebar.component';
 import { AddRecruitmentComponent } from '../recrutement/add.component';
 import { Role } from '@core/models/role';
+import { CandidateHistoryComponent } from '../history/candidate-history.component';
 
 @Component({
   selector: 'app-candidate-list',
@@ -40,7 +41,8 @@ import { Role } from '@core/models/role';
     MatSelectModule,
     MatOptionModule, 
     ScrollingModule,
-    SidebarComponent
+    SidebarComponent,
+    CandidateHistoryComponent
 
   ],
   templateUrl: './list.component.html',
@@ -251,6 +253,13 @@ startRecruitmentProcess(candidate: Candidate): void {
       this.showSuccess('Recruitment process started successfully');
 
     }
+  });
+}
+
+viewCandidateHistory(id: number): void {
+  const dialogRef = this.dialog.open(CandidateHistoryComponent, {
+    width: '800px',
+    data: { candidateId: id }
   });
 }
 

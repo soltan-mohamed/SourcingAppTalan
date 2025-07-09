@@ -1,4 +1,7 @@
+import { Evaluation } from "./evaluation.model";
+
 export interface Recruitment {
+  recruteur: { id: number; name: string; };
   id: number;
   position: string;
   status: RecruitmentStatus;
@@ -10,6 +13,8 @@ export interface Recruitment {
     id: number;
     name: string;
   };
+    evaluations?: Evaluation[];
+
 }
 
 export enum RecruitmentStatus {

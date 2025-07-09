@@ -5,6 +5,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { CandidateListComponent } from '../dashboard/candidates/list/list.component';
 import { AddCandidateComponent } from '../dashboard/candidates/add/add.component';
 import { AddRecruitmentComponent } from './candidates/recrutement/add.component';
+import { CandidateHistoryComponent } from './candidates/history/candidate-history.component';
 
 export const DASHBOARD_ROUTE: Route[] = [
   {
@@ -30,6 +31,10 @@ export const DASHBOARD_ROUTE: Route[] = [
             {
         path: 'recrutement',
         component: AddRecruitmentComponent
+      },
+                  {
+        path: 'history',
+        component: CandidateHistoryComponent
       },
       {
         path: '',

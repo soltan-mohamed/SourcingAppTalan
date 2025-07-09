@@ -1,0 +1,112 @@
+<!-- candidate-history.component.html -->
+<div class="bg-white rounded-xl shadow-lg max-h-[90vh] overflow-hidden flex flex-col">
+  <!-- Header -->
+  <div class="flex justify-between bg-gradient-to-r from-lime-700 to-blue-700 px-7 py-6">
+    <h2 class="text-2xl font-serif text-white font-medium tracking-wide flex items-center">
+      <mat-icon class="mr-2">history</mat-icon>
+      Candidate History
+    </h2>
+    <button class="hover:cursor-pointer" (click)="onClose()">
+      <mat-icon class="text-white">close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex items-center justify-center p-8">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span class="ml-2 text-gray-600">Loading candidate information...</span>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && candidate" class="flex-1 overflow-y-auto p-8">
+    <!-- Candidate Info -->
+    <div class="mb-8">
+      <div class="bg-gray-50 rounded-lg p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">
+              {{ candidate.prenom }} {{ candidate.nom }}
+            </h3>
+            <div class="space-y-2">
+              <div class="flex items-center text-gray-600">
+                <mat-icon class="mr-2" fontIcon="email"></mat-icon>
+                {{ candidate.email }}
+              </div>
+              <div class="flex items-center text-gray-600">
+                <mat-icon class="mr-2" fontIcon="phone"></mat-icon>
+                {{ candidate.telephone }}
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-medium text-gray-900 mb-3">Candidate Details</h4>
+            <div class="space-y-2">
+              <div class="flex items-center text-gray-600">
+                <mat-icon class="mr-2" fontIcon="work"></mat-icon>
+                <span class="text-sm">Skills: {{ candidate.skills?.join(', ') || 'None' }}</span>
+              </div>
+              <div class="flex items-center">
+                <mat-icon class="mr-2" fontIcon="info"></mat-icon>
+                <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getStatusColor(candidate.statut || '')">
+                  {{ candidate.statut || 'No status' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recruitment History Tree -->
+    <div>
+      <h4 class="text-lg font-semibold text-gray-900 mb-5">Recruitment Processes</h4>
+
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="bg-gray-50 border border-gray-200 rounded-lg">
+        <!-- Parent Node (Recruitment Process) -->
+        <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodeToggle
+                      class="hover:bg-gray-100 transition-colors">
+          <div class="flex w-full items-center p-4">
+            <button mat-icon-button matTreeNodeToggle class="mr-3">
+              <mat-icon class="text-blue-600">
+                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+              </mat-icon>
+            </button>
+            <div class="flex-1">
+              <h5 class="font-semibold text-gray-900">{{ node.name }}</h5>
+              <div class="flex items-center mt-1">
+                <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getStatusColor(node.data.status)">
+                  {{ node.data.status }}
+                </span>
+                <span class="text-sm text-gray-600 ml-3">
+                  Manager: {{ node.data.manager?.fullName || 'Not assigned' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </mat-tree-node>
+
+        <!-- Child Node (Evaluations) -->
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+          <div class="bg-white border border-gray-200 rounded-lg p-4 ml-12 my-2">
+            <div class="flex items-center justify-between">
+              <div>
+                <h6 class="font-medium text-gray-900">{{ node.name }}</h6>
+                <div class="flex items-center mt-1">
+                  <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getStatusColor(node.data.statut)">
+                    {{ node.data.statut }}
+                  </span>
+                  <span class="text-sm text-gray-600 ml-3">
+                    {{ formatDate(node.data.date) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="node.data.description" class="mt-3 text-sm text-gray-700">
+              {{ node.data.description }}
+            </div>
+          </div>
+        </mat-tree-node>
+      </mat-tree>
+    </div>
+  </div>
+</div>

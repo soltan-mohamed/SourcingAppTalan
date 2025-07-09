@@ -39,7 +39,7 @@ public class Recrutement {
     @JoinColumn(name = "candidate_id", nullable = false)
     private Candidate candidate;
 
-    @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Evaluation> evaluations = new ArrayList<>();
 
     @Transient
