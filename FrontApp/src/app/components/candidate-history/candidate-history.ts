@@ -121,13 +121,11 @@ export class CandidateHistory implements OnInit {
 
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
-  // Merged constructor - includes both MatDialogRef and MatDialog
   constructor(
     private dialogRef: MatDialogRef<CandidateHistory>,
     private dialog: MatDialog
   ) {}
   
-  // Methods from Editable-status branch
   toggleDropdown(event: Event, evalData : Evaluation) {
     event.stopPropagation();
     this.editingEval = evalData

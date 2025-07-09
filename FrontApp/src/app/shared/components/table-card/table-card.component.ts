@@ -155,7 +155,8 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
 
   openHistory(row: T): void {
     const dialogRef = this.dialog.open(CandidateHistory, {
-      width: '3000px',
+      width: '90vw',       
+      maxWidth: 'none',
       disableClose: false,
       data: row 
     });
