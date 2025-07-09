@@ -31,7 +31,7 @@ public class EvaluationService {
     public Evaluation createEvaluation(Long recrutementId, Evaluation evaluation) {
         User currentUser = getCurrentUser();
 
-        if (!currentUser.getRoles().contains(Role.RECRUTEUR )) {
+        if (!currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER  )) {
             throw new UnauthorizedAccessException("Only recruteurs can create evaluations");
         }
 

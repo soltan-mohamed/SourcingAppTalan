@@ -3,6 +3,7 @@
   
   <form [formGroup]="evaluationForm" (ngSubmit)="onSubmit()">
     <div class="grid gap-4">
+      <!-- Evaluation Type Field -->
       <mat-form-field appearance="outline">
         <mat-label>Evaluation Type</mat-label>
         <mat-select formControlName="type" required>
@@ -10,39 +11,66 @@
             {{ type }}
           </mat-option>
         </mat-select>
+        <mat-error *ngIf="evaluationForm.get('type')?.hasError('required')">
+          Evaluation type is required
+        </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Evaluator</mat-label>
-        <mat-select formControlName="evaluateurId" required>
-          <mat-option *ngFor="let evaluator of evaluators" [value]="evaluator.id">
-            {{ evaluator.fullName }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <!-- Evaluator Field - Different based on role -->
+      <ng-container *ngIf="isRecruteurManager(); else regularRecruiter">
+        <mat-form-field appearance="outline">
+          <mat-label>Evaluator</mat-label>
+          <mat-select formControlName="evaluateurId" required>
+            <mat-option *ngFor="let evaluator of evaluators" [value]="evaluator.id">
+              {{ evaluator.fullName }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="evaluationForm.get('evaluateurId')?.hasError('required')">
+            Evaluator is required
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
 
+      <ng-template #regularRecruiter>
+        <mat-form-field appearance="outline">
+          <mat-label>Evaluator</mat-label>
+          <mat-select formControlName="evaluateurId" [disabled]="true">
+            <mat-option [value]="currentUser?.id">
+              {{ currentUser?.fullName }} (You)
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-template>
+
+      <!-- Date Field -->
       <mat-form-field appearance="outline">
         <mat-label>Date</mat-label>
         <input matInput [matDatepicker]="picker" formControlName="date" required>
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="evaluationForm.get('date')?.hasError('required')">
+          Date is required
+        </mat-error>
       </mat-form-field>
 
+      <!-- Description Field -->
       <mat-form-field appearance="outline">
         <mat-label>Description</mat-label>
         <textarea matInput formControlName="description" rows="3"></textarea>
       </mat-form-field>
     </div>
 
+    <!-- Action Buttons -->
     <div class="flex justify-end gap-2 mt-4">
       <button mat-button type="button" (click)="onCancel()">Cancel</button>
       <button 
         mat-raised-button 
         color="primary" 
         type="submit"
-        [disabled]="!evaluationForm.valid || loading">
+        [disabled]="!evaluationForm.valid || loading"
+        class="flex items-center gap-2">
         <span *ngIf="!loading">Save</span>
-        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <mat-spinner *ngIf="loading" diameter="20" strokeWidth="3"></mat-spinner>
       </button>
     </div>
   </form>

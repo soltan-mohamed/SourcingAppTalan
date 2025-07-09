@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Evaluation } from '../models/evaluation.model';
 import { AuthService } from './auth.service';
 import { Recruitment } from '../models/recruitment.model';
+import { Role } from '../models/role';
 
 @Injectable({
   providedIn: 'root'
@@ -16,13 +17,21 @@ export class EvaluationService {
     private authService: AuthService
   ) {}
 
-createEvaluation(recruitmentId: number, evaluation: Evaluation): Observable<Evaluation> {
-  return this.http.post<Evaluation>(
-    `${this.apiUrl}/recrutement/${recruitmentId}`,
-    evaluation,
-    { headers: this.getAuthHeaders() }
-  );
-}
+  canManageEvaluation(evaluation: Evaluation): boolean {
+    const currentUser = this.authService.currentUserValue;
+    if (!currentUser) return false;
+    
+    return this.authService.hasRole(Role.RECRUTEUR_MANAGER) ||
+           evaluation.evaluateur?.id === currentUser.id;
+  }
+
+  createEvaluation(recruitmentId: number, evaluation: Evaluation): Observable<Evaluation> {
+    return this.http.post<Evaluation>(
+      `${this.apiUrl}/recrutement/${recruitmentId}`,
+      evaluation,
+      { headers: this.getAuthHeaders() }
+    );
+  }
 
   updateEvaluation(id: number, evaluation: Evaluation): Observable<Evaluation> {
     return this.http.put<Evaluation>(
@@ -36,6 +45,14 @@ createEvaluation(recruitmentId: number, evaluation: Evaluation): Observable<Eval
     return this.http.get<Evaluation[]>(
       `${this.apiUrl}/recrutement/${recruitmentId}`,
       { headers: this.getAuthHeaders() }
+    ).pipe(
+      map(evaluations => {
+        return evaluations.map(e => ({
+          ...e,
+          isEditable: this.canManageEvaluation(e),
+          isDeleteable: this.canManageEvaluation(e)
+        }));
+      })
     );
   }
 

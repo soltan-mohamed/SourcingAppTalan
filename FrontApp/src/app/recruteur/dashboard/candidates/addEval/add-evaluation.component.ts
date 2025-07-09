@@ -19,6 +19,8 @@ import { CandidateHistoryComponent } from '../history/candidate-history.componen
 import { MatTree, MatTreeModule } from '@angular/material/tree';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { Role } from '@core/models/role';
+import { AuthService } from '@core/service/auth.service';
 
 @Component({
   selector: 'app-add-evaluation',
@@ -59,6 +61,8 @@ export class AddEvaluationComponent implements OnInit {
     private evaluationService: EvaluationService,
     private userService: UserService,
     private snackBar: MatSnackBar,
+    public authService: AuthService,
+
     @Inject(MAT_DIALOG_DATA) public data: { recrutementId: number }
   ) {
     this.evaluationForm = this.fb.group({
@@ -115,4 +119,15 @@ export class AddEvaluationComponent implements OnInit {
   onCancel(): void {
     this.dialogRef.close();
   }
+
+
+  Role = Role;
+
+  get currentUser() {
+  return this.authService.currentUserValue;
+}
+
+isRecruteurManager(): boolean {
+  return this.authService.hasRole(Role.RECRUTEUR_MANAGER);
+}
 }

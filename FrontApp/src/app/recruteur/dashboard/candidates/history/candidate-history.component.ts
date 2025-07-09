@@ -23,6 +23,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { MatTooltipModule } from '@angular/material/tooltip'; // Add this import
 import { EvaluationService } from '@core/service/evaluation.service';
+import { Role } from '@core/models/role';
+import { AuthService } from '@core/service/auth.service';
 
 
 
@@ -108,6 +110,7 @@ export class CandidateHistoryComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
         private evaluationService: EvaluationService,
+        public authService: AuthService,
 
     @Inject(MAT_DIALOG_DATA) public data: { candidateId: number }
 ) {}
@@ -287,4 +290,15 @@ export class CandidateHistoryComponent implements OnInit {
       minute: '2-digit'
     });
   }
+
+  Role = Role;
+
+  
+canAddEvaluation(recruitment: Recruitment): boolean {
+  const currentUser = this.authService.currentUserValue;
+  if (!currentUser) return false;
+  
+  return this.authService.hasRole(Role.RECRUTEUR_MANAGER) ||
+         recruitment.recruteur?.id === currentUser.id;
+}
 }

@@ -90,12 +90,13 @@
       </div>
       
       <!-- Add Evaluation button -->
-      <button mat-icon-button 
-              color="primary"
-              (click)="openAddEvaluationDialog(node.data.id)"
-              matTooltip="Add Evaluation">
-        <mat-icon>add</mat-icon>
-      </button>
+<button mat-icon-button 
+        color="primary"
+        (click)="openAddEvaluationDialog(node.data.id)"
+        *ngIf="canAddEvaluation(node.data)"
+        matTooltip="Add Evaluation">
+  <mat-icon>add</mat-icon>
+</button>
     </div>
   </mat-tree-node>
 
