@@ -1,0 +1,49 @@
+<div class="p-4">
+  <h2 class="text-xl font-semibold mb-4">Add New Evaluation</h2>
+  
+  <form [formGroup]="evaluationForm" (ngSubmit)="onSubmit()">
+    <div class="grid gap-4">
+      <mat-form-field appearance="outline">
+        <mat-label>Evaluation Type</mat-label>
+        <mat-select formControlName="type" required>
+          <mat-option *ngFor="let type of evaluationTypes" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Evaluator</mat-label>
+        <mat-select formControlName="evaluateurId" required>
+          <mat-option *ngFor="let evaluator of evaluators" [value]="evaluator.id">
+            {{ evaluator.fullName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date" required>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="3"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="flex justify-end gap-2 mt-4">
+      <button mat-button type="button" (click)="onCancel()">Cancel</button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit"
+        [disabled]="!evaluationForm.valid || loading">
+        <span *ngIf="!loading">Save</span>
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { CandidateService } from '@core/service/candidate.service';
 import { RecruitmentService } from '@core/service/recruitment.service';
 import { Candidate } from '@core/models/candidate.model';
@@ -18,11 +18,19 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { SidebarComponent } from '../../sidebar/sidebar.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { AddEvaluationComponent } from '../addEval/add-evaluation.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { MatTooltipModule } from '@angular/material/tooltip'; // Add this import
+import { EvaluationService } from '@core/service/evaluation.service';
+
+
 
 interface RecruitmentNode {
   name: string;
   data: Recruitment;
   children?: EvaluationNode[];
+  evaluationsLoaded?: boolean;
 }
 
 interface EvaluationNode {
@@ -60,6 +68,9 @@ interface FlatNode {
     CandidateHistoryComponent,
     MatTree,
     MatTreeModule,
+    AddEvaluationComponent,
+        MatTooltipModule,
+
 
   ],
 })
@@ -88,14 +99,18 @@ export class CandidateHistoryComponent implements OnInit {
   );
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+ 
 
   constructor(
     private dialogRef: MatDialogRef<CandidateHistoryComponent>,
     private candidateService: CandidateService,
     private recruitmentService: RecruitmentService,
-    @Inject(MAT_DIALOG_DATA) public data: { candidateId: number }
-  ) {}
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+        private evaluationService: EvaluationService,
 
+    @Inject(MAT_DIALOG_DATA) public data: { candidateId: number }
+) {}
   ngOnInit(): void {
     this.loadCandidateHistory();
   }
@@ -115,15 +130,14 @@ export class CandidateHistoryComponent implements OnInit {
   }
 
   loadRecruitments(candidateId: number): void {
+    this.loading = true;
     this.recruitmentService.getRecruitmentsByCandidate(candidateId).subscribe({
       next: (recruitments) => {
         const treeData: RecruitmentNode[] = recruitments.map(rec => ({
           name: `Recruitment for ${rec.position}`,
           data: rec,
-          children: rec.evaluations?.map(evalItem => ({
-            name: `${evalItem.type} Evaluation`,
-            data: evalItem
-          })) || []
+          children: [],
+          evaluationsLoaded: false
         }));
         
         this.dataSource.data = treeData;
@@ -135,12 +149,91 @@ export class CandidateHistoryComponent implements OnInit {
       }
     });
   }
-
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
   onClose(): void {
     this.dialogRef.close();
   }
+
+    // Handle node expansion
+  onNodeToggle(node: FlatNode): void {
+    if (node.expandable) {
+      if (this.treeControl.isExpanded(node)) {
+        // Node is being expanded
+        const parentNode = this.findParentNode(node);
+        if (parentNode && !parentNode.evaluationsLoaded) {
+          this.loadEvaluationsForRecruitment(parentNode);
+        }
+      }
+    }
+  }
+
+    // Find the parent node in the flat tree structure
+  private findParentNode(node: FlatNode): RecruitmentNode | null {
+    const nodeIndex = this.treeControl.dataNodes.indexOf(node);
+    
+    for (let i = nodeIndex - 1; i >= 0; i--) {
+      const currentNode = this.treeControl.dataNodes[i];
+      if (currentNode.level < node.level) {
+        // Find the corresponding node in the original tree data
+        return this.findNodeInTreeData(currentNode);
+      }
+    }
+    return null;
+  }
+
+    // Find the corresponding node in the original tree data
+  private findNodeInTreeData(node: FlatNode): RecruitmentNode | null {
+    const treeData = this.dataSource.data;
+    for (const rootNode of treeData) {
+      if (rootNode.data.id === node.data.id) {
+        // Ensure we only return RecruitmentNode, not EvaluationNode
+        if ('children' in rootNode) {
+          return rootNode;
+        }
+      }
+    }
+    return null;
+  }
+
+    // Load evaluations for a specific recruitment
+  private loadEvaluationsForRecruitment(node: RecruitmentNode): void {
+    this.evaluationService.getEvaluationsByRecruitment(node.data.id).subscribe({
+      next: (evaluations) => {
+        node.children = evaluations.map(evalItem => ({
+          name: `${evalItem.type} Evaluation`,
+          data: evalItem
+        }));
+        node.evaluationsLoaded = true;
+        
+        // Update the data source
+        this.dataSource.data = [...this.dataSource.data];
+        
+        // Expand the node after loading
+        const flatNode = this.findFlatNode(node);
+        if (flatNode && !this.treeControl.isExpanded(flatNode)) {
+          this.treeControl.expand(flatNode);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading evaluations:', err);
+      }
+    });
+  }
+
+  // Find the corresponding flat node
+  private findFlatNode(node: RecruitmentNode): FlatNode | null {
+    const flatNodes = this.treeControl.dataNodes;
+    for (const flatNode of flatNodes) {
+      if (flatNode.data.id === node.data.id) {
+        return flatNode;
+      }
+    }
+    return null;
+  }
+
+  // Load evaluations for a specific recruitment
+
 
   getStatusColor(status: string): string {
     switch (status) {
@@ -161,5 +254,37 @@ export class CandidateHistoryComponent implements OnInit {
     if (!date) return '';
     const d = new Date(date);
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  openAddEvaluationDialog(recruitmentId: number): void {
+    if (!recruitmentId) {
+      this.snackBar.open('No recruitment process selected', 'Close', {
+        duration: 3000
+      });
+      return;
+    }
+
+    const dialogRef = this.dialog.open(AddEvaluationComponent, {
+      width: '500px',
+      data: { recrutementId: recruitmentId }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadCandidateHistory();
+      }
+    });
+  }
+
+  formatDateTime(date: string | Date): string {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }

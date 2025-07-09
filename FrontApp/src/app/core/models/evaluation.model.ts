@@ -1,3 +1,4 @@
+// evaluation.model.ts
 import { Statut } from "./candidate.model";
 import { Recruitment } from "./recruitment.model";
 import { User } from "./user";
@@ -13,7 +14,7 @@ export interface Evaluation {
 }
 
 export enum TypeEvaluation {
-  TECHNICAL = 'TECHNICAL',
-  BEHAVIORAL = 'BEHAVIORAL',
-  MANAGERIAL = 'MANAGERIAL'
+  RH = 'RH',
+  MANAGERIAL = 'MANAGERIAL',
+  TECHNIQUE = 'TECHNIQUE'
 }

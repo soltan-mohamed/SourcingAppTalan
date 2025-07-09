@@ -41,8 +41,7 @@ import { CandidateHistoryComponent } from '../history/candidate-history.componen
     MatSelectModule,
     MatOptionModule, 
     ScrollingModule,
-    SidebarComponent,
-    CandidateHistoryComponent
+    SidebarComponent
 
   ],
   templateUrl: './list.component.html',
@@ -255,12 +254,10 @@ startRecruitmentProcess(candidate: Candidate): void {
     }
   });
 }
-
 viewCandidateHistory(id: number): void {
   const dialogRef = this.dialog.open(CandidateHistoryComponent, {
     width: '800px',
     data: { candidateId: id }
   });
 }
-
 }

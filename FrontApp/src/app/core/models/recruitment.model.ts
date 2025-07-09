@@ -1,20 +1,17 @@
 import { Evaluation } from "./evaluation.model";
+import { User } from "./user";
 
 export interface Recruitment {
-  recruteur: { id: number; name: string; };
   id: number;
   position: string;
   status: RecruitmentStatus;
-  demandeur: {
-    id: number;
-    name: string;
-  };
+  recruteur: User;
+  manager: User;
   candidate: {
     id: number;
     name: string;
   };
-    evaluations?: Evaluation[];
-
+  evaluations?: Evaluation[];
 }
 
 export enum RecruitmentStatus {

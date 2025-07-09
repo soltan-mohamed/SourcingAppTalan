@@ -14,5 +14,8 @@ import java.util.List;
 
 public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
 
+    List<Evaluation> findByRecrutementId(Long recrutementId);
+    List<Evaluation> findByEvaluateurId(Integer evaluateurId);
+
 
 }

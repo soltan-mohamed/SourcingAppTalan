@@ -1,5 +1,6 @@
 package tn.talan.backendapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.talan.backendapp.enums.Role;
@@ -39,6 +40,7 @@ public class Recrutement {
     @JoinColumn(name = "candidate_id", nullable = false)
     private Candidate candidate;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Evaluation> evaluations = new ArrayList<>();
 

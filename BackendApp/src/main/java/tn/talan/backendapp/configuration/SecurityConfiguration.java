@@ -68,7 +68,8 @@ public class SecurityConfiguration {
         // Explicitly list allowed origins
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
-                "http://127.0.0.1:4200"
+                "http://127.0.0.1:4200",
+                "http://localhost:9090/talan/swagger-ui/index.html"
         ));
 
         configuration.setAllowedMethods(Arrays.asList(

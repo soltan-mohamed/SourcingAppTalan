@@ -44,6 +44,16 @@ getManagers(): Observable<User[]> {
   ));
 }
 
+getEvaluators(): Observable<User[]> {
+  return this.http.get<User[]>(`${this.apiUrl}/`, { 
+    headers: this.getAuthHeaders() 
+  }).pipe(
+    map(users => users.filter(user => 
+      user.roles.includes(Role.EVALUATEUR)
+    ))
+  );
+}
+
 private getAuthHeaders(): HttpHeaders {
   const token = this.authService.token;
   if (!token) {

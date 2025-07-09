@@ -1,54 +1,104 @@
 package tn.talan.backendapp.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tn.talan.backendapp.entity.Evaluation;
-import tn.talan.backendapp.repository.EvaluationRepository;
-import tn.talan.backendapp.enums.Statut;
+import org.springframework.transaction.annotation.Transactional;
+import tn.talan.backendapp.entity.*;
+import tn.talan.backendapp.enums.*;
+import tn.talan.backendapp.exceptions.*;
+import tn.talan.backendapp.repository.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service
+@Transactional
 public class EvaluationService {
-    private final EvaluationRepository repository;
 
-    @Autowired
-    public EvaluationService(EvaluationRepository repository) {
-        this.repository = repository;
+    private final EvaluationRepository evaluationRepo;
+    private final RecrutementRepository recrutementRepo;
+    private final UserRepository userRepo;
+
+    public EvaluationService(EvaluationRepository evaluationRepo,
+                             RecrutementRepository recrutementRepo,
+                             UserRepository userRepo) {
+        this.evaluationRepo = evaluationRepo;
+        this.recrutementRepo = recrutementRepo;
+        this.userRepo = userRepo;
     }
 
-    public List<Evaluation> getAll() {
-        return repository.findAll();
-    }
+    public Evaluation createEvaluation(Long recrutementId, Evaluation evaluation) {
+        User currentUser = getCurrentUser();
 
-    public Evaluation getById(Long id) {
-        return repository.findById(id).orElse(null);
-    }
-
-
-
-
-    public Evaluation save(Evaluation e) {
-        return repository.save(e);
-    }
-
-    public Evaluation update(Long id, Evaluation updated) {
-        Evaluation e = repository.findById(id).orElse(null);
-        if (e != null) {
-            e.setDate(updated.getDate());
-            e.setType(updated.getType());
-            e.setDescription(updated.getDescription());
-            e.setEvaluateur(updated.getEvaluateur());
-            e.setRecrutement(updated.getRecrutement());
-            e.setStatut(updated.getStatut());
-            return repository.save(e);
+        if (!currentUser.getRoles().contains(Role.RECRUTEUR )) {
+            throw new UnauthorizedAccessException("Only recruteurs can create evaluations");
         }
-        return null;
+
+        Recrutement recrutement = recrutementRepo.findById(recrutementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recruitment not found"));
+
+        evaluation.setRecrutement(recrutement);
+        evaluation.setEvaluateur(currentUser);
+        evaluation.setDate(LocalDateTime.now());
+        evaluation.setStatut(Statut.IN_PROGRESS);
+
+        return evaluationRepo.save(evaluation);
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public Evaluation updateEvaluation(Long evaluationId, Evaluation evaluationDetails) {
+        Evaluation evaluation = evaluationRepo.findById(evaluationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Evaluation not found"));
+
+        User currentUser = getCurrentUser();
+        if (!canEditEvaluation(currentUser, evaluation)) {
+            throw new UnauthorizedAccessException("You don't have permission to edit this evaluation");
+        }
+
+        if (evaluationDetails.getDescription() != null) {
+            evaluation.setDescription(evaluationDetails.getDescription());
+        }
+        if (evaluationDetails.getType() != null) {
+            evaluation.setType(evaluationDetails.getType());
+        }
+        if (evaluationDetails.getStatut() != null) {
+            evaluation.setStatut(evaluationDetails.getStatut());
+        }
+
+        return evaluationRepo.save(evaluation);
+    }
+
+    public List<Evaluation> getEvaluationsByRecrutement(Long recrutementId) {
+        return evaluationRepo.findByRecrutementId(recrutementId);
+    }
+
+    public List<Evaluation> getEvaluationsByEvaluateur() {
+        User currentUser = getCurrentUser();
+        return evaluationRepo.findByEvaluateurId(currentUser.getId());
+    }
+
+    public void deleteEvaluation(Long evaluationId) {
+        Evaluation evaluation = evaluationRepo.findById(evaluationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Evaluation not found"));
+
+        User currentUser = getCurrentUser();
+        if (!canEditEvaluation(currentUser, evaluation)) {
+            throw new UnauthorizedAccessException("You don't have permission to delete this evaluation");
+        }
+
+        evaluationRepo.delete(evaluation);
+    }
+
+    private boolean canEditEvaluation(User currentUser, Evaluation evaluation) {
+        return currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER) ||
+                evaluation.getEvaluateur().getId().equals(currentUser.getId());
+    }
+
+    private User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof User) {
+            return (User) auth.getPrincipal();
+        }
+        throw new UnauthorizedAccessException("User not authenticated");
     }
 }

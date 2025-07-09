@@ -1,52 +1,50 @@
 package tn.talan.backendapp.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.talan.backendapp.entity.Evaluation;
 import tn.talan.backendapp.service.EvaluationService;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/evaluations")
-@CrossOrigin(origins = "*")
 public class EvaluationController {
-    private final EvaluationService service;
 
+    private final EvaluationService evaluationService;
 
-    @Autowired
-    public EvaluationController(EvaluationService service) {
-        this.service = service;
+    public EvaluationController(EvaluationService evaluationService) {
+        this.evaluationService = evaluationService;
     }
 
-
-    @GetMapping
-    public List<Evaluation> getAll() {
-        return service.getAll();
-    }
-
-    @GetMapping("/{id}")
-    public Evaluation getById(@PathVariable Long id) {
-        return service.getById(id);
-    }
-
-
-
-    @PostMapping
-    public Evaluation create(@RequestBody Evaluation e) {
-        return service.save(e);
+    @PostMapping("/recrutement/{recrutementId}")
+    public ResponseEntity<Evaluation> createEvaluation(
+            @PathVariable Long recrutementId,
+            @RequestBody Evaluation evaluation) {
+        return ResponseEntity.ok(evaluationService.createEvaluation(recrutementId, evaluation));
     }
 
     @PutMapping("/{id}")
-    public Evaluation update(@PathVariable Long id, @RequestBody Evaluation e) {
-        return service.update(id, e);
+    public ResponseEntity<Evaluation> updateEvaluation(
+            @PathVariable Long id,
+            @RequestBody Evaluation evaluation) {
+        return ResponseEntity.ok(evaluationService.updateEvaluation(id, evaluation));
+    }
+
+    @GetMapping("/recrutement/{recrutementId}")
+    public ResponseEntity<List<Evaluation>> getEvaluationsByRecrutement(
+            @PathVariable Long recrutementId) {
+        return ResponseEntity.ok(evaluationService.getEvaluationsByRecrutement(recrutementId));
+    }
+
+    @GetMapping("/my-evaluations")
+    public ResponseEntity<List<Evaluation>> getMyEvaluations() {
+        return ResponseEntity.ok(evaluationService.getEvaluationsByEvaluateur());
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    public ResponseEntity<Void> deleteEvaluation(@PathVariable Long id) {
+        evaluationService.deleteEvaluation(id);
+        return ResponseEntity.noContent().build();
     }
 }
