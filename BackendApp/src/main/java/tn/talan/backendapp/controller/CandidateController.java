@@ -43,9 +43,29 @@ public class CandidateController {
     }
 
     @GetMapping("/{id}")
-    public Candidate getById(@PathVariable Long id) {
-        return service.getById(id);
+    public ResponseEntity<CandidateDTO> getById(@PathVariable Long id) {
+        Candidate candidate = service.getById(id);
+        if (candidate == null) {
+            return ResponseEntity.notFound().build();
+        }
+        candidate.getSkills().size();
+        CandidateDTO dto = new CandidateDTO();
+        dto.setNom(candidate.getNom());
+        dto.setPrenom(candidate.getPrenom());
+        dto.setEmail(candidate.getEmail());
+        dto.setTelephone(candidate.getTelephone());
+        dto.setStatut(candidate.getStatut());
+        dto.setCv(candidate.getCv());
+        dto.setSkills(candidate.getSkills());
+
+        return ResponseEntity.ok(dto);
     }
+
+    @GetMapping("/statuts")
+    public ResponseEntity<Statut[]> getAllStatuts() {
+        return ResponseEntity.ok(Statut.values());
+    }
+
 
 
 
