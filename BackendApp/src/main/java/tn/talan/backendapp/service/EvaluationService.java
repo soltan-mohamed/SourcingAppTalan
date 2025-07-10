@@ -89,6 +89,7 @@ public class EvaluationService {
 
 
 
+    @Transactional
     public Evaluation updateEvaluation(Long evaluationId, Evaluation evaluationDetails) {
         Evaluation evaluation = evaluationRepo.findById(evaluationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Evaluation not found"));
@@ -98,7 +99,10 @@ public class EvaluationService {
             throw new UnauthorizedAccessException("You don't have permission to edit this evaluation");
         }
 
-        // Update only allowed fields
+        // Track if status is being changed
+        boolean statusChanged = evaluationDetails.getStatut() != null &&
+                !evaluationDetails.getStatut().equals(evaluation.getStatut());
+
         if (evaluationDetails.getDescription() != null) {
             evaluation.setDescription(evaluationDetails.getDescription());
         }
@@ -108,11 +112,28 @@ public class EvaluationService {
         if (evaluationDetails.getStatut() != null) {
             evaluation.setStatut(evaluationDetails.getStatut());
         }
-        if (evaluationDetails.getDate() != null) {
-            evaluation.setDate(evaluationDetails.getDate());
+
+        Evaluation updatedEvaluation = evaluationRepo.save(evaluation);
+
+        // Update candidate status if evaluation status changed
+        if (statusChanged) {
+            updateCandidateStatusFromEvaluation(updatedEvaluation);
         }
 
-        return evaluationRepo.save(evaluation);
+        return updatedEvaluation;
+    }
+
+    private void updateCandidateStatusFromEvaluation(Evaluation evaluation) {
+        if (evaluation.getRecrutement() != null &&
+                evaluation.getRecrutement().getCandidate() != null) {
+
+            Candidate candidate = evaluation.getRecrutement().getCandidate();
+            candidate.setStatut(evaluation.getStatut());
+            candidateRepo.save(candidate);
+
+            log.info("Updated candidate {} status to {} based on evaluation update",
+                    candidate.getId(), evaluation.getStatut());
+        }
     }
 
     @Transactional

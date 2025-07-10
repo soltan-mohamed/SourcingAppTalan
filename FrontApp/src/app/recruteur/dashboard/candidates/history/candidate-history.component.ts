@@ -233,15 +233,26 @@ private loadEvaluationsForRecruitment(node: RecruitmentNode): void {
 }
 
   // UI Helper Methods
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'ACCEPTED': return 'bg-green-100 text-green-800';
-      case 'REJECTED': return 'bg-red-100 text-red-800';
-      case 'IN_PROGRESS': return 'bg-yellow-100 text-yellow-800';
-      case 'CONTACTED': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+getStatusColor(status: string): string {
+  switch (status) {
+    case 'ACCEPTED': 
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+    case 'REJECTED': 
+      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+    case 'IN_PROGRESS': 
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+    case 'CONTACTED': 
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+    case 'SCHEDULED': 
+      return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+    case 'CANCELLED': 
+      return 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200';
+    case 'VIVIER': 
+      return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200';
+    default: 
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
   }
+}
 
   getRoleNames(roles: Role[]): string {
   if (!roles || roles.length === 0) return '';
@@ -392,12 +403,17 @@ confirmDeleteEvaluation(id: number): void {
             duration: 5000,
             panelClass: ['success-snackbar'] 
           });
-          // Force reload from server
           this.loadCandidateHistory();
         },
         error: (err) => {
           console.error('Detailed error:', err);
-          this.snackBar.open(`Delete failed: ${err.message}`, 'Close', { 
+          
+          // Show specific error message for SCHEDULED evaluations
+          const message = err.message.includes('SCHEDULED') 
+            ? err.message 
+            : `Delete failed: ${err.message}`;
+            
+          this.snackBar.open(message, 'Close', { 
             duration: 5000,
             panelClass: ['error-snackbar']
           });

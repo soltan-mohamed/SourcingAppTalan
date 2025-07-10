@@ -67,7 +67,7 @@ export class AddEvaluationComponent implements OnInit {
   ) {
     this.evaluationForm = this.fb.group({
       type: ['', Validators.required],
-      description: [''],
+      description: ['not evaluated yet'],
       date: [new Date(), Validators.required],
       evaluateurId: ['', Validators.required]
     });

@@ -66,6 +66,13 @@ map(candidates => {
     );
   }
 
+refreshCandidate(id: number): Observable<Candidate> {
+  return this.http.get<Candidate>(
+    `${this.apiUrl}/${id}`,
+    { headers: this.getAuthHeaders() }
+  );
+}
+
   updateCandidate(id: number, candidateData: any): Observable<Candidate> {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}`, candidateData, {
       headers: this.getAuthHeaders()

@@ -47,12 +47,16 @@ public class EvaluationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvaluation(@PathVariable Long id) {
+    public ResponseEntity<?> deleteEvaluation(@PathVariable Long id) {
         try {
             evaluationService.deleteEvaluation(id);
             return ResponseEntity.noContent().build();
+        } catch (IllegalStateException e) {
+            // Return the specific error message with 400 status
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            throw e;
+            // Handle other exceptions
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }

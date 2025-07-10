@@ -5,6 +5,7 @@ import { Evaluation } from '../models/evaluation.model';
 import { AuthService } from './auth.service';
 import { Recruitment } from '../models/recruitment.model';
 import { Role } from '../models/role';
+import { CandidateService } from './candidate.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class EvaluationService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    public candidateService: CandidateService
   ) {}
 
   canManageEvaluation(evaluation: Evaluation): boolean {
@@ -63,44 +65,62 @@ createEvaluation(recruitmentId: number, evaluationData: any): Observable<Evaluat
 
 
 updateEvaluation(id: number, evaluation: any): Observable<Evaluation> {
-  const payload = {
-    type: evaluation.type,
-    description: evaluation.description,
-    date: evaluation.date,
-    evaluateur: { id: evaluation.evaluateurId },
-    statut: evaluation.statut
-  };
-
   return this.http.put<Evaluation>(
     `${this.apiUrl}/${id}`,
-    payload,
+    {
+      type: evaluation.type,
+      description: evaluation.description,
+      date: evaluation.date,
+      evaluateur: { id: evaluation.evaluateurId },
+      statut: evaluation.statut
+    },
     { headers: this.getAuthHeaders() }
+  ).pipe(
+    tap(updatedEval => {
+      // Refresh candidate data after status update
+      if (evaluation.statut) {
+        this.refreshCandidateData(updatedEval.recrutement?.candidate?.id);
+      }
+    })
   );
 }
 
+private refreshCandidateData(candidateId?: number): void {
+  if (candidateId) {
+    // You'll need to implement this method in your candidate service
+    this.candidateService.refreshCandidate(candidateId).subscribe();
+  }
+}
+
 deleteEvaluation(id: number): Observable<void> {
-  return this.http.delete<void>(
+  return this.http.delete(
     `${this.apiUrl}/${id}`,
     { 
       headers: this.getAuthHeaders(),
-      observe: 'response' // Get full response
+      observe: 'response',
+      responseType: 'text' // Important for error messages
     }
   ).pipe(
     tap(response => {
-      console.log('Delete response:', response);
       if (response.status !== 204) {
-        throw new Error(`Unexpected status code: ${response.status}`);
+        throw new Error(response.body?.toString() || `Unexpected status: ${response.status}`);
       }
     }),
     map(() => undefined),
     catchError(error => {
       console.error('Full error:', error);
-      let message = 'Delete failed';
-      if (error.error instanceof ErrorEvent) {
-        message = `Client error: ${error.error.message}`;
-      } else {
-        message = `Server error: ${error.status} ${error.statusText}`;
+      
+      // Extract the actual error message from the response
+      let message = error.error?.message || error.message;
+      
+      if (error.error && typeof error.error === 'string') {
+        message = error.error;
+      } else if (error.status === 400) {
+        message = error.error || 'Cannot delete evaluation with status SCHEDULED';
+      } else if (error.status === 500) {
+        message = 'Server error occurred';
       }
+      
       return throwError(() => new Error(message));
     })
   );
