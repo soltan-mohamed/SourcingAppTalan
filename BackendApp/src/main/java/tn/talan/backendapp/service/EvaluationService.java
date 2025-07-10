@@ -1,5 +1,7 @@
 package tn.talan.backendapp.service;
 
+import jakarta.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tn.talan.backendapp.entity.*;
@@ -14,12 +16,14 @@ import java.util.List;
 
 @Service
 @Transactional
+@Slf4j
 public class EvaluationService {
 
     private final EvaluationRepository evaluationRepo;
     private final RecrutementRepository recrutementRepo;
     private final UserRepository userRepo;
     private final CandidateRepository candidateRepo;
+
 
     public EvaluationService(EvaluationRepository evaluationRepo,
                              RecrutementRepository recrutementRepo,
@@ -94,6 +98,7 @@ public class EvaluationService {
             throw new UnauthorizedAccessException("You don't have permission to edit this evaluation");
         }
 
+        // Update only allowed fields
         if (evaluationDetails.getDescription() != null) {
             evaluation.setDescription(evaluationDetails.getDescription());
         }
@@ -103,9 +108,40 @@ public class EvaluationService {
         if (evaluationDetails.getStatut() != null) {
             evaluation.setStatut(evaluationDetails.getStatut());
         }
+        if (evaluationDetails.getDate() != null) {
+            evaluation.setDate(evaluationDetails.getDate());
+        }
 
         return evaluationRepo.save(evaluation);
     }
+
+    @Transactional
+    public void deleteEvaluation(Long evaluationId) {
+        // 1. Verify exists and get evaluation
+        Evaluation evaluation = evaluationRepo.findById(evaluationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Evaluation not found"));
+
+        // 2. Check permissions
+        User currentUser = getCurrentUser();
+        if (!canEditEvaluation(currentUser, evaluation)) {
+            throw new UnauthorizedAccessException("Not authorized to delete evaluation");
+        }
+
+        // 3. Check evaluation status
+        if (evaluation.getStatut() == Statut.SCHEDULED) {
+            throw new IllegalStateException("Cannot delete SCHEDULED evaluation");
+        }
+
+        // 4. Delete using custom repository method
+        evaluationRepo.customDeleteById(evaluationId);
+
+        // 5. Verify deletion
+        if (evaluationRepo.existsById(evaluationId)) {
+            throw new RuntimeException("Failed to delete evaluation");
+        }
+    }
+
+
 
     public List<Evaluation> getEvaluationsByRecrutement(Long recrutementId) {
         return evaluationRepo.findByRecrutementId(recrutementId);
@@ -126,17 +162,7 @@ public class EvaluationService {
         throw new UnauthorizedAccessException("Unauthorized access to evaluations");
     }
 
-    public void deleteEvaluation(Long evaluationId) {
-        Evaluation evaluation = evaluationRepo.findById(evaluationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Evaluation not found"));
 
-        User currentUser = getCurrentUser();
-        if (!canEditEvaluation(currentUser, evaluation)) {
-            throw new UnauthorizedAccessException("You don't have permission to delete this evaluation");
-        }
-
-        evaluationRepo.delete(evaluation);
-    }
 
     private boolean canEditEvaluation(User currentUser, Evaluation evaluation) {
         return currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER) ||

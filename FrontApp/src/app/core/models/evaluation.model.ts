@@ -18,3 +18,5 @@ export enum TypeEvaluation {
   MANAGERIAL = 'MANAGERIAL',
   TECHNIQUE = 'TECHNIQUE'
 }
+
+export { Statut };

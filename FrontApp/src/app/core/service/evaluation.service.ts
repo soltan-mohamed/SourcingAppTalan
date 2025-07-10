@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { Evaluation } from '../models/evaluation.model';
 import { AuthService } from './auth.service';
 import { Recruitment } from '../models/recruitment.model';
@@ -60,14 +60,51 @@ createEvaluation(recruitmentId: number, evaluationData: any): Observable<Evaluat
   );
 }
 
-  updateEvaluation(id: number, evaluation: Evaluation): Observable<Evaluation> {
-    return this.http.put<Evaluation>(
-      `${this.apiUrl}/${id}`,
-      evaluation,
-      { headers: this.getAuthHeaders() }
-    );
-  }
 
+
+updateEvaluation(id: number, evaluation: any): Observable<Evaluation> {
+  const payload = {
+    type: evaluation.type,
+    description: evaluation.description,
+    date: evaluation.date,
+    evaluateur: { id: evaluation.evaluateurId },
+    statut: evaluation.statut
+  };
+
+  return this.http.put<Evaluation>(
+    `${this.apiUrl}/${id}`,
+    payload,
+    { headers: this.getAuthHeaders() }
+  );
+}
+
+deleteEvaluation(id: number): Observable<void> {
+  return this.http.delete<void>(
+    `${this.apiUrl}/${id}`,
+    { 
+      headers: this.getAuthHeaders(),
+      observe: 'response' // Get full response
+    }
+  ).pipe(
+    tap(response => {
+      console.log('Delete response:', response);
+      if (response.status !== 204) {
+        throw new Error(`Unexpected status code: ${response.status}`);
+      }
+    }),
+    map(() => undefined),
+    catchError(error => {
+      console.error('Full error:', error);
+      let message = 'Delete failed';
+      if (error.error instanceof ErrorEvent) {
+        message = `Client error: ${error.error.message}`;
+      } else {
+        message = `Server error: ${error.status} ${error.statusText}`;
+      }
+      return throwError(() => new Error(message));
+    })
+  );
+}
 getEvaluationsByRecruitment(recruitmentId: number): Observable<Evaluation[]> {
   return this.http.get<Evaluation[]>(
     `${this.apiUrl}/recrutement/${recruitmentId}`,
@@ -98,12 +135,7 @@ getEvaluationsByRecruitment(recruitmentId: number): Observable<Evaluation[]> {
     );
   }
 
-  deleteEvaluation(id: number): Observable<void> {
-    return this.http.delete<void>(
-      `${this.apiUrl}/${id}`,
-      { headers: this.getAuthHeaders() }
-    );
-  }
+
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.token;

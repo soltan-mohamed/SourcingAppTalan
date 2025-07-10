@@ -48,7 +48,11 @@ public class EvaluationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvaluation(@PathVariable Long id) {
-        evaluationService.deleteEvaluation(id);
-        return ResponseEntity.noContent().build();
+        try {
+            evaluationService.deleteEvaluation(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }

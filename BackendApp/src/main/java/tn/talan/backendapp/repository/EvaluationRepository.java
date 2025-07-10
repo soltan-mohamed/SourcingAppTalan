@@ -1,6 +1,7 @@
 package tn.talan.backendapp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -40,4 +41,14 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
     );
 
 
+    boolean existsByRecrutementId(Long recrutementId);
+
+    @Override
+    @Modifying
+    @Query("DELETE FROM Evaluation e WHERE e.id = :id")
+    void deleteById(@Param("id") Long id);
+
+    @Modifying
+    @Query("DELETE FROM Evaluation e WHERE e.id = :id")
+    void customDeleteById(@Param("id") Long id);
 }

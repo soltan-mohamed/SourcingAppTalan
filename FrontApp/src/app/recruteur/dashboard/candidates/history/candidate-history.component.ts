@@ -27,6 +27,7 @@ import { AuthService } from '@core/service/auth.service';
 import { ConfirmDialogComponent } from '../dialog/confirm-dialog.component';
 import { User } from '@core/models/user';
 import { UserService } from '@core/service/user.service';
+import { EditEvaluationComponent } from '../editEval/edit-evaluation.component';
 
 interface RecruitmentNode {
   expandable: boolean;
@@ -296,6 +297,19 @@ private loadEvaluationsForRecruitment(node: RecruitmentNode): void {
     });
   }
 
+  openEditDialog(evaluation: Evaluation): void {
+  const dialogRef = this.dialog.open(EditEvaluationComponent, {
+    width: '600px',
+    data: { evaluation }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      // Refresh your evaluations list
+    }
+  });
+}
+
   // Permission Methods
 canAddEvaluation(recruitment: Recruitment): boolean {
   const currentUser = this.authService.currentUserValue;
@@ -362,28 +376,36 @@ canAddEvaluation(recruitment: Recruitment): boolean {
     });
   }
 
-  confirmDeleteEvaluation(id: number): void {
-    const confirmDialog = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Delete Evaluation',
-        message: 'Are you sure you want to delete this evaluation?'
-      }
-    });
+confirmDeleteEvaluation(id: number): void {
+  const confirmDialog = this.dialog.open(ConfirmDialogComponent, {
+    data: {
+      title: 'Delete Evaluation',
+      message: 'Are you sure you want to delete this evaluation?'
+    }
+  });
 
-    confirmDialog.afterClosed().subscribe(result => {
-      if (result) {
-        this.evaluationService.deleteEvaluation(id).subscribe({
-          next: () => {
-            this.snackBar.open('Evaluation deleted', 'Close', { duration: 3000 });
-            this.loadCandidateHistory();
-          },
-          error: (err) => {
-            this.snackBar.open('Error deleting evaluation', 'Close', { duration: 3000 });
-          }
-        });
-      }
-    });
-  }
+  confirmDialog.afterClosed().subscribe(result => {
+    if (result) {
+      this.evaluationService.deleteEvaluation(id).subscribe({
+        next: () => {
+          this.snackBar.open('Evaluation deleted successfully', 'Close', { 
+            duration: 5000,
+            panelClass: ['success-snackbar'] 
+          });
+          // Force reload from server
+          this.loadCandidateHistory();
+        },
+        error: (err) => {
+          console.error('Detailed error:', err);
+          this.snackBar.open(`Delete failed: ${err.message}`, 'Close', { 
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    }
+  });
+}
 
   // Evaluation Helpers
   getEvaluationIcon(type: string): string {

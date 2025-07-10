@@ -162,7 +162,7 @@
             <div *ngIf="canManageEvaluation(node.data)" class="flex space-x-1">
               <button mat-icon-button 
                       color="primary"
-                      (click)="$event.stopPropagation(); openEditEvaluationDialog(node.data)"
+                      (click)="$event.stopPropagation(); openEditDialog(node.data)"
                       matTooltip="Edit Evaluation">
                 <mat-icon>edit</mat-icon>
               </button>
