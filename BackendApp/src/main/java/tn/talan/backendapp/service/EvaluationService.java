@@ -19,32 +19,71 @@ public class EvaluationService {
     private final EvaluationRepository evaluationRepo;
     private final RecrutementRepository recrutementRepo;
     private final UserRepository userRepo;
+    private final CandidateRepository candidateRepo;
 
     public EvaluationService(EvaluationRepository evaluationRepo,
                              RecrutementRepository recrutementRepo,
-                             UserRepository userRepo) {
+                             UserRepository userRepo,
+                             CandidateRepository candidateRepo) {
         this.evaluationRepo = evaluationRepo;
         this.recrutementRepo = recrutementRepo;
         this.userRepo = userRepo;
+        this.candidateRepo = candidateRepo;
     }
 
     public Evaluation createEvaluation(Long recrutementId, Evaluation evaluation) {
         User currentUser = getCurrentUser();
-
-        if (!currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER  )) {
-            throw new UnauthorizedAccessException("Only recruteurs can create evaluations");
-        }
-
         Recrutement recrutement = recrutementRepo.findById(recrutementId)
                 .orElseThrow(() -> new ResourceNotFoundException("Recruitment not found"));
 
-        evaluation.setRecrutement(recrutement);
-        evaluation.setEvaluateur(currentUser);
-        evaluation.setDate(LocalDateTime.now());
-        evaluation.setStatut(Statut.IN_PROGRESS);
+        // Check permissions
+        if (!currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER) &&
+                !recrutement.getRecruteur().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedAccessException("Not authorized to create evaluation");
+        }
 
-        return evaluationRepo.save(evaluation);
+        // Get and validate evaluator
+        User selectedEvaluator = userRepo.findById(evaluation.getEvaluateur().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Evaluator not found"));
+
+        if (!selectedEvaluator.getRoles().contains(Role.EVALUATEUR)) {
+            throw new IllegalArgumentException("Selected user must have EVALUATEUR role");
+        }
+
+        // Set evaluation details
+        evaluation.setRecrutement(recrutement);
+        evaluation.setEvaluateur(selectedEvaluator);
+        evaluation.setRecruteur(recrutement.getRecruteur());
+        evaluation.setDate(LocalDateTime.now());
+        evaluation.setStatut(Statut.SCHEDULED);
+
+        // Save evaluation
+        Evaluation savedEvaluation = evaluationRepo.save(evaluation);
+
+        // Update candidate status to SCHEDULED
+        if (recrutement.getCandidate() != null) {
+            recrutement.getCandidate().setStatut(Statut.SCHEDULED);
+            candidateRepo.save(recrutement.getCandidate());
+        }
+
+        return savedEvaluation;
     }
+
+    public boolean updateCandidateStatus(Long recrutementId, String newStatus) {
+        Recrutement recrutement = recrutementRepo.findById(recrutementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recruitment not found"));
+
+        if (recrutement.getCandidate() != null) {
+            recrutement.getCandidate().setStatut(Statut.valueOf(newStatus));
+            candidateRepo.save(recrutement.getCandidate());
+            return true;
+        }
+        return false;
+    }
+
+
+
+
 
     public Evaluation updateEvaluation(Long evaluationId, Evaluation evaluationDetails) {
         Evaluation evaluation = evaluationRepo.findById(evaluationId)
@@ -74,7 +113,17 @@ public class EvaluationService {
 
     public List<Evaluation> getEvaluationsByEvaluateur() {
         User currentUser = getCurrentUser();
-        return evaluationRepo.findByEvaluateurId(currentUser.getId());
+
+        if (currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER)) {
+            return evaluationRepo.findByRecruteurIdAndEvaluateurRole(
+                    currentUser.getId().longValue(),  // Convert Integer to Long if needed
+                    Role.EVALUATEUR
+            );
+        }
+        else if (currentUser.getRoles().contains(Role.EVALUATEUR)) {
+            return evaluationRepo.findByEvaluateurId(currentUser.getId());
+        }
+        throw new UnauthorizedAccessException("Unauthorized access to evaluations");
     }
 
     public void deleteEvaluation(Long evaluationId) {

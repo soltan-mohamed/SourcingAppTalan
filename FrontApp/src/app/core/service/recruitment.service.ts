@@ -15,12 +15,12 @@ export class RecruitmentService {
     private authService: AuthService
   ) {}
 
-  getRecruitmentsByCandidate(candidateId: number): Observable<Recruitment[]> {
-    return this.http.get<Recruitment[]>(
-      `${this.apiUrl}/candidate/${candidateId}`,
-      { headers: this.getAuthHeaders() }
-    );
-  }
+getRecruitmentsByCandidate(candidateId: number): Observable<Recruitment[]> {
+  return this.http.get<Recruitment[]>(
+    `${this.apiUrl}/candidate/${candidateId}?_expand=recruteur`,
+    { headers: this.getAuthHeaders() }
+  );
+}
 
   createRecruitment(candidateId: number, position: string, managerId: number): Observable<Recruitment> {
     return this.http.post<Recruitment>(
@@ -64,11 +64,5 @@ export class RecruitmentService {
 
 
 
- /* canManageRecruitment(recruitment: Recruitment): boolean {
-  const currentUser = this.authService.currentUserValue;
-  if (!currentUser) return false;
-  
-  return this.authService.hasRole(Role.RECRUTEUR_MANAGER) ||
-         recruitment.demandeur.id === currentUser.id ;
-}*/
+
 }

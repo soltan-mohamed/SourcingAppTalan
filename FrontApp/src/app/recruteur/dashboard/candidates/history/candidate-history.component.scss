@@ -1,0 +1,17 @@
+/* Add to your global styles */
+.evaluation-list {
+  @apply mt-6;
+}
+
+.evaluation-item {
+  @apply p-4 border rounded-lg mb-2 shadow-sm;
+  border-color: var(--border-color);
+}
+
+.evaluation-item-header {
+  @apply flex justify-between items-center mb-2;
+}
+
+.evaluation-item-details {
+  @apply text-sm text-gray-600;
+}

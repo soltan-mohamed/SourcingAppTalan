@@ -18,9 +18,12 @@
 
   <!-- Content -->
   <div *ngIf="!loading && candidate" class="flex-1 overflow-y-auto p-8">
+    <!-- Debug Info (can be removed in production) -->
+
+
     <!-- Candidate Info -->
     <div class="mb-8">
-      <div class="bg-gray-50 rounded-lg p-6">
+      <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h3 class="text-xl font-semibold text-gray-900 mb-4">
@@ -58,49 +61,127 @@
 
     <!-- Recruitment History Tree -->
     <div>
-  <div>
-    <div class="flex justify-between items-center mb-5">
-      <h4 class="text-lg font-semibold text-gray-900">Recruitment Processes</h4>
-
-    </div>
-
-<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="bg-gray-50 border border-gray-200 rounded-lg">
-  <!-- Parent Node (Recruitment Process) -->
-  <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodeToggle
-                class="hover:bg-gray-100 transition-colors">
-    <div class="flex w-full items-center p-4">
-      <!-- Toggle button -->
-  <button mat-icon-button (click)="onNodeToggle(node)" class="mr-3">
-    <mat-icon class="text-blue-600">
-      {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-    </mat-icon>
-  </button>
-      
-      <!-- Recruitment info -->
-      <div class="flex-1">
-        <h5 class="font-semibold text-gray-900">{{ node.name }}</h5>
-        <div class="flex items-center mt-1">
-          <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getStatusColor(node.data.status)">
-            {{ node.data.status }}
-          </span>
-          <span class="text-sm text-gray-600 ml-3">
-            Manager: {{ node.data.manager?.fullName || 'Not assigned' }}
-          </span>
-        </div>
+      <div class="flex justify-between items-center mb-5">
+        <h4 class="text-lg font-semibold text-gray-900">Recruitment Processes</h4>
+        <button mat-button color="primary" (click)="refreshData()">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
       </div>
-      
-      <!-- Add Evaluation button -->
-<button mat-icon-button 
-        color="primary"
-        (click)="openAddEvaluationDialog(node.data.id)"
-        *ngIf="canAddEvaluation(node.data)"
-        matTooltip="Add Evaluation">
-  <mat-icon>add</mat-icon>
-</button>
-    </div>
-  </mat-tree-node>
 
-</mat-tree>
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="bg-gray-50 border border-gray-200 rounded-lg">
+        <!-- Parent Node (Recruitment Process) -->
+        <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodeToggle
+                      class="hover:bg-gray-100 transition-colors border-b border-gray-100">
+          <div class="flex w-full items-center p-4">
+            <!-- Toggle button -->
+            <button mat-icon-button (click)="onNodeToggle(node)" class="mr-3">
+              <mat-icon class="text-blue-600">
+                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+              </mat-icon>
+            </button>
+            
+            <!-- Recruitment info -->
+            <div class="flex-1">
+              <div class="flex items-center">
+                <h5 class="font-semibold text-gray-900 mr-3">{{ node.data.position }}</h5>
+                <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getStatusColor(node.data.statut)">
+                  {{ node.data.statut }}
+                </span>
+              </div>
+              
+              <div class="mt-2 text-sm text-gray-600 grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div class="flex items-center">
+                  <span><strong>Recruiter:</strong> {{ node.data.recruteur?.fullName || 'Not assigned' }}</span>
+                </div>
+                <div class="flex items-center">
+                  <span><strong>Manager:</strong> {{ node.data.manager?.fullName || 'Not assigned' }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Action buttons -->
+            <div class="flex space-x-2">
+              <button mat-icon-button 
+                      color="primary"
+                      (click)="$event.stopPropagation(); openAddEvaluationDialog(node.data.id)"
+                      *ngIf="canAddEvaluation(node.data)"
+                      matTooltip="Add Evaluation">
+                <mat-icon>add</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      color="warn"
+                      (click)="$event.stopPropagation(); confirmDeleteRecruitment(node.data.id)"
+                      *ngIf="canDeleteRecruitment(node.data)"
+                      matTooltip="Delete Process">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-tree-node>
+
+        <!-- Child Node (Evaluation) -->
+        <mat-tree-node *matTreeNodeDef="let node; when: isEvaluationNode" matTreeNodePadding
+                      class="hover:bg-gray-50 pl-16 border-b border-gray-100">
+          <div class="flex items-center p-3">
+            <div class="flex-1">
+              <div class="flex items-center">
+                <mat-icon [class]="'mr-2 ' + getEvaluationIconColor(node.data.type)">
+                  {{ getEvaluationIcon(node.data.type) }}
+                </mat-icon>
+                <span class="font-medium">{{ node.data.type }} Evaluation</span>
+              </div>
+              <div class="ml-8 mt-1">
+                <div class="flex items-center">
+                  <span [class]="'px-2 py-1 rounded-full text-xs font-medium mr-3 ' + getStatusColor(node.data.statut)">
+                    {{ node.data.statut }}
+                  </span>
+                  <span class="text-xs text-gray-500">
+                    {{ formatDateTime(node.data.date) }}
+                  </span>
+                </div>
+                <div class="text-sm text-gray-600 mt-1">
+                  <p>{{ node.data.description || 'No description provided' }}</p>
+<div class="flex items-center mt-1 text-xs text-gray-500">
+  <mat-icon class="mr-1" style="font-size: 16px;">person_outline</mat-icon>
+  <ng-container *ngIf="node.data.evaluateur; else noEvaluator">
+    <span>Evaluated by: {{ node.data.evaluateur.fullName }}</span>
+    <span class="text-gray-400 ml-1">
+      ({{ getRoleNames(node.data.evaluateur.roles) }})
+    </span>
+  </ng-container>
+  <ng-template #noEvaluator>
+    <span>Evaluator not assigned</span>
+  </ng-template>
+</div>
+
+<!-- Debugging help (remove after fixing) -->
+                </div>
+              </div>
+            </div>
+            <div *ngIf="canManageEvaluation(node.data)" class="flex space-x-1">
+              <button mat-icon-button 
+                      color="primary"
+                      (click)="$event.stopPropagation(); openEditEvaluationDialog(node.data)"
+                      matTooltip="Edit Evaluation">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      color="warn"
+                      (click)="$event.stopPropagation(); confirmDeleteEvaluation(node.data.id)"
+                      matTooltip="Delete Evaluation">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-tree-node>
+      </mat-tree>
+
+      <!-- Empty State -->
+      <div *ngIf="dataSource.data.length === 0" class="text-center py-8 text-gray-500">
+        <mat-icon class="text-4xl mb-2">folder_open</mat-icon>
+        <p>No recruitment processes found for this candidate</p>
+      </div>
     </div>
   </div>
 </div>

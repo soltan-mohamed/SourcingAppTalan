@@ -21,17 +21,44 @@ export class EvaluationService {
     const currentUser = this.authService.currentUserValue;
     if (!currentUser) return false;
     
+    // Allow RECRUTEUR_MANAGER or the evaluator who created the evaluation
     return this.authService.hasRole(Role.RECRUTEUR_MANAGER) ||
            evaluation.evaluateur?.id === currentUser.id;
   }
 
-  createEvaluation(recruitmentId: number, evaluation: Evaluation): Observable<Evaluation> {
-    return this.http.post<Evaluation>(
-      `${this.apiUrl}/recrutement/${recruitmentId}`,
-      evaluation,
-      { headers: this.getAuthHeaders() }
-    );
+canAddEvaluation(recruitment: Recruitment): boolean {
+  const currentUser = this.authService.currentUserValue;
+  if (!currentUser || !recruitment?.recruteur) {
+    console.log('Cannot add evaluation - missing user or recruteur');
+    return false;
   }
+  
+  console.log('Current User:', currentUser);
+  console.log('Recruitment Recruteur:', recruitment.recruteur);
+  console.log('User Roles:', currentUser.roles);
+  console.log('Is RECRUTEUR_MANAGER:', this.authService.hasRole(Role.RECRUTEUR_MANAGER));
+  console.log('Is RECRUTEUR:', this.authService.hasRole(Role.RECRUTEUR));
+  console.log('Is Owner:', recruitment.recruteur.id === currentUser.id);
+
+  return this.authService.hasRole(Role.RECRUTEUR_MANAGER) ||
+         (this.authService.hasRole(Role.RECRUTEUR) && 
+          recruitment.recruteur.id === currentUser.id);
+}
+
+createEvaluation(recruitmentId: number, evaluationData: any): Observable<Evaluation> {
+  const payload = {
+    type: evaluationData.type,
+    description: evaluationData.description,
+    date: evaluationData.date,
+    evaluateur: { id: evaluationData.evaluateurId }
+  };
+
+  return this.http.post<Evaluation>(
+    `${this.apiUrl}/recrutement/${recruitmentId}`,
+    payload,
+    { headers: this.getAuthHeaders() }
+  );
+}
 
   updateEvaluation(id: number, evaluation: Evaluation): Observable<Evaluation> {
     return this.http.put<Evaluation>(
@@ -41,20 +68,28 @@ export class EvaluationService {
     );
   }
 
-  getEvaluationsByRecruitment(recruitmentId: number): Observable<Evaluation[]> {
-    return this.http.get<Evaluation[]>(
-      `${this.apiUrl}/recrutement/${recruitmentId}`,
-      { headers: this.getAuthHeaders() }
-    ).pipe(
-      map(evaluations => {
-        return evaluations.map(e => ({
+getEvaluationsByRecruitment(recruitmentId: number): Observable<Evaluation[]> {
+  return this.http.get<Evaluation[]>(
+    `${this.apiUrl}/recrutement/${recruitmentId}`,
+    { headers: this.getAuthHeaders() }
+  ).pipe(
+    map(evaluations => {
+      return evaluations.map(e => {
+        // Only map evaluateur if it exists, and do not add extra properties
+        return {
           ...e,
-          isEditable: this.canManageEvaluation(e),
-          isDeleteable: this.canManageEvaluation(e)
-        }));
-      })
-    );
-  }
+          evaluateur: e.evaluateur
+            ? {
+                id: e.evaluateur.id,
+                fullName: e.evaluateur.fullName,
+                roles: e.evaluateur.roles || []
+              }
+            : undefined // Use undefined instead of null
+        } as Evaluation;
+      });
+    })
+  );
+}
 
   getMyEvaluations(): Observable<Evaluation[]> {
     return this.http.get<Evaluation[]>(

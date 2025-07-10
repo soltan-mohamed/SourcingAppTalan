@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.*;
 import tn.talan.backendapp.entity.Evaluation;
 import tn.talan.backendapp.service.EvaluationService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/evaluations")
@@ -21,7 +23,9 @@ public class EvaluationController {
     public ResponseEntity<Evaluation> createEvaluation(
             @PathVariable Long recrutementId,
             @RequestBody Evaluation evaluation) {
-        return ResponseEntity.ok(evaluationService.createEvaluation(recrutementId, evaluation));
+
+        Evaluation createdEvaluation = evaluationService.createEvaluation(recrutementId, evaluation);
+        return ResponseEntity.ok(createdEvaluation);
     }
 
     @PutMapping("/{id}")

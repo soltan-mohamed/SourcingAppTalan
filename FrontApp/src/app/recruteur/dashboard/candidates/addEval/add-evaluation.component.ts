@@ -77,45 +77,47 @@ export class AddEvaluationComponent implements OnInit {
     this.loadEvaluators();
   }
 
-  loadEvaluators(): void {
-    this.userService.getEvaluators().subscribe({
-      next: (users) => {
-        this.evaluators = users;
+loadEvaluators(): void {
+  this.userService.getEvaluators().subscribe({
+    next: (users) => {
+      // Filter to only show users with EVALUATEUR role
+      this.evaluators = users.filter(user => 
+        user.roles?.includes(Role.EVALUATEUR)
+      );
+    },
+    error: (err) => {
+      console.error('Error loading evaluators:', err);
+    }
+  });
+}
+
+onSubmit(): void {
+  if (this.evaluationForm.valid) {
+    this.loading = true;
+    const evaluationData = {
+      type: this.evaluationForm.value.type,
+      description: this.evaluationForm.value.description,
+      date: this.evaluationForm.value.date,
+      evaluateurId: this.evaluationForm.value.evaluateurId
+    };
+
+    this.evaluationService.createEvaluation(this.data.recrutementId, evaluationData).subscribe({
+      next: (response) => {
+        this.snackBar.open('Evaluation created and candidate status updated to SCHEDULED', 'Close', {
+          duration: 3000
+        });
+        this.dialogRef.close(response);
       },
       error: (err) => {
-        console.error('Error loading evaluators:', err);
+        console.error('Error:', err);
+        this.snackBar.open('Failed to create evaluation', 'Close', {
+          duration: 3000
+        });
+        this.loading = false;
       }
     });
   }
-
-  onSubmit(): void {
-    if (this.evaluationForm.valid) {
-      this.loading = true;
-      const evaluationData = {
-        ...this.evaluationForm.value
-      };
-
-      this.evaluationService.createEvaluation(this.data.recrutementId, evaluationData).subscribe({
-        next: (response) => {
-          this.snackBar.open('Evaluation created successfully', 'Close', {
-            duration: 3000
-          });
-          this.dialogRef.close(response);
-        },
-        error: (err) => {
-          console.error('Error creating evaluation:', err);
-          this.snackBar.open('Failed to create evaluation', 'Close', {
-            duration: 3000
-          });
-          this.loading = false;
-        },
-        complete: () => {
-          this.loading = false;
-        }
-      });
-    }
-  }
-
+}
   onCancel(): void {
     this.dialogRef.close();
   }

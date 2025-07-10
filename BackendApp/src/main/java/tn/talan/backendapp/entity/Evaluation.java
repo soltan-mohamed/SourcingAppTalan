@@ -1,6 +1,8 @@
 package tn.talan.backendapp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.talan.backendapp.enums.Statut;
@@ -31,7 +33,17 @@ public class Evaluation {
 
     @ManyToOne
     @JoinColumn(name = "evaluateur_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)  // Only include if not null
     private User evaluateur;
+
+    @JsonProperty("evaluateur")
+    public User getEvaluateur() {
+        return this.evaluateur;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "recruteur_id", nullable = false) // Add this
+    private User recruteur;
 
     @ManyToOne
     @JoinColumn(name = "recrutement_id")
