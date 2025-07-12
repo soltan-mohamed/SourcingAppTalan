@@ -6,51 +6,57 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 
+import { User } from 'app/models/user';
+import { UsersService } from 'app/services/users-service';
+
 @Component({
   selector: 'app-add-interview-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatInputModule, MatSelectModule, MatButtonModule],
-  template: `
-    <h2>Add Interview</h2>
-    <form class="dialog-form" (ngSubmit)="save()">
-      <input [(ngModel)]="interview.candidate" name="candidate" placeholder="Candidate" required />
-      <input [(ngModel)]="interview.date" name="date" type="date" required />
-      <input [(ngModel)]="interview.time" name="time" type="time" required />
-
-      <mat-select [(ngModel)]="interview.type" name="type" placeholder="Type" required>
-        <mat-option value="Technique">Technique</mat-option>
-        <mat-option value="RH">RH</mat-option>
-        <mat-option value="Managerial">Managerial</mat-option>
-      </mat-select>
-
-      <mat-select [(ngModel)]="interview.evaluator" name="evaluator" placeholder="Evaluator" required >
-        <mat-option value="Anouar Khemeja">Anouar Khemeja</mat-option>
-        <mat-option value="Safouane Chabchoub">Safouane Chabchoub</mat-option>
-        <mat-option value="Alice Johnson">Alice Johnson</mat-option>
-      </mat-select>
-
-      <div class="dialog-actions">
-        <button mat-button type="submit">Save</button>
-        <button mat-button (click)="dialogRef.close()">Cancel</button>
-      </div>
-    </form>
-  `,
+  imports: [
+    CommonModule, 
+    FormsModule,
+    MatInputModule,
+    MatSelectModule, 
+    MatButtonModule
+  ],
+  templateUrl: './add-interview.html',
   styleUrls: ['./add-interview.scss']
 })
 export class AddInterviewComponent {
+
+  users : User[] = [];
   interview = {
-    candidate: '',
     date: '',
     time: '',
     type: '',
     evaluator: ''
   };
 
-  constructor(public dialogRef: MatDialogRef<AddInterviewComponent>) {}
+  constructor(
+    public dialogRef: MatDialogRef<AddInterviewComponent>,
+    private usersService : UsersService,
+  ) {}
 
   save() {
-    if (this.interview.candidate && this.interview.date) {
+    if (this.interview.date) {
       this.dialogRef.close(this.interview);
     }
   }
+
+  getUsersByRole(role : string): void {
+    this.usersService.getAllUsersByRole(role).subscribe({
+      next: (data) => {
+        this.users = data;
+      },
+      error: (err) => {
+        console.error("An internal server error has occurred !");
+      }
+    });
+  }
+
+  onTypeChange(event: Event): void {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.getUsersByRole(selectedValue)
+  }
+
 }

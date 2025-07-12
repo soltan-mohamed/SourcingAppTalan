@@ -12,48 +12,18 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AddInterviewComponent } from '../interviews/add-interview/add-interview';
 
 import { Candidate } from 'app/models/candidate';
+import { Recrutement } from 'app/models/recrutement';
+import { Evaluation } from 'app/models/evaluation';
 
 type EvaluationStatus = 'pending' | 'passed' | 'failed' | 'in-progress' | 'scheduled' | 'KO' | 'accepted';
 
-interface RecrutementEvaluation {
-  candidate?: CandidateT;
-  poste?: string;
-  evaluations?: Evaluation[];
-}
-
-interface Evaluation {
-  id: string;
-  type?: string;
-  status: EvaluationStatus ;
-  date?: Date;
-  score?: number;
-  notes?: string;
-  evaluator?: string;
-  editing : boolean;
-}
-
-interface CandidateT {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  contactDate: Date;
-  recruiter: {
-    name: string;
-    email: string;
-  };
-  currentStatus: EvaluationStatus;
-  position: string;
-  evaluationHistory?: Evaluation[];
-}
 
 // Flat node interface for the tree
 interface FlatNode {
   expandable: boolean;
   name: string;
   level: number;
-  data: RecrutementEvaluation | Evaluation;
+  data: Recrutement | Evaluation;
 }
 
 @Component({
@@ -70,21 +40,23 @@ interface FlatNode {
   styleUrl: './candidate-history.scss'
 })
 export class CandidateHistory implements OnInit {
-  candidate: CandidateT | null = null;
-  recruitementData: RecrutementEvaluation[] = [];
+  recruitementData: Recrutement[] = [];
   loading = false;
   editingEval! : Evaluation;
-
   availableStatuses : EvaluationStatus[] = ['accepted' ,  'scheduled' , 'KO'];
 
+
+  treeControls: FlatTreeControl<FlatNode>[] = [];
+  dataSources: MatTreeFlatDataSource<Recrutement | Evaluation, FlatNode>[] = [];
+  
   // Tree control setup
-  private _transformer = (node: RecrutementEvaluation | Evaluation, level: number): FlatNode => {
-    // RecrutementEvaluation node
+  private _transformer = (node: Recrutement | Evaluation, level: number): FlatNode => {
+    // Recrutement node
     if ('evaluations' in node) {
-      const recruitment = node as RecrutementEvaluation;
+      const recruitment = node as Recrutement;
       return {
-        expandable: !!recruitment.evaluations && recruitment.evaluations.length > 0,
-        name: `Position : ${recruitment.poste}`,
+        expandable: !!recruitment.evaluations,
+        name: `Position : ${recruitment.position}`,
         level: level,
         data: recruitment,
       };
@@ -93,7 +65,7 @@ export class CandidateHistory implements OnInit {
       const evaluation = node as Evaluation;
       return {
         expandable: false,
-        name: `${evaluation.type} - ${evaluation.status}`,
+        name: `${evaluation.type} - ${evaluation.statut}`,
         level: level,
         data: evaluation,
       };
@@ -111,13 +83,11 @@ export class CandidateHistory implements OnInit {
     node => node.expandable,
     node => {
       if ('evaluations' in node) {
-        return (node as RecrutementEvaluation).evaluations || [];
+        return (node as Recrutement).evaluations || [];
       }
       return [];
     }
   );
-
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
@@ -140,23 +110,15 @@ export class CandidateHistory implements OnInit {
   
   changeStatus(newStatus: EvaluationStatus, eval_id : number) {
     const evalu = this.recruitementData
-      .flatMap(item => item.evaluations)
-      .find(evaluation => evaluation!.id === String(eval_id));  
+      .flatMap(item => item.evaluations || [])
+      .find(evaluation => evaluation && String(evaluation.id) === String(eval_id));  
     if (evalu) {
-      evalu.status = newStatus;
+      evalu.statut = newStatus;
       console.log("Updated evaluation ! ");
       console.log("evalu : ",evalu);
-    // candidate.candidate.currentStatus = newStatus;
     }
-    
-    // Close the dropdown
+
     this.closeDropdown();    
-    // Optional: Emit an event or call a service to save the change
-    // this.onStatusChange.emit({
-    //   node: this.node,
-    //   oldStatus: this.node.data.status,
-    //   newStatus: newStatus
-    // });
   }
 
   onClose(): void {
@@ -168,153 +130,30 @@ export class CandidateHistory implements OnInit {
     this.loadCandidateData();
   }
 
-
-  getEvaluationIndex(evaluation: Evaluation | RecrutementEvaluation): number {
-    if ('status' in evaluation && 'id' in evaluation) {
-      const ev = evaluation as Evaluation;
-      if (!this.candidate?.evaluationHistory) return 1;
-      
-      const index = this.candidate.evaluationHistory.findIndex(e => e.id === ev.id);
-      return index >= 0 ? index + 1 : 1;
-    }
-    
-    return 1;
-  }
-
   private loadCandidateData(): void {
     this.loading = true;
 
-    // Simulate API call
     setTimeout(() => {
-      this.recruitementData = [{
-        candidate: {
-          id: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john.doe@email.com',
-          phone: '22 561 242',
-          contactDate: new Date('2024-01-15'),
-          recruiter: {
-            name: 'Sarah Johnson',
-            email: 'sarah.johnson@company.com'
-          },
-          currentStatus: 'passed',
-          position: 'Senior Frontend Developer'
-        },
-        poste: "Senior Software Engineer",
-        evaluations: [
-          {
-            id: '1',
-            type: 'HR',
-            status: 'passed',
-            date: new Date('2024-01-16'),
-            evaluator: 'Sarah Johnson',
-            notes: 'Good communication skills, relevant experience',
-            editing: false
-          },
-          {
-            id: '2',
-            type: 'HR',
-            status: 'passed',
-            date: new Date('2024-01-20'),
-            score: 85,
-            evaluator: 'Mike Chen',
-            notes: 'Cultural fit confirmed, salary expectations aligned',
-            editing: false
-          },
-          {
-            id: '3',
-            type: 'Coding Challenge',
-            status: 'scheduled',
-            date: new Date('2024-01-25'),
-            score: 92,
-            evaluator: 'Tech Team',
-            notes: 'Excellent problem-solving skills, clean code structure',
-            editing: false
-          },
-          {
-            id: '4',
-            type: 'Technical',
-            status: 'KO',
-            date: new Date('2024-01-30'),
-            evaluator: 'Lead Developer',
-            notes: 'Scheduled for system design discussion',
-            editing: false
-          }
-        ]
-      }];
+      this.recruitementData = this.data.recrutements || [];
+      
+      this.treeControls = [];
+      this.dataSources = [];
+      
+      this.recruitementData.forEach((recruitment, index) => {
 
-      // Set the data source with an array containing our recruitment data
-      this.dataSource.data = this.recruitementData;
-
-      this.candidate = {
-        id: '1',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@email.com',
-        phone: '22 561 242',
-        contactDate: new Date('2024-01-15'),
-        recruiter: {
-          name: 'Sarah Johnson',
-          email: 'sarah.johnson@company.com'
-        },
-        currentStatus: 'passed',
-        position: 'Senior Frontend Developer',
-        evaluationHistory: [
-          {
-            id: '1',
-            type: 'Initial Screening',
-            status: 'passed',
-            date: new Date('2024-01-16'),
-            evaluator: 'Sarah Johnson',
-            notes: 'Good communication skills, relevant experience',
-            editing: false
-
-          },
-          {
-            id: '2',
-            type: 'HR Interview',
-            status: 'passed',
-            date: new Date('2024-01-20'),
-            score: 85,
-            evaluator: 'Mike Chen',
-            notes: 'Cultural fit confirmed, salary expectations aligned',
-            editing: false
-
-          },
-          {
-            id: '3',
-            type: 'Coding Challenge',
-            status: 'scheduled',
-            date: new Date('2024-01-25'),
-            score: 92,
-            evaluator: 'Tech Team',
-            notes: 'Excellent problem-solving skills, clean code structure',
-            editing: false,
-
-          },
-          {
-            id: '4',
-            type: 'Technical Interview',
-            status: 'in-progress',
-            date: new Date('2024-01-30'),
-            evaluator: 'Lead Developer',
-            notes: 'Scheduled for system design discussion',
-            editing: false
-          },
-          {
-            id: '5',
-            type: 'Final Interview',
-            status: 'pending',
-            evaluator: 'CTO',
-            editing: false
-
-          }
-        ]
-      };
-
+        const treeControl = new FlatTreeControl<FlatNode>(
+          node => node.level,
+          node => node.expandable
+        );
+        
+        const dataSource = new MatTreeFlatDataSource<Recrutement | Evaluation, FlatNode>(treeControl, this.treeFlattener);
+        dataSource.data = [recruitment];
+        
+        this.treeControls.push(treeControl);
+        this.dataSources.push(dataSource);
+      });      
       this.loading = false;
-    }, 1000);
+    }, 400);
   }
 
   getStatusColor(status: string): string {
@@ -347,9 +186,6 @@ export class CandidateHistory implements OnInit {
     return icons[status] || icons['pending'];
   }
 
-  openNewInterview() {
-
-  }
 
   formatContactDate(dateString: string | null | undefined): string {
     if (!dateString) return 'N/A';
@@ -369,9 +205,34 @@ export class CandidateHistory implements OnInit {
         return 'Invalid Date';
     }
   }
-   addInterview() {
-    const dialogRef = this.dialog.open(AddInterviewComponent,{
-      panelClass: 'add-interview-dialog-panel'
+
+
+  getDataSourceForRecruitment(recruitment: Recrutement): MatTreeFlatDataSource<Recrutement | Evaluation, FlatNode> {
+    const index = this.recruitementData.findIndex(r => r.id === recruitment.id);
+    return this.dataSources[index] || new MatTreeFlatDataSource<Recrutement | Evaluation, FlatNode>(
+      new FlatTreeControl<FlatNode>(node => node.level, node => node.expandable), 
+      this.treeFlattener
+    );
+  }
+
+  getEvaluationIndex(evaluation: Evaluation | Recrutement, recruitment: Recrutement): number {
+    if ('statut' in evaluation && 'id' in evaluation) {
+      const ev = evaluation as Evaluation;
+      if (!recruitment.evaluations) return 1;
+      
+      const index = recruitment.evaluations.findIndex(e => e.id === ev.id);
+      return index >= 0 ? index + 1 : 1;
+    }
+    
+    return 1;
+  }
+
+  openNewInterview(recruitment?: Recrutement) {
+    const dialogRef = this.dialog.open(AddInterviewComponent, {
+      panelClass: 'add-interview-dialog-panel',
+      width: '30vw',
+      maxWidth: 'none',
+      data: { recruitment: recruitment }
     });
   }
 }

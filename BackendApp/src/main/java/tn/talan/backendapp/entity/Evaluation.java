@@ -1,5 +1,6 @@
 package tn.talan.backendapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,5 +36,6 @@ public class Evaluation {
 
     @ManyToOne
     @JoinColumn(name = "recrutement_id")
+    @JsonBackReference
     private Recrutement recrutement;
 }

@@ -1,11 +1,14 @@
 package tn.talan.backendapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import tn.talan.backendapp.enums.StatutRecrutement;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +38,11 @@ public class Recrutement {
 
     @ManyToOne
     @JoinColumn(name = "candidate_id")
+    @JsonBackReference
     private Candidate candidate;
 
     @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Evaluation> evaluations = new ArrayList<>();
 
     public Recrutement(String position, StatutRecrutement statut, User demandeur, Candidate candidate) {

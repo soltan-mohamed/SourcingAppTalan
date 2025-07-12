@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Transactional // Add this
 public class CandidateService {
     private final CandidateRepository repository;
 
@@ -21,7 +22,7 @@ public class CandidateService {
     }
 
     public List<Candidate> getAll() {
-        return repository.findAll();
+        return repository.fetchAllWithRecrutements();
     }
 
     public Candidate getById(Long id) {
