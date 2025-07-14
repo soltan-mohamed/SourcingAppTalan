@@ -144,8 +144,8 @@ export class CandidateHistory implements OnInit {
       .find(evaluation => evaluation!.id === String(eval_id));  
     if (evalu) {
       evalu.status = newStatus;
-      console.log("Updated evaluation ! ");
-      console.log("evalu : ",evalu);
+      //console.log("Updated evaluation ! ");
+      //console.log("evalu : ",evalu);
     // candidate.candidate.currentStatus = newStatus;
     }
     

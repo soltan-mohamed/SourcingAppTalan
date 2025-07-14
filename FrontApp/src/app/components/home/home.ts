@@ -36,7 +36,7 @@ export class Home implements OnInit {
 
   ngOnInit() {
 
-    console.log("HOme works !!!!! ");
+    //console.log("HOme works !!!!! ");
 
    
 

@@ -82,11 +82,11 @@ export class AddCandidateComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCurrentUser();
-    console.log('Statuses:', this.statuses);
-    console.log('Initial form value:', this.CandidateForm.value);
+    //console.log('Statuses:', this.statuses);
+    //console.log('Initial form value:', this.CandidateForm.value);
   
     this.CandidateForm.valueChanges.subscribe(values => {
-      console.log('Form values changed:', values);
+      //console.log('Form values changed:', values);
     });
 
     if (this.isEditMode && this.data.candidate) {
@@ -111,7 +111,7 @@ export class AddCandidateComponent implements OnInit {
   getCurrentUser(): void {
     this.userService.getCurrentUser().subscribe({
       next: (user) => {
-        console.log('User data received:', user);
+        //console.log('User data received:', user);
         this.currentUser = {
           id: user.id,
           name: user.fullName

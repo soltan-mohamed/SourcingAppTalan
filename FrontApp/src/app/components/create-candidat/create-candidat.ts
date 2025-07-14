@@ -65,7 +65,7 @@ export class CreateCandidat implements OnInit {
   }
 
   addKeyword(keyword: string) {
-    console.log(this.keywords);
+    //console.log(this.keywords);
     keyword = keyword.trim();
     if (keyword && !this.keywords.includes(keyword) && this.keywords.length < 5) {
       this.keywords.push(keyword);
@@ -158,12 +158,12 @@ export class CreateCandidat implements OnInit {
         file: this.selectedFile
       };
       
-      console.log('Submitting candidate: ...', formData);
+      //console.log('Submitting candidate: ...', formData);
       
       // Simulate API call delay
       setTimeout(() => {
         this.isSubmitting = false;
-        console.log('Candidate submitted successfully!');
+        //console.log('Candidate submitted successfully!');
         this.resetForm();
       }, 2000);
     } else {
@@ -183,7 +183,7 @@ export class CreateCandidat implements OnInit {
   closeForm(): void {
     // Reset form and close modal/dialog
     this.resetForm();
-    console.log('Form closed');
+    //console.log('Form closed');
     // In real app, this would close the modal or navigate away
   }
 

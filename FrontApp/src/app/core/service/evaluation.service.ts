@@ -31,16 +31,16 @@ export class EvaluationService {
 canAddEvaluation(recruitment: Recruitment): boolean {
   const currentUser = this.authService.currentUserValue;
   if (!currentUser || !recruitment?.recruteur) {
-    console.log('Cannot add evaluation - missing user or recruteur');
+    //console.log('Cannot add evaluation - missing user or recruteur');
     return false;
   }
   
-  console.log('Current User:', currentUser);
+  /*console.log('Current User:', currentUser);
   console.log('Recruitment Recruteur:', recruitment.recruteur);
   console.log('User Roles:', currentUser.roles);
   console.log('Is RECRUTEUR_MANAGER:', this.authService.hasRole(Role.RECRUTEUR_MANAGER));
   console.log('Is RECRUTEUR:', this.authService.hasRole(Role.RECRUTEUR));
-  console.log('Is Owner:', recruitment.recruteur.id === currentUser.id);
+  console.log('Is Owner:', recruitment.recruteur.id === currentUser.id);*/
 
   return this.authService.hasRole(Role.RECRUTEUR_MANAGER) ||
          (this.authService.hasRole(Role.RECRUTEUR) && 

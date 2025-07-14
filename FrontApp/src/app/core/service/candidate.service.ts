@@ -22,8 +22,8 @@ export class CandidateService {
       headers: this.getAuthHeaders()
     }).pipe(
       tap(candidates => {
-        console.log('API Response:', candidates);
-        console.log('Current Auth User:', this.authService.currentUserValue);
+        //console.log('API Response:', candidates);
+        //console.log('Current Auth User:', this.authService.currentUserValue);
       }),
 map(candidates => {
   const currentUser = this.authService.currentUserValue;

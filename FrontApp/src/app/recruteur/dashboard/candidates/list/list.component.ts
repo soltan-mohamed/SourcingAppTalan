@@ -65,7 +65,7 @@ export class CandidateListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('Initializing CandidateListComponent');
+    //console.log('Initializing CandidateListComponent');
     this.loadCandidates();
   }
 
@@ -147,7 +147,7 @@ isDeleteable(candidate: Candidate): boolean {
   }
 
   viewCandidate(id: number): void {
-    console.log('View candidate:', id);
+    //console.log('View candidate:', id);
   }
 
   editCandidate(id: number): void {

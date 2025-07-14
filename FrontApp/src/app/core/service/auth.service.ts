@@ -83,7 +83,7 @@ private createUserFromResponse(response: LoginResponse): User {
     }
   }
   
-  console.log('Created user from response:', user);
+  //console.log('Created user from response:', user);
   return user;
 }
 

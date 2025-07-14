@@ -206,7 +206,7 @@ getEvaluatorName(evaluateurId: number): string {
 private loadEvaluationsForRecruitment(node: RecruitmentNode): void {
   this.evaluationService.getEvaluationsByRecruitment(node.data.id).subscribe({
     next: (evaluations) => {
-      console.log('Evaluations data:', evaluations); // Add this line
+      //console.log('Evaluations data:', evaluations); // Add this line
 
       node.children = evaluations.map(evalItem => ({
         expandable: false,
@@ -331,7 +331,7 @@ canAddEvaluation(recruitment: Recruitment): boolean {
   }
 
   // Debug output to verify values
-  console.log('Current User:', {
+  /*console.log('Current User:', {
     id: currentUser.id,
     email: currentUser.email
   });
@@ -339,7 +339,7 @@ canAddEvaluation(recruitment: Recruitment): boolean {
     id: recruitment.recruteur?.id,
     email: recruitment.recruteur?.email
   });
-
+*/
   // Check if user is RECRUTEUR_MANAGER
   if (this.authService.hasRole(Role.RECRUTEUR_MANAGER)) {
     return true;

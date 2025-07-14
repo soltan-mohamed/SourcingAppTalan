@@ -68,7 +68,7 @@ export class EditCandidat implements OnInit {
 
   populateFormWithData(): void {
     if (this.data) {
-      console.log('Received data:', this.data);
+      //console.log('Received data:', this.data);
       
       let fullName = this.extractFirstWord(this.data['name'] || '');
 
@@ -115,7 +115,7 @@ export class EditCandidat implements OnInit {
   }
 
   addKeyword(keyword: string) {
-    console.log(this.keywords);
+    //console.log(this.keywords);
     keyword = keyword.trim();
     if (keyword && !this.keywords.includes(keyword) && this.keywords.length < 5) {
       this.keywords.push(keyword);
@@ -213,7 +213,7 @@ export class EditCandidat implements OnInit {
       // Simulate API call delay
       setTimeout(() => {
         this.isSubmitting = false;
-        console.log('Candidate submitted successfully!');
+        //console.log('Candidate submitted successfully!');
         
         // Close dialog and return the updated data
         this.dialogRef.close(formData);
