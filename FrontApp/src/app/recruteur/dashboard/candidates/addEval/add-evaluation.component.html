@@ -16,13 +16,25 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Evaluator Field - Different based on role -->
+      <!-- Evaluator Field -->
       <ng-container *ngIf="isRecruteurManager(); else regularRecruiter">
         <mat-form-field appearance="outline">
           <mat-label>Evaluator</mat-label>
           <mat-select formControlName="evaluateurId" required>
+            <mat-option *ngIf="isEvaluatorLoading" disabled>
+              <div class="flex items-center">
+                <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
+                <span class="ml-2">Loading evaluators...</span>
+              </div>
+            </mat-option>
             <mat-option *ngFor="let evaluator of evaluators" [value]="evaluator.id">
               {{ evaluator.fullName }}
+              <span *ngIf="evaluator.roles" class="text-gray-500 ml-2">
+                ({{ evaluator.roles.join(', ') }})
+              </span>
+            </mat-option>
+            <mat-option *ngIf="evaluators.length === 0 && !isEvaluatorLoading" disabled>
+              No evaluators available for this type
             </mat-option>
           </mat-select>
           <mat-error *ngIf="evaluationForm.get('evaluateurId')?.hasError('required')">
@@ -56,7 +68,6 @@
       <!-- Description Field -->
       <mat-form-field appearance="outline">
         <mat-label>Description</mat-label>
-        
         <textarea matInput formControlName="description" rows="3"></textarea>
       </mat-form-field>
     </div>

@@ -15,8 +15,8 @@ export interface Evaluation {
 
 export enum TypeEvaluation {
   RH = 'RH',
-  MANAGERIAL = 'MANAGERIAL',
-  TECHNIQUE = 'TECHNIQUE'
+  TECHNIQUE = 'TECHNIQUE',
+  MANAGERIAL = 'MANAGERIAL'
 }
 
 export { Statut };

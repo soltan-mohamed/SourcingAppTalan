@@ -46,13 +46,12 @@ public class EvaluationService {
             throw new UnauthorizedAccessException("Not authorized to create evaluation");
         }
 
-        // Get and validate evaluator
+        // Get and validate evaluator based on evaluation type
         User selectedEvaluator = userRepo.findById(evaluation.getEvaluateur().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Evaluator not found"));
 
-        if (!selectedEvaluator.getRoles().contains(Role.EVALUATEUR)) {
-            throw new IllegalArgumentException("Selected user must have EVALUATEUR role");
-        }
+        // Validate evaluator role based on evaluation type
+        validateEvaluatorRole(evaluation.getType(), selectedEvaluator);
 
         // Set evaluation details
         evaluation.setRecrutement(recrutement);
@@ -73,6 +72,27 @@ public class EvaluationService {
         return savedEvaluation;
     }
 
+    private void validateEvaluatorRole(TypeEvaluation type, User evaluator) {
+        switch (type) {
+            case RH:
+                if (!evaluator.getRoles().contains(Role.RECRUTEUR)) {
+                    throw new IllegalArgumentException("Selected user must have RECRUTEUR role for RH evaluation");
+                }
+                break;
+            case MANAGERIAL:
+                if (!evaluator.getRoles().contains(Role.MANAGER)) {
+                    throw new IllegalArgumentException("Selected user must have MANAGER role for MANAGERIAL evaluation");
+                }
+                break;
+            case TECHNIQUE:
+                if (!evaluator.getRoles().contains(Role.EVALUATEUR)) {
+                    throw new IllegalArgumentException("Selected user must have EVALUATEUR role for TECHNIQUE evaluation");
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid evaluation type");
+        }
+    }
     public boolean updateCandidateStatus(Long recrutementId, String newStatus) {
         Recrutement recrutement = recrutementRepo.findById(recrutementId)
                 .orElseThrow(() -> new ResourceNotFoundException("Recruitment not found"));
