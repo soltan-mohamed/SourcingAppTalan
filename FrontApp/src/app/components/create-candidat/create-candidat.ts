@@ -5,16 +5,21 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar,MatSnackBarModule } from '@angular/material/snack-bar';
+
+import { CandidatesService } from 'app/services/candidates-service';
 
 @Component({
   selector: 'app-create-candidat',
   imports: [ReactiveFormsModule,
     CommonModule,
     MatIconModule,
-    MatChipsModule
+    MatChipsModule,
+    MatSnackBarModule
   ],
   templateUrl: './create-candidat.html',
-  styleUrl: './create-candidat.scss'
+  styleUrl: './create-candidat.scss',
+  
 })
 export class CreateCandidat implements OnInit {
   CandidateForm!: FormGroup;
@@ -30,7 +35,11 @@ export class CreateCandidat implements OnInit {
   // Form submission state
   isSubmitting: boolean = false;
 
-  constructor(private formBuilder: FormBuilder,private dialogRef: MatDialogRef<CreateCandidat>) {}
+  constructor(private formBuilder: FormBuilder,
+    private dialogRef: MatDialogRef<CreateCandidat>,
+    private candidatesService : CandidatesService,
+    private snackBar: MatSnackBar
+  ) {}
 
   onClose(): void {
     this.dialogRef.close();
@@ -154,24 +163,56 @@ export class CreateCandidat implements OnInit {
         prenom: this.CandidateForm.get('prenom')?.value,
         email: this.CandidateForm.get('email')?.value,
         telephone: this.CandidateForm.get('telephone')?.value,
-        competences: this.keywords,
-        file: this.selectedFile
+        statut : "CONTACTED",
+        skills: this.keywords,
+        cv: "testingcv"
+        //this.selectedFile
       };
       
       console.log('Submitting candidate: ...', formData);
+
+
+      this.candidatesService.CreateNewCandidate(formData)
+        .subscribe({
+          next: (response: any) => {
+            this.isSubmitting = false;
+            this.snackBar.open(
+              'Success creating new candidate',
+              'Close',
+              {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                panelClass: ['success-snackbar']
+              }
+            );
+            this.dialogRef.close(response);
+          },
+          error: (error: any) => {
+            this.isSubmitting = false;
+            console.error('Error creating canddiate:', error);
+
+            this.snackBar.open(
+              'Failed to create new candidate: ' + (error.error?.message || 'Unknown error'),
+              'Close',
+              {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+              }
+            );
+          }
+      });
       
-      // Simulate API call delay
-      setTimeout(() => {
-        this.isSubmitting = false;
-        console.log('Candidate submitted successfully!');
-        this.resetForm();
-      }, 2000);
+      // setTimeout(() => {
+      //   this.isSubmitting = false;
+      //   console.log('Candidate submitted successfully!');
+      //   this.resetForm();
+      // }, 2000);
     } else {
       this.CandidateForm.markAllAsTouched();
-      
-      // if (this.selectedDomainNames.length === 0) {
-      //   this.CandidateForm.get('domains')?.setErrors({ required: true });
-      // }
+
       
       if (!this.selectedFile) {
         this.fileError = true;

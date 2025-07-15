@@ -4,24 +4,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import tn.talan.backendapp.entity.Evaluation;
+import tn.talan.backendapp.dtos.createEvaluationDTO;
 import tn.talan.backendapp.service.EvaluationService;
+
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/evaluations")
-@CrossOrigin(origins = "*")
 public class EvaluationController {
-    private final EvaluationService service;
 
+    private final EvaluationService service;
 
     @Autowired
     public EvaluationController(EvaluationService service) {
         this.service = service;
     }
-
 
     @GetMapping
     public List<Evaluation> getAll() {
@@ -33,10 +34,8 @@ public class EvaluationController {
         return service.getById(id);
     }
 
-
-
     @PostMapping
-    public Evaluation create(@RequestBody Evaluation e) {
+    public Evaluation create(@RequestBody createEvaluationDTO e) {
         return service.save(e);
     }
 

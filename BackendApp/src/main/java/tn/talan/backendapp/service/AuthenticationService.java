@@ -1,7 +1,8 @@
 package tn.talan.backendapp.service;
 
 
-
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +16,7 @@ import tn.talan.backendapp.repository.UserRepository;
 
 @Service
 public class AuthenticationService {
+
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -53,5 +55,14 @@ public class AuthenticationService {
 
         return userRepository.findByEmail(input.getEmail())
                 .orElseThrow();
+    }
+
+    public String getCurrentUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            return userDetails.getUsername(); // usually email or username
+        } else {
+            return principal.toString(); // fallback
+        }
     }
 }

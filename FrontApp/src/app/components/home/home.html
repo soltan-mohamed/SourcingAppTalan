@@ -2,24 +2,21 @@
     <mat-sidenav class="!w-[20%]" #sidenav mode="side" [(opened)]="sideBarOpened">
         <div class="p-3 bg m-0 sticky h-full w-full flex-col">
 
-            <!-- App logo + name -->
+            <!-- Talan logo-->
             <div class="p-1 flex justify-center items-center h-[15%] ">
                 <img src="assets\images\talan-logo2.png" alt="Talan Logo" class="h-full mx-auto " >
             </div>
 
-            <hr style="border-color: rgb(52, 145, 16);">
+            <hr style="border-color: rgb(196, 196, 196);">
 
             <!-- My profile div -->
-            <div class="w-full py-3 flex items-center gap-3 px-4">
-                <div class="flex justify-center items-center w-10 h-10 bg-white/20 rounded-full">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjDGMp734S91sDuUFqL51_xRTXS15iiRoHew&s" alt="Talan Logo" class="h-full mx-auto " >
-                </div>
-                <div class="flex-1">
-                    <span class="text-white font-medium text-sm">Med Saber Mahjoub</span>
+            <div class="w-full py-3 flex items-center justify-center gap-3 px-4">
+                <div class="items-center justify-center flex-1">
+                    <span class="flex justify-center text-white text-center font-medium text-sm">{{fullName}}</span>
                 </div>
             </div>
 
-            <hr style="border-color: rgb(52, 145, 16);">
+            <hr style="border-color: rgb(196, 196, 196);">
 
             <!-- Main container for the menu items -->
             <div class="w-full mb-6 justify-center items-center flex flex-col p-0 h-[70%]">
