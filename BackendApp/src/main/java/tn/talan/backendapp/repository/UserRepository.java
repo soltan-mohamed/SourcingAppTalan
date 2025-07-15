@@ -12,7 +12,5 @@ import java.util.Set;
 @Repository
 public interface UserRepository extends CrudRepository<User, Integer> {
     Optional<User> findByEmail(String email);
-
-    // New method to find users by role
-    List<User> findByRolesContaining(Role role);
+    List<User> findByRolesContaining(Role roles);
 }

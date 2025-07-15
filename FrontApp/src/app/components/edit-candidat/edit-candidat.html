@@ -75,27 +75,27 @@
 
             </div>
 
-            <div class="flex gap-2 relative" [ngSwitch]="data['status']">
+            <div class="flex gap-2 relative" [ngSwitch]="data['statut']">
                 <span>Latest status : </span>
-                <div *ngSwitchCase="'accepted'">
-                    <span class="badge badge-solid-green">{{ data['status'] }}</span>
+                <div *ngSwitchCase="'ACCEPTED'">
+                    <span class="badge badge-solid-green">{{ data['statut'] | lowercase }}</span>
                 </div>
                                 
-                <div *ngSwitchCase="'KO'">
-                    <span class="badge badge-solid-red">{{ data['status'] }}</span>
+                <div *ngSwitchCase="'REJECTED'">
+                    <span class="badge badge-solid-red">{{ data['statut'] | lowercase }}</span>
                 </div>
                                 
-                <div *ngSwitchCase="'scheduled'">
-                    <span class="badge badge-solid-orange">{{ data['status'] }}</span>
+                <div *ngSwitchCase="'SCHEDULED'">
+                    <span class="badge badge-solid-orange">{{ data['statut'] | lowercase }}</span>
                 </div>
 
                                 
-                <div *ngSwitchCase="'vivier'">
-                    <span class="badge badge-solid-blue">{{ data['status'] }}</span>
+                <div *ngSwitchCase="'VIVIER'">
+                    <span class="badge badge-solid-blue">{{ data['statut'] | lowercase }}</span>
                 </div>
 
-                <div *ngSwitchCase="'contacted'">
-                    <span class="badge badge-solid-notsched">{{ data['status'] }}</span>
+                <div *ngSwitchCase="'CONTACTED'">
+                    <span class="badge badge-solid-contacted">{{ data['statut'] | lowercase }}</span>
                 </div>
             </div>
             

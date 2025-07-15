@@ -17,7 +17,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: #fff;
 }
 
-.badge-solid-green {
+.badge-solid-accepted {
   background-color: #28a745;
 }
 
@@ -33,8 +33,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   background-color: #4255c1;
 }
 
-.badge-solid-notsched {
+.badge-solid-contacted {
   background-color: #575b75;
+}
+
+.badge-solid-in-progress {
+  background-color: #c7745b;
 }
 
 :root {
@@ -78,4 +82,34 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   .mdc-notched-outline
   .mdc-notched-outline__trailing {
   border-color: var(--color-primary) !important;
+}
+
+.mat-mdc-snack-bar-container.success-snackbar {
+  .mdc-snackbar__surface {
+    background-color: #4CAF50 !important;
+  }
+  .mdc-snackbar__label {
+    color: white !important;
+  }
+  .mdc-button__label {
+    color: white !important;
+  }
+  .mat-mdc-button:hover .mdc-button__label {
+    opacity: 0.8;
+  }
+}
+
+.mat-mdc-snack-bar-container.error-snackbar {
+  .mdc-snackbar__surface {
+    background-color: #F44336 !important;
+  }
+  .mdc-snackbar__label {
+    color: white !important;
+  }
+  .mdc-button__label {
+    color: white !important;
+  }
+  .mat-mdc-button:hover .mdc-button__label {
+    opacity: 0.8;
+  }
 }

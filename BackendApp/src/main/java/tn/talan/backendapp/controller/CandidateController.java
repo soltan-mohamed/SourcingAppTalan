@@ -1,100 +1,67 @@
 package tn.talan.backendapp.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.format.annotation.DateTimeFormat;
+import tn.talan.backendapp.dtos.CandidateUpdateDTO;
 import tn.talan.backendapp.entity.Candidate;
-import tn.talan.backendapp.enums.Statut;
-import tn.talan.backendapp.exceptions.ResourceNotFoundException;
-import tn.talan.backendapp.exceptions.UnauthorizedAccessException;
+import tn.talan.backendapp.entity.User;
+import tn.talan.backendapp.repository.UserRepository;
+import tn.talan.backendapp.service.AuthenticationService;
 import tn.talan.backendapp.service.CandidateService;
-import tn.talan.backendapp.service.FileStorageService;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/candidates")
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/candidats")
 public class CandidateController {
 
-    private final CandidateService candidateService;
-    private final FileStorageService fileStorageService;
+    private final CandidateService service;
+    private final AuthenticationService authService;
+    private final UserRepository userRepository;
 
-    public CandidateController(CandidateService candidateService,
-                               FileStorageService fileStorageService) {
-        this.candidateService = candidateService;
-        this.fileStorageService = fileStorageService;
+    public CandidateController(CandidateService service, AuthenticationService authService, UserRepository userRepository ) {
+        this.authService = authService;
+        this.service = service;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
-    public ResponseEntity<List<Candidate>> getAllCandidates() {
-        List<Candidate> candidates = candidateService.getAllCandidates();
-        return ResponseEntity.ok(candidates);
+    public List<Candidate> getAll() {
+        return service.getAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Candidate> getCandidateById(@PathVariable Long id) {
-        Candidate candidate = candidateService.getCandidateById(id);
-        return ResponseEntity.ok(candidate);
+    public Candidate getById(@PathVariable Long id) {
+        return service.getById(id);
     }
+
+
 
     @PostMapping
-    public ResponseEntity<Candidate> createCandidate(@RequestBody Candidate candidate) {
-        Candidate createdCandidate = candidateService.createCandidate(candidate);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdCandidate);
+    public Candidate create(@RequestBody Candidate candidate) {
+        String email = authService.getCurrentUsername(); // get from token
+        System.out.println("Username is : "+ email + "\n");
+        User responsable = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+        candidate.setResponsable(responsable);
+        return service.save(candidate);
+
     }
 
+    @GetMapping("/not-vivier")
+    public List<Candidate> getAllNotVivier() {
+        return service.getAllNotVivierCandidates();
+    }
+
+
     @PutMapping("/{id}")
-    public ResponseEntity<Candidate> updateCandidate(
-            @PathVariable Long id,
-            @RequestBody Candidate candidateDetails) {
-        Candidate updatedCandidate = candidateService.updateCandidate(id, candidateDetails);
-        return ResponseEntity.ok(updatedCandidate);
+    public Candidate update(@PathVariable Long id, @RequestBody CandidateUpdateDTO candidate) {
+        return service.updateCandidate(id, candidate);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCandidate(@PathVariable Long id) {
-        candidateService.deleteCandidate(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<Candidate>> getCandidatesByStatus(
-            @PathVariable("status") String status) {
-        List<Candidate> candidates = candidateService.getCandidatesByStatus(Statut.valueOf(status));
-        return ResponseEntity.ok(candidates);
-    }
-
-    @PostMapping("/{id}/upload-cv")
-    public ResponseEntity<?> uploadCv(
-            @PathVariable Long id,
-            @RequestParam("cv") MultipartFile file) {
-        try {
-            String fileName = fileStorageService.storeFile(file);
-            String filePath = "/uploads/" + fileName;
-            Map<String, Object> response = candidateService.uploadCv(id, filePath);
-            return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to store file", "details", e.getMessage()));
-        }
-    }
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(UnauthorizedAccessException.class)
-    public ResponseEntity<String> handleUnauthorizedAccess(UnauthorizedAccessException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }

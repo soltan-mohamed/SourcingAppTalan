@@ -8,11 +8,12 @@ import { User } from '../models/user';
 import { Role } from '@core/models/role';
 
 interface LoginResponse {
+  id : number;
   email: string;
   token: string;
   expiresIn: number;
   fullName: string;
-  roles: Role[]; 
+  roles: Role[]; // Changé de 'role' à 'roles' (array)
 }
 
 @Injectable({ providedIn: 'root' })
@@ -53,39 +54,29 @@ export class AuthService {
   }
 
   private redirectBasedOnRoles(roles: Role[]): void {
+    //console.log('User roles:', roles);
     
     // Priorité des redirections (si l'utilisateur a plusieurs rôles)
     if (roles.includes(Role.MANAGER)) {
       this.router.navigate(['/manager/dashboard']);
     } else if (roles.includes(Role.EVALUATEUR)) {
       this.router.navigate(['/evaluateur/dashboard']);
-  } else if (roles.includes(Role.RECRUTEUR) || roles.includes(Role.RECRUTEUR_MANAGER)) {
+    } else if (roles.includes(Role.RECRUTEUR)) {
       this.router.navigate(['/recruteur/dashboard/main']);
     } else {
+      //console.error('No valid role found, redirecting to signin');
       this.router.navigate(['/authentication/signin']);
     }
   }
-private createUserFromResponse(response: LoginResponse): User {
-  const user = new User();
-  user.email = response.email;
-  user.fullName = response.fullName;
-  user.roles = response.roles;
-  user.token = response.token;
-  
-  // Ensure ID is properly extracted from JWT
-  if (response.token) {
-    const decoded = this.jwtHelper.decodeToken(response.token);
-    user.id = decoded.userId || decoded.sub;
-    
-    // Convert to number if needed
-    if (typeof user.id === 'string' && !isNaN(Number(user.id))) {
-      user.id = Number(user.id);
-    }
+  private createUserFromResponse(response: LoginResponse): User {
+    const user = new User();
+    user.id = response.id;
+    user.email = response.email;
+    user.fullName = response.fullName;
+    user.roles = response.roles; // Changé pour stocker un tableau
+    user.token = response.token;
+    return user;
   }
-  
-  //console.log('Created user from response:', user);
-  return user;
-}
 
   private getUserFromStorage(): User | null {
     try {
@@ -99,6 +90,7 @@ private createUserFromResponse(response: LoginResponse): User {
       
       return JSON.parse(userJson) as User;
     } catch (error) {
+      //console.error('Error parsing user data:', error);
       this.clearAuthData();
       return null;
     }
@@ -108,25 +100,12 @@ private createUserFromResponse(response: LoginResponse): User {
     return this.jwtHelper.isTokenExpired(token);
   }
 
-private storeAuthData(user: User, token: string): void {
-  // Verify token format before storing
-  if (!this.isValidToken(token)) {
-    console.error('Invalid token format:', token);
-    throw new Error('Invalid token format');
+  private storeAuthData(user: User, token: string): void {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    localStorage.setItem('token', token);
+    this.currentUserSubject.next(user);
   }
-  
-  localStorage.setItem('currentUser', JSON.stringify(user));
-  localStorage.setItem('token', token);
-  this.currentUserSubject.next(user);
-}
 
-
-
-public isValidToken(token: string): boolean {
-  if (!token) return false;
-  const parts = token.split('.');
-  return parts.length === 3; // Valid JWT has 3 parts
-}
   logout(): void {
     this.clearAuthData();
     this.router.navigate(['/authentication/signin']);
@@ -135,7 +114,6 @@ public isValidToken(token: string): boolean {
   clearAuthData(): void {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
-    
     // Check if currentUserSubject exists before calling next
     if (this.currentUserSubject) {
       this.currentUserSubject.next(null);

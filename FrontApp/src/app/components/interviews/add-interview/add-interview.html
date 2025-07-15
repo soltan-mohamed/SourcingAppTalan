@@ -1,0 +1,233 @@
+<!-- Enhanced Angular Interview Form with Tailwind CSS -->
+<div class="flex flex-col bg-gray-100 max-h-[85vh] overflow-hidden rounded-lg shadow-lg max-w-full">
+  
+    <div class="flex justify-between bg-gradient-to-r from-lime-700 to-blue-700 px-8 py-6">
+        <h2 class="text-2xl font-serif text-white font-medium tracking-wide flex items-center">
+            <span class="material-symbols-outlined">
+            assignment
+            </span>
+            New interview
+        </h2>
+    </div>
+  
+    <div class="px-6 py-6 !overflow-y-scroll flex-1">
+        <form [formGroup]="newInterviewForm" class="space-y-12" (ngSubmit)="save()">
+            <!-- Date Input -->
+            <div class="relative">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Interview Date - Time</label>
+            <input 
+                formControlName="date"
+                name="date" 
+                type="datetime-local" 
+                required
+                class="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-300 rounded-md 
+                    focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 
+                    focus:border-indigo-500 transition-all duration-300 ease-in-out
+                    hover:bg-gray-100"
+            />
+            </div>
+
+            <!-- Time Input -->
+            <!--div class="relative">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Interview Time</label>
+            <input 
+                [(ngModel)]="interview.time" 
+                name="time" 
+                type="time" 
+                required
+                class="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-300 rounded-md 
+                    focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 
+                    focus:border-indigo-500 transition-all duration-300 ease-in-out
+                    hover:bg-gray-100"
+            />
+            </div-->
+
+            <!-- Interview Type -->
+            <div class="relative">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Interview Type</label>
+            <select 
+                formControlName="type"
+                name="type" 
+                (change)="onTypeChange($event)"
+                required
+                class="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-300 rounded-md 
+                    focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 
+                    focus:border-indigo-500 transition-all duration-300 ease-in-out
+                    hover:bg-gray-100 appearance-none cursor-pointer"
+            >
+                <option value="" disabled selected>Select Type</option>
+                <option value="TECHNIQUE">Tech</option>
+                <option value="RH">RH</option>
+                <option value="MANAGERIAL">Managerial</option>
+            </select>
+            <!-- Custom dropdown arrow -->
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none mt-8">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+            </div>
+
+            <!-- Evaluator -->
+            <div class="relative">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Evaluator</label>
+                <select 
+                  formControlName="evaluator"
+                  name="evaluator" 
+                  required
+                  class="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-300 rounded-md 
+                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 
+                      focus:border-indigo-500 transition-all duration-300 ease-in-out
+                      hover:bg-gray-100 appearance-none cursor-pointer"
+                >
+                    <option value="" disabled selected>Select Evaluator</option>
+                    <option *ngFor="let user of users" [value]="user.id">
+                        {{ user.fullName }}
+                    </option>
+                </select>
+                <!-- Custom dropdown arrow -->
+                <div class="pointer-events-none absolute right-2 top-12">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <span *ngIf="newInterviewForm.get('type')?.value === ''" class="text-sm text-gray-500">Select the type of interview first</span>
+
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end space-x-3 mt-8 pt-4 border-t border-gray-200">
+            <button 
+                type="submit"
+                class="px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-md 
+                    hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                    focus:ring-offset-2 transition-colors duration-200 ease-in-out
+                    disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="newInterviewForm.invalid || isSubmitting"
+
+            >
+                Save
+            </button>
+            <button 
+                type="button"
+                (click)="dialogRef.close()"
+                class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-200 rounded-md 
+                    hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 
+                    focus:ring-offset-2 transition-colors duration-200 ease-in-out"
+            >
+                Cancel
+            </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Alternative version if you want to keep mat-select components -->
+<!-- 
+<div class="bg-gray-100 p-8 rounded-lg shadow-lg max-w-md mx-auto">
+  <h2 class="text-xl font-semibold text-indigo-700 text-center pb-4 mb-6 border-b border-gray-200">
+    Add Interview
+  </h2>
+  
+  <form class="space-y-12" (ngSubmit)="save()">
+    <div class="relative">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Interview Date</label>
+      <input 
+        [(ngModel)]="interview.date" 
+        name="date" 
+        type="date" 
+        required
+        class="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-300 rounded-md 
+               focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 
+               focus:border-indigo-500 transition-all duration-300 ease-in-out
+               hover:bg-gray-100"
+      />
+    </div>
+
+    <div class="relative">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Interview Time</label>
+      <input 
+        [(ngModel)]="interview.time" 
+        name="time" 
+        type="time" 
+        required
+        class="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-300 rounded-md 
+               focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 
+               focus:border-indigo-500 transition-all duration-300 ease-in-out
+               hover:bg-gray-100"
+      />
+    </div>
+
+    <div class="relative">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Interview Type</label>
+      <mat-select 
+        [(ngModel)]="interview.type" 
+        name="type" 
+        placeholder="Select Type" 
+        required
+        class="w-full"
+      >
+        <mat-option value="Technique">Technique</mat-option>
+        <mat-option value="RH">RH</mat-option>
+        <mat-option value="Managerial">Managerial</mat-option>
+      </mat-select>
+    </div>
+
+    <div class="relative">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Evaluator</label>
+      <mat-select 
+        [(ngModel)]="interview.evaluator" 
+        name="evaluator" 
+        placeholder="Select Evaluator" 
+        required
+        class="w-full"
+      >
+        <mat-option value="Anouar Khemeja">Anouar Khemeja</mat-option>
+        <mat-option value="Safouane Chabchoub">Safouane Chabchoub</mat-option>
+        <mat-option value="Alice Johnson">Alice Johnson</mat-option>
+      </mat-select>
+    </div>
+
+    <div class="flex justify-end space-x-3 mt-8 pt-4 border-t border-gray-200">
+      <button 
+        mat-button 
+        type="submit"
+        class="px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-md 
+               hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+               focus:ring-offset-2 transition-colors duration-200 ease-in-out"
+      >
+        Save
+      </button>
+      <button 
+        mat-button 
+        (click)="dialogRef.close()"
+        class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-200 rounded-md 
+               hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 
+               focus:ring-offset-2 transition-colors duration-200 ease-in-out"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+-->
+
+<!-- Additional CSS for Material Design components if using mat-select -->
+<style>
+  /* Custom styles for mat-select to work with Tailwind */
+  ::ng-deep .mat-mdc-select {
+    @apply bg-gray-50 border border-gray-300 rounded-md;
+  }
+  
+  ::ng-deep .mat-mdc-select-trigger {
+    @apply px-3 py-2.5 text-sm;
+  }
+  
+  ::ng-deep .mat-mdc-select:focus-within {
+    @apply ring-2 ring-indigo-500 ring-opacity-20 border-indigo-500;
+  }
+  
+  ::ng-deep .mat-mdc-select:hover {
+    @apply bg-gray-100;
+  }
+</style>

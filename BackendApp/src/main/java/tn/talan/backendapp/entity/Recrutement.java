@@ -1,10 +1,14 @@
 package tn.talan.backendapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.*;
-import tn.talan.backendapp.enums.Role;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 import tn.talan.backendapp.enums.StatutRecrutement;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,45 +17,38 @@ import java.util.List;
 @Table(name = "recrutement")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Recrutement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "position", nullable = false)
     private String position;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "statut", nullable = false)
     private StatutRecrutement statut;
 
     @ManyToOne
-    @JoinColumn(name = "recruteur_id", nullable = false)
-    private User recruteur;
+    @JoinColumn(name = "demandeur_id")
+    private User demandeur;
 
     @ManyToOne
-    @JoinColumn(name = "manager_id", nullable = false)
-    private User manager;
-
-    @ManyToOne
-    @JoinColumn(name = "candidate_id", nullable = false)
+    @JoinColumn(name = "candidate_id")
+    @JsonBackReference
     private Candidate candidate;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Evaluation> evaluations = new ArrayList<>();
 
-    @Transient
-    private boolean editable;
-
-    public boolean isEditable(User currentUser) {
-        if (currentUser.getRoles().contains(Role.RECRUTEUR_MANAGER)) {
-            return true;
-        }
-        return this.recruteur.getId().equals(currentUser.getId()) ||
-                this.manager.getId().equals(currentUser.getId());
+    public Recrutement(String position, StatutRecrutement statut, User demandeur, Candidate candidate) {
+        this.position = position;
+        this.statut = statut;
+        this.demandeur = demandeur;
+        this.candidate = candidate;
     }
 }

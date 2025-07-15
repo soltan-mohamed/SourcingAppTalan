@@ -7,6 +7,7 @@ import tn.talan.backendapp.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -27,6 +28,10 @@ public class UserService {
         userRepository.findAll().forEach(users::add);
 
         return users;
+    }
+
+    public List<User> allUsersByRole(Role role) {
+        return userRepository.findByRolesContaining(role);
     }
 }
 

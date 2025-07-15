@@ -1,94 +1,79 @@
 package tn.talan.backendapp.controller;
 
-import org.springframework.http.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import tn.talan.backendapp.dtos.createRecrutementDTO;
+import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.Recrutement;
+import tn.talan.backendapp.entity.User;
+import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.enums.StatutRecrutement;
-import tn.talan.backendapp.exceptions.ResourceNotFoundException;
-import tn.talan.backendapp.exceptions.UnauthorizedAccessException;
+import tn.talan.backendapp.repository.CandidateRepository;
+import tn.talan.backendapp.repository.UserRepository;
+import tn.talan.backendapp.service.AuthenticationService;
 import tn.talan.backendapp.service.RecrutementService;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/recrutements")
-@CrossOrigin(origins = "*")
 public class RecrutementController {
 
-    private final RecrutementService recrutementService;
+    private final RecrutementService service;
+    private final AuthenticationService authService;
+    private final UserRepository userRepository;
+    private final CandidateRepository candidateRepository;
 
-    public RecrutementController(RecrutementService recrutementService) {
-        this.recrutementService = recrutementService;
+    @Autowired
+    public RecrutementController(RecrutementService service, AuthenticationService authService, UserRepository userRepository, CandidateRepository candidateRepository) {
+        this.service = service;
+        this.authService = authService;
+        this.userRepository = userRepository;
+        this.candidateRepository = candidateRepository;
     }
 
-    @PostMapping("/candidate/{candidateId}")
-    public ResponseEntity<?> createRecrutement(
-            @PathVariable Long candidateId,
-            @RequestBody Map<String, Object> request) {
-        try {
-            String position = (String) request.get("position");
-            Long managerId = parseLong(request.get("managerId"));
-
-            Recrutement created = recrutementService.createRecrutement(
-                    candidateId, position, managerId);
-            return ResponseEntity.ok(created);
-        } catch (NumberFormatException e) {
-            return badRequest("Invalid manager ID format");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return badRequest(e.getMessage());
-        } catch (UnauthorizedAccessException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch (Exception e) {
-            return serverError(e.getMessage());
-        }
+    @GetMapping
+    public List<Recrutement> getAll() {
+        return service.getAll();
     }
 
-    @GetMapping("/candidate/{candidateId}")
-    public ResponseEntity<List<Recrutement>> getRecrutementsForCandidate(
-            @PathVariable Long candidateId) {
-        List<Recrutement> recrutements = recrutementService.getRecrutementsByCandidate(candidateId);
-        return ResponseEntity.ok(recrutements);
+
+
+    @GetMapping("/{id}")
+    public Recrutement getById(@PathVariable Long id) {
+        return service.getById(id);
     }
 
-    @PutMapping("/{id}/status")
-    public ResponseEntity<?> updateStatus(
-            @PathVariable Long id,
-            @RequestParam StatutRecrutement status) {
-        try {
-            Recrutement updated = recrutementService.updateRecrutementStatus(id, status);
-            return ResponseEntity.ok(updated);
-        } catch (UnauthorizedAccessException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @PostMapping
+    public Recrutement create(@RequestBody createRecrutementDTO recrutementDTO) {
+        String email = authService.getCurrentUsername(); // get from token
+        User responsable = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+        User demandeur = userRepository.findById(recrutementDTO.getDemandeur_id())
+                .orElseThrow(() -> new RuntimeException("Demandeur not found: " + email));
+
+        Candidate candidate = candidateRepository.findById(recrutementDTO.getCandidate_id())
+                .orElseThrow(() -> new RuntimeException("Candidate not found: ID = " + recrutementDTO.getCandidate_id()));
+
+        //Updating correspondant candidate status and recruiter for each new recruitement
+        candidate.setResponsable(responsable);
+        candidate.setStatut(Statut.IN_PROGRESS);
+        candidateRepository.save(candidate);
+
+        Recrutement recrutement = new Recrutement(recrutementDTO.getPosition(),StatutRecrutement.IN_PROGRESS,demandeur,candidate);
+
+        return service.save(recrutement);
+    }
+
+    @PutMapping("/{id}")
+    public Recrutement update(@PathVariable Long id, @RequestBody Recrutement r) {
+        return service.update(id, r);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteRecrutement(@PathVariable Long id) {
-        try {
-            recrutementService.deleteRecrutement(id);
-            return ResponseEntity.noContent().build();
-        } catch (UnauthorizedAccessException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    private Long parseLong(Object value) {
-        if (value instanceof Number) {
-            return ((Number) value).longValue();
-        }
-        return Long.parseLong(value.toString());
-    }
-
-    private ResponseEntity<String> badRequest(String message) {
-        return ResponseEntity.badRequest().body(message);
-    }
-
-    private ResponseEntity<String> serverError(String message) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }
