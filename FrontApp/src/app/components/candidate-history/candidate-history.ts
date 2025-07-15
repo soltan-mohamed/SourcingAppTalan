@@ -14,9 +14,8 @@ import { AddInterviewComponent } from '../interviews/add-interview/add-interview
 import { Candidate } from 'app/models/candidate';
 import { Recrutement } from 'app/models/recrutement';
 import { Evaluation } from 'app/models/evaluation';
-
-type EvaluationStatus = 'pending' | 'passed' | 'failed' | 'in-progress' | 'scheduled' | 'KO' | 'accepted';
-
+import { EvaluationStatus } from 'app/models/EvaluationStatus';
+import { EvaluationStatusList } from 'app/models/EvaluationStatus';
 
 // Flat node interface for the tree
 interface FlatNode {
@@ -43,9 +42,7 @@ export class CandidateHistory implements OnInit {
   recruitementData: Recrutement[] = [];
   loading = false;
   editingEval! : Evaluation;
-  availableStatuses : EvaluationStatus[] = ['accepted' ,  'scheduled' , 'KO'];
-
-
+  evaluationStatus = EvaluationStatusList;
   treeControls: FlatTreeControl<FlatNode>[] = [];
   dataSources: MatTreeFlatDataSource<Recrutement | Evaluation, FlatNode>[] = [];
   
@@ -158,30 +155,24 @@ export class CandidateHistory implements OnInit {
 
   getStatusColor(status: string): string {
     const colors: { [key: string]: string } = {
-      'applied': 'bg-gray-100 text-gray-800',
-      'screening': 'bg-blue-100 text-blue-800',
-      'interview': 'bg-yellow-100 text-yellow-800',
-      'technical': 'bg-purple-100 text-purple-800',
-      'final': 'bg-indigo-100 text-indigo-800',
-      'accepted': 'bg-green-100 text-green-800',
-      'KO': 'bg-red-100 text-red-800',
-      'withdrawn': 'bg-gray-100 text-gray-800',
-      'pending': 'bg-gray-100 text-gray-600',
-      'passed': 'bg-green-100 text-green-700',
-      'failed': 'bg-red-100 text-red-700',
-      'in-progress': 'bg-blue-100 text-blue-700',
-      'scheduled': 'bg-orange-100 text-orange-700'
+      'CONTACTED': 'bg-blue-100 text-blue-800',
+      'CANCELLED': 'bg-indigo-100 text-indigo-800',
+      'ACCEPTED': 'bg-green-100 text-green-800',
+      'REJECTED': 'bg-red-100 text-red-800',
+      'VIVIER': 'bg-gray-100 text-gray-800',
+      'IN_PROGRESS': 'bg-blue-100 text-blue-700',
+      'SCHEDULED': 'bg-orange-100 text-orange-700'
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
   }
 
   getStatusIcon(status: string): string {
     const icons: { [key: string]: string } = {
-      'scheduled': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-      'accepted': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-      'passed': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-      'KO': 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z',
-      'in-progress': 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+      'SCHEDULED': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+      'ACCEPTED': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+      //'passed': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+      'REJECTED': 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z',
+      'IN_PROGRESS': 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
     };
     return icons[status] || icons['pending'];
   }
@@ -232,7 +223,7 @@ export class CandidateHistory implements OnInit {
       panelClass: 'add-interview-dialog-panel',
       width: '30vw',
       maxWidth: 'none',
-      data: { recruitment: recruitment }
+      data: recruitment!.id
     });
   }
 }

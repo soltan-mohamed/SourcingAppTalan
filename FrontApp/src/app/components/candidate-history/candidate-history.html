@@ -170,7 +170,7 @@
                             <div *ngIf="node.data.editing" 
                                 class="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-[120px]"
                                 (click)="$event.stopPropagation()">
-                            <div *ngFor="let status of availableStatuses" 
+                            <div *ngFor="let status of evaluationStatus" 
                                 class="px-3 py-2 text-xs hover:bg-gray-100 cursor-pointer flex items-center"
                                 (click)="changeStatus(status, node.data.id)"
                                 [class.bg-blue-50]="status === node.data.statut">

@@ -183,7 +183,7 @@ export class CreateCandidat implements OnInit {
                 duration: 5000,
                 horizontalPosition: 'center',
                 verticalPosition: 'top',
-                panelClass: ['error-snackbar']
+                panelClass: ['success-snackbar']
               }
             );
             this.dialogRef.close(response);
