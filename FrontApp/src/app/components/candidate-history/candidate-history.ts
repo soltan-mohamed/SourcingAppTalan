@@ -16,6 +16,7 @@ import { Recrutement } from 'app/models/recrutement';
 import { Evaluation } from 'app/models/evaluation';
 import { EvaluationStatus } from 'app/models/EvaluationStatus';
 import { EvaluationStatusList } from 'app/models/EvaluationStatus';
+import { InterviewService } from 'app/services/interview-service';
 
 // Flat node interface for the tree
 interface FlatNode {
@@ -92,7 +93,8 @@ export class CandidateHistory implements OnInit {
     private dialogRef: MatDialogRef<CandidateHistory>,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: Candidate,
-    private candidatesService: CandidatesService
+    private candidatesService: CandidatesService,
+    private interviewService: InterviewService
     
   ) {}
   
@@ -117,26 +119,50 @@ export class CandidateHistory implements OnInit {
     evalu.statut = newStatus;
     console.log("Updated evaluation locally:", evalu);
 
-    // Préparer la donnée à envoyer (pour le candidat)
+    const updatedEval = {
+  statut: newStatus,
+  description: evalu.description,
+  type: evalu.type,
+  date: evalu.date,
+};
+ this.interviewService.updateEvaluation(evalu.id, evalu).subscribe({
+  next: (res) => {
+    console.log("✅ Statut de l'évaluation mis à jour dans le backend.");
+  },
+  error: (err) => {
+    console.error("❌ Erreur lors de la mise à jour du statut de l'évaluation :", err);
+  }
+});
+    // Trouver toutes les évaluations avec une date valide
+  const allEvaluations = this.recruitementData
+    .flatMap(item => item.evaluations || [])
+    .filter(e => !!e.date);
+
+  // Trier les évaluations par date décroissante
+  const lastEvaluation = allEvaluations
+    .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime())[0];
+
+  // Vérifier si l'évaluation modifiée est la plus récente
+  const isLastEvaluation = lastEvaluation?.id === evalu.id;
+    if (isLastEvaluation) {
     const updatedCandidate = {
       statut: newStatus
     };
 
-    // Appeler le service pour mettre à jour le statut du candidat côté backend
     this.candidatesService.updateCandidate(this.data.id, updatedCandidate).subscribe({
-      next: (res) => {
-        // Synchroniser la donnée locale pour l'UI
+      next: () => {
         this.data.statut = newStatus;
-        console.log("Statut candidat mis à jour avec succès !");
+        console.log("✅ Statut du candidat mis à jour !");
       },
       error: (err) => {
-        console.error("Échec mise à jour statut candidat", err);
-        // En cas d'erreur, tu peux envisager de revenir en arrière côté UI (rollback)
-        //evalu.statut = /* valeur précédente ou null */;
+        console.error("❌ Erreur lors de la mise à jour du statut candidat", err);
+        // rollback optionnel
       }
     });
+  } else {
+    console.log("ℹ️ L'évaluation modifiée n'est pas la dernière => statut du candidat NON modifié.");
   }
-
+  }
   this.closeDropdown();
 }
 
@@ -179,7 +205,7 @@ export class CandidateHistory implements OnInit {
   getStatusColor(status: string): string {
     const colors: { [key: string]: string } = {
       'CONTACTED': 'bg-blue-100 text-blue-800',
-      'CANCELLED': 'bg-indigo-100 text-indigo-800',
+      'CANCELLED': 'bg-yellow-100 text-indigo-800',
       'ACCEPTED': 'bg-green-100 text-green-800',
       'REJECTED': 'bg-red-100 text-red-800',
       'VIVIER': 'bg-gray-100 text-gray-800',

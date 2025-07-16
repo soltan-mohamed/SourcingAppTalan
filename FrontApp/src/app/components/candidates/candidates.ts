@@ -41,7 +41,8 @@ export class Candidates {
 
   ngOnInit(): void {
     this.candidatesSubscription = this.candidateService.candidates$.subscribe({
-      next: (data) => {
+      next: (data : Candidate[]) => {
+    console.log('Candidates received:', data);
         this.candidates = data.map(candidate => {
   const name = `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
   let type = '-';
@@ -117,7 +118,7 @@ export class Candidates {
   loadCandidates(): void {
     this.candidateService.getAllCandidates().subscribe({
       next: (data) => {
-        console.log('Candidates loaded successfully');
+        console.log('Candidates loaded successfully', data);
       },
       error: (err) => {
         console.error('Error fetching candidates:', err);
