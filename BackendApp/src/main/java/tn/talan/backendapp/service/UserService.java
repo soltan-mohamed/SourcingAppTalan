@@ -17,11 +17,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getUsersByRole(Role role) {
-        return userRepository.findByRolesContaining(role);
-    }
-
-
     public List<User> allUsers() {
         List<User> users = new ArrayList<>();
 
@@ -34,4 +29,3 @@ public class UserService {
         return userRepository.findByRolesContaining(role);
     }
 }
-

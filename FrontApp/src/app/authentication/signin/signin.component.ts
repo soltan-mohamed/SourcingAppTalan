@@ -6,7 +6,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { finalize } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field'; // This includes error messages
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -22,7 +22,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatFormFieldModule,
+    MatFormFieldModule, // This is all you need for error messages
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -35,7 +35,7 @@ export class SigninComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   error = '';
   hide = true;
   rememberMe = false;
-  selectedRole: Role | null = null;
+  selectedRole: Role | null = null; // Add this line
 
 
   constructor(
@@ -93,6 +93,7 @@ onSubmit() {
         console.error('Login error:', error);
         this.handleLoginError(error);
       }
+      // Removed the next handler since AuthService now handles navigation
     });
 }
 
@@ -116,8 +117,8 @@ onSubmit() {
       this.router.navigate(['/manager/dashboard']);
     } else if (roles.includes(Role.EVALUATEUR)) {
       this.router.navigate(['/evaluateur/dashboard']);
-  } else if (roles.includes(Role.RECRUTEUR) || roles.includes(Role.RECRUTEUR_MANAGER)) {
-      this.router.navigate(['/recruteur/dashboard/main']);
+    } else if (roles.includes(Role.RECRUTEUR)) {
+      this.router.navigate(['/home']);
     } else {
       this.router.navigate(['/authentication/signin']);
     }

@@ -1,3 +1,4 @@
+
 import { Role } from './role';
 
 export class User {
@@ -7,6 +8,6 @@ export class User {
   password!: string;
   createdAt!: Date;
   updatedAt!: Date;
-  roles!: Role[];
+  roles!: Role[]; // Changé de 'role' à 'roles' (array)
   token!: string;
 }

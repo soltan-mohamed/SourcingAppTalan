@@ -54,6 +54,10 @@ public class CandidateController {
         return service.getAllNotVivierCandidates();
     }
 
+//    @PutMapping("/{id}")
+//    public Candidate update(@PathVariable Long id, @RequestBody Candidate candidate) {
+//        return service.update(id, candidate);
+//    }
 
     @PutMapping("/{id}")
     public Candidate update(@PathVariable Long id, @RequestBody CandidateUpdateDTO candidate) {
@@ -65,3 +69,104 @@ public class CandidateController {
         service.delete(id);
     }
 }
+
+/*package tn.talan.backendapp.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.enums.Statut;
+import tn.talan.backendapp.exceptions.ResourceNotFoundException;
+import tn.talan.backendapp.exceptions.UnauthorizedAccessException;
+import tn.talan.backendapp.service.CandidateService;
+import tn.talan.backendapp.service.FileStorageService;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/candidates")
+@CrossOrigin(origins = "*")
+public class CandidateController {
+
+    private final CandidateService candidateService;
+    private final FileStorageService fileStorageService;
+
+    public CandidateController(CandidateService candidateService,
+                               FileStorageService fileStorageService) {
+        this.candidateService = candidateService;
+        this.fileStorageService = fileStorageService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Candidate>> getAllCandidates() {
+        List<Candidate> candidates = candidateService.getAllCandidates();
+        return ResponseEntity.ok(candidates);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Candidate> getCandidateById(@PathVariable Long id) {
+        Candidate candidate = candidateService.getCandidateById(id);
+        return ResponseEntity.ok(candidate);
+    }
+
+    @PostMapping
+    public ResponseEntity<Candidate> createCandidate(@RequestBody Candidate candidate) {
+        Candidate createdCandidate = candidateService.createCandidate(candidate);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCandidate);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Candidate> updateCandidate(
+            @PathVariable Long id,
+            @RequestBody Candidate candidateDetails) {
+        Candidate updatedCandidate = candidateService.updateCandidate(id, candidateDetails);
+        return ResponseEntity.ok(updatedCandidate);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCandidate(@PathVariable Long id) {
+        candidateService.deleteCandidate(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Candidate>> getCandidatesByStatus(
+            @PathVariable("status") String status) {
+        List<Candidate> candidates = candidateService.getCandidatesByStatus(Statut.valueOf(status));
+        return ResponseEntity.ok(candidates);
+    }
+
+    @PostMapping("/{id}/upload-cv")
+    public ResponseEntity<?> uploadCv(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            String fileName = fileStorageService.storeFile(file);
+            String filePath = "/uploads/" + fileName;
+            Map<String, Object> response = candidateService.uploadCv(id, filePath);
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to store file", "details", e.getMessage()));
+        }
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<String> handleUnauthorizedAccess(UnauthorizedAccessException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+}*/

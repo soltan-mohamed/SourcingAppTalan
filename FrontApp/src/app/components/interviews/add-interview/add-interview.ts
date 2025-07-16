@@ -104,7 +104,7 @@ export class AddInterviewComponent {
     }
   }
 
-  getUsersByRole(role : string): void {
+ /* getUsersByRole(role : string): void {
     this.usersService.getAllUsersByRole(role).subscribe({
       next: (data) => {
         this.users = data;
@@ -113,7 +113,7 @@ export class AddInterviewComponent {
         console.error("An internal server error has occurred !");
       }
     });
-  }
+  }*/
 
   onTypeChange(event: Event): void {
     const selectedValue = (event.target as HTMLSelectElement).value;
@@ -127,7 +127,7 @@ export class AddInterviewComponent {
     else if (selectedValue === "TECHNIQUE") {
       role = "EVALUATEUR";
     }
-    this.getUsersByRole(role);
+    //this.getUsersByRole(role);
   }
 
 }
