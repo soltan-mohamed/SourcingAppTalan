@@ -104,6 +104,10 @@ public class CandidateService {
         if (dto.getSkills() != null) {
             candidate.setSkills(dto.getSkills());
         }
+        if (dto.getStatut() != null) {
+            candidate.setStatut(dto.getStatut());
+        }
+
 
         return candidate;
     }
