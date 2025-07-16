@@ -93,7 +93,7 @@ export class Candidates {
     { def: 'email', label: 'Email', type: 'email' },
     { def: 'position', label: 'Position', type: 'text' },
     { def: 'statut', label: 'Status', type: 'text' },
-    { def: 'type', label: 'type', type: 'TypeEvaluation' },
+    { def: 'type', label: 'type', type: 'text' },
     { def: 'cv', label: 'CV', type: 'file' },
     { def: 'actions', label: 'Actions', type: 'actionBtn' },
   ];
