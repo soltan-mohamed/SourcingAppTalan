@@ -43,40 +43,42 @@ export class Candidates {
     this.candidatesSubscription = this.candidateService.candidates$.subscribe({
       next: (data) => {
         this.candidates = data.map(candidate => {
-          const name= `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
-          let type = '-';
-          if (candidate.statut === 'CONTACTED') {
+  const name = `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
+  let type = '-';
+
+  if (candidate.recrutements?.length > 0) {
+    const allEvaluations = candidate.recrutements
+      .flatMap(r => r.evaluations || [])
+      .filter(e => e.date) // On garde uniquement celles avec une date
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    const lastEval = allEvaluations[0];
+
+    if (lastEval) {
+      switch (lastEval.type?.toLowerCase()) {
+        case 'rh':
+          type = 'RH';
+          break;
+        case 'technique':
+          type = 'TECHNIQUE';
+          break;
+        case 'managerial':
+          type = 'MANAGERIAL';
+          break;
+        default:
           type = '-';
-          }
-          else if (candidate.recrutements?.length > 0) {
-          const allEvaluations = candidate.recrutements.flatMap(r => r.evaluations || []);
+      }
+    }
+  }
 
-          // Trouver la première évaluation en cours
-          const inProgressEval = allEvaluations.find(e => e.statut === 'IN_PROGRESS');
+  return {
+    ...candidate,
+    name,
+    type,
+    statut: candidate.statut // 👈 s'assurer qu'on garde bien statut
+  };
+});
 
-          if (inProgressEval) {
-            switch (inProgressEval.type) {
-              case 'rh':
-                type = 'RH';
-                break;
-              case 'technique':
-                type = 'TECHNIQUE';
-                break;
-              case 'managerial':
-                type = 'MANAGERIAL';
-                break;
-              default:
-                type = '-';
-            }
-          }
-        }
-
-        return {
-          ...candidate,
-          name,
-          type
-        };
-        });
         console.log('Candidates updated:', data);
       },
       error: (err) => {
