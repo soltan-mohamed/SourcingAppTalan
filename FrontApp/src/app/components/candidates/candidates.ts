@@ -50,13 +50,13 @@ export class Candidates {
       next: (data : Candidate[]) => {
     console.log('Candidates received:', data);
         this.candidates = data.map(candidate => {
-  const name = `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
+  const fullName = `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
   let type = '-';
 
   if (candidate.recrutements?.length > 0) {
     const allEvaluations = candidate.recrutements
       .flatMap(r => r.evaluations || [])
-      .filter(e => e.date) // On garde uniquement celles avec une date
+      .filter(e => e.date)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     const lastEval = allEvaluations[0];
@@ -80,9 +80,10 @@ export class Candidates {
 
   return {
     ...candidate,
-    name,
+    fullName,
+    skills: candidate.skills ? candidate.skills.join(', ') : 'No skills',
     type,
-    statut: candidate.statut // 👈 s'assurer qu'on garde bien statut
+    statut: candidate.statut
   };
 });
 
@@ -106,7 +107,6 @@ export class Candidates {
     { def: 'fullName', label: 'Name', type: 'text' },
     { def: 'telephone', label: 'Phone', type: 'phone' },
     { def: 'email', label: 'Email', type: 'email' },
-    { def: 'skills', label: 'Skills', type: 'text' },
 
     { def: 'position', label: 'Position', type: 'text' },
     { def: 'statut', label: 'Status', type: 'text' },
@@ -135,9 +135,8 @@ loadCandidates(): void {
         // Transform the data to match the table expectations
         this.candidates = data.map(candidate => ({
           ...candidate,
-          fullName: `${candidate.prenom} ${candidate.nom}`,
-          skills: candidate.skills ? candidate.skills.join(', ') : 'No skills'
-        })) as CandidateTableData[];
+          fullName: `${candidate.prenom} ${candidate.nom}`
+        })) as unknown as CandidateTableData[];
         console.log('Candidates loaded successfully:', this.candidates);
         // Log CV information for debugging
         this.candidates.forEach(candidate => {
