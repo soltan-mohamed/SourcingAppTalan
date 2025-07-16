@@ -80,6 +80,7 @@ export class CandidatesService {
         })
       );
   }
+  
 
   // Method to manually refresh candidates list
   refreshCandidates(): Observable<Candidate[]> {
