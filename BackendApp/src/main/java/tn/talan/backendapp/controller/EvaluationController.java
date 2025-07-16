@@ -3,6 +3,7 @@ package tn.talan.backendapp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import tn.talan.backendapp.dtos.EvaluationUpdateDTO;
 import tn.talan.backendapp.entity.Evaluation;
 import tn.talan.backendapp.dtos.createEvaluationDTO;
 import tn.talan.backendapp.service.EvaluationService;
@@ -40,8 +41,8 @@ public class EvaluationController {
     }
 
     @PutMapping("/{id}")
-    public Evaluation update(@PathVariable Long id, @RequestBody Evaluation e) {
-        return service.update(id, e);
+    public Evaluation update(@PathVariable Long id, @RequestBody EvaluationUpdateDTO dto) {
+        return service.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
