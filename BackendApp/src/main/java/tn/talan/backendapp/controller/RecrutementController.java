@@ -46,26 +46,6 @@ public class RecrutementController {
         return service.getById(id);
     }
 
-    @PostMapping
-    public Recrutement create(@RequestBody createRecrutementDTO recrutementDTO) {
-        String email = authService.getCurrentUsername(); // get from token
-        User responsable = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found: " + email));
-        User demandeur = userRepository.findById(recrutementDTO.getDemandeur_id())
-                .orElseThrow(() -> new RuntimeException("Demandeur not found: " + email));
-
-        Candidate candidate = candidateRepository.findById(recrutementDTO.getCandidate_id())
-                .orElseThrow(() -> new RuntimeException("Candidate not found: ID = " + recrutementDTO.getCandidate_id()));
-
-        //Updating correspondant candidate status and recruiter for each new recruitement
-        candidate.setResponsable(responsable);
-        candidate.setStatut(Statut.IN_PROGRESS);
-        candidateRepository.save(candidate);
-
-        Recrutement recrutement = new Recrutement(recrutementDTO.getPosition(),StatutRecrutement.IN_PROGRESS,demandeur,candidate);
-
-        return service.save(recrutement);
-    }
 
     @PutMapping("/{id}")
     public Recrutement update(@PathVariable Long id, @RequestBody Recrutement r) {

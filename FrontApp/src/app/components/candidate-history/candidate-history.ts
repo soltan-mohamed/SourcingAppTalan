@@ -34,7 +34,8 @@ interface FlatNode {
     MatIconModule,
     MatButtonModule,
     FeatherModule,
-    MatDialogModule
+    MatDialogModule,
+    FormsModule
   ],
   templateUrl: './candidate-history.html',
   styleUrl: './candidate-history.scss'
@@ -43,6 +44,7 @@ export class CandidateHistory implements OnInit {
   recruitementData: Recrutement[] = [];
   loading = false;
   editingEval! : Evaluation;
+  defaultEvalDesc = "No interview notes are available ...";
   evaluationStatus = EvaluationStatusList;
   treeControls: FlatTreeControl<FlatNode>[] = [];
   dataSources: MatTreeFlatDataSource<Recrutement | Evaluation, FlatNode>[] = [];
@@ -187,6 +189,13 @@ export class CandidateHistory implements OnInit {
       
       this.recruitementData.forEach((recruitment, index) => {
 
+        recruitment.evaluations?.forEach(e => {
+          if(!e.description) {
+            e.description = this.defaultEvalDesc;
+          }
+          e.editingText = false;
+        });
+
         const treeControl = new FlatTreeControl<FlatNode>(
           node => node.level,
           node => node.expandable
@@ -259,7 +268,7 @@ export class CandidateHistory implements OnInit {
     if ('statut' in evaluation && 'id' in evaluation) {
       const ev = evaluation as Evaluation;
       if (!recruitment.evaluations) return 1;
-      
+
       const index = recruitment.evaluations.findIndex(e => e.id === ev.id);
       return index >= 0 ? index + 1 : 1;
     }
@@ -274,5 +283,10 @@ export class CandidateHistory implements OnInit {
       maxWidth: 'none',
       data: recruitment!.id
     });
+  }
+
+  editDescription(evalu : Evaluation) : void {
+    evalu.editingText = !evalu.editingText;
+    evalu.description = "";
   }
 }

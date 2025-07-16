@@ -1,19 +1,23 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { backendUrl } from '@shared/backendUrl';
 import { Candidate } from 'app/models/candidate';
+import { AuthService } from '@core/service/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CandidatesService {
-  
+
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   public candidates$ = this.candidatesSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+        private authService: AuthService
+
+  ) { }
 
   get currentCandidates(): Candidate[] {
     return this.candidatesSubject.value;
@@ -36,6 +40,29 @@ export class CandidatesService {
     );
   }
 
+    createCandidate(candidateData: any, responsableId: number): Observable<Candidate> {
+    const dataWithResponsable = {
+      ...candidateData,
+      responsable: { id: responsableId }
+    };
+
+    return this.http.post<Candidate>(`${backendUrl}/candidats`, dataWithResponsable, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+    private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.token;
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+  }
+
+
   CreateNewCandidate(candidate: any): Observable<any> {
     const token = localStorage.getItem('token');
 
@@ -48,7 +75,13 @@ export class CandidatesService {
       .pipe(
         tap(newCandidate => {
           const currentCandidates = this.currentCandidates;
-          this.candidatesSubject.next([...currentCandidates, newCandidate]);
+          // Check if currentCandidates is a valid array before spreading
+          if (Array.isArray(currentCandidates)) {
+            this.candidatesSubject.next([...currentCandidates, newCandidate.candidate || newCandidate]);
+          } else {
+            // If currentCandidates is not an array, initialize with the new candidate
+            this.candidatesSubject.next([newCandidate.candidate || newCandidate]);
+          }
         }),
         catchError(error => {
           console.error('API Error:', error);
@@ -92,10 +125,27 @@ export class CandidatesService {
     return this.getAllCandidates();
   }
 
-  // Method to remove a candidate from the list
-  // removeCandidate(id: number): void {
-  //   const currentCandidates = this.candidatesSubject.value;
-  //   const filteredCandidates = currentCandidates.filter(candidate => candidate.id !== id);
-  //   this.candidatesSubject.next(filteredCandidates);
-  // }
+
+  uploadCv(candidateId: number, file: File): Observable<HttpEvent<any>> {
+    const formData = new FormData();
+    formData.append('cv', file);
+
+    return this.http.post(`${backendUrl}/candidats/${candidateId}/upload-cv`, formData, {
+      headers: this.getAuthHeadersForFileUpload(),
+      reportProgress: true,
+      observe: 'events'
+    });
+  }
+
+    private getAuthHeadersForFileUpload(): HttpHeaders {
+    const token = this.authService.token;
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+      // Don't set Content-Type for FormData - browser will set it automatically
+    });
+  }
+
 }

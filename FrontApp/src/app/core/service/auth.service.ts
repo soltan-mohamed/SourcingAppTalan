@@ -62,7 +62,7 @@ export class AuthService {
     } else if (roles.includes(Role.EVALUATEUR)) {
       this.router.navigate(['/evaluateur/dashboard']);
     } else if (roles.includes(Role.RECRUTEUR)) {
-      this.router.navigate(['/recruteur/dashboard/main']);
+      this.router.navigate(['/home']);
     } else {
       //console.error('No valid role found, redirecting to signin');
       this.router.navigate(['/authentication/signin']);
@@ -146,4 +146,11 @@ export class AuthService {
     const user = this.currentUserValue;
     return user && user.roles ? user.roles.map((role: Role) => role.toUpperCase() as Role) : [];
 }
+
+public isValidToken(token: string): boolean {
+  if (!token) return false;
+  const parts = token.split('.');
+  return parts.length === 3; // Valid JWT has 3 parts
+}
+
 }

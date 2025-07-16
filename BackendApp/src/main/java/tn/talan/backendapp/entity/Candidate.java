@@ -52,7 +52,7 @@ public class Candidate {
     @Column(name = "skill")
     private List<String> skills = new ArrayList<>();
 
-    @Column(name = "cv")
+    @Column(name = "cv", columnDefinition = "MEDIUMTEXT")
     private String cv;
 
     @ManyToOne

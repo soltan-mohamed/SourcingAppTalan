@@ -29,4 +29,3 @@ public class UserService {
         return userRepository.findByRolesContaining(role);
     }
 }
-
