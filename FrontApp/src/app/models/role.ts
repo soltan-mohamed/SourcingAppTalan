@@ -4,9 +4,3 @@ export enum Role {
   Evaluateur = 'Evaluateur',
   Manager = 'Manager',
 }
-
-/*export enum Role {
-  RECRUTEUR = 'RECRUTEUR',
-  EVALUATEUR = 'EVALUATEUR',
-  MANAGER = 'MANAGER',
-}*/
