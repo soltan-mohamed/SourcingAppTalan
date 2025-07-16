@@ -13,14 +13,16 @@
         </button>
     </div>
 
-    <div class="px-6 py-6 !overflow-y-scroll flex-1">
-        <form [formGroup]="CandidateForm" (ngSubmit)="onSubmit()" class="space-y-10">
+    <!--div class="px-6 py-6 !overflow-y-scroll flex-1"-->
 
-            <!-- Progress indicator -->
-            <div class="w-full bg-gray-100 rounded-full h-1.5 mb-6">
-            <div class="bg-blue-700 h-1.5 rounded-full transition-all duration-300"
-                    [style.width]="getFormProgress() + '%'"></div>
-            </div>
+        <mat-stepper class="px-6! py-6! !overflow-y-scroll flex-1!" [linear]="false" #stepper>
+            <mat-step [stepControl]="CandidateForm" label="Candidate details">
+                <form [formGroup]="CandidateForm" class="space-y-10">
+                    <div class="w-full gap-2! bg-gray-100 rounded-full h-1.5 mb-6">
+                        <!-- Progress indicator -->
+                        <div class="my-4! bg-blue-700 h-1.5 rounded-full transition-all duration-300"
+                                [style.width]="getFormProgress() + '%'"></div>
+                        </div>
 
             <!-- Surname and lastname fields -->
             <div class="flex justify-between gap-2">
@@ -28,7 +30,7 @@
                 <!-- Surname Field -->
                 <div class="relative">
                 <label for="nom" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
-                    Nom<span class="text-red-500">*</span>
+                    Last name<span class="text-red-500">*</span>
                 </label>
                 <input 
                     id="nom"
@@ -52,7 +54,7 @@
                 <!-- Firstname Field -->
                 <div class="relative">
                 <label for="prenom" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
-                    Prenom<span class="text-red-500">*</span>
+                    First name<span class="text-red-500">*</span>
                 </label>
                 <input 
                     id="prenom"
@@ -75,36 +77,10 @@
 
             </div>
             
-
-
-            <!-- email Field -->
-            <div class="relative">
-            <label for="email" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
-                Email<span class="text-red-500">*</span>
-            </label>
-            <input 
-                id="email"
-                type="text"
-                formControlName="email"
-                placeholder="Enter email address"
-                class="mt-1 block w-full px-4 py-3 border-2 rounded-lg focus:ring-0 transition duration-200
-                    {{CandidateForm.get('email')?.invalid && CandidateForm.get('email')?.touched ? 
-                        'border-red-400 focus:border-red-500' : 
-                        'border-gray-200 focus:border-red-600'}}"
-            >
-            <p *ngIf="CandidateForm.get('email')?.invalid && CandidateForm.get('email')?.touched" 
-                class="mt-1 text-sm text-red-600 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                Please provide a correct address
-            </p>
-            </div>
-
-                        <!-- Num tel Field -->
+            <!-- Num tel Field -->
             <div class="relative">
                 <label for="telephone" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
-                    Telephone<span class="text-red-500">*</span>
+                    Phone number<span class="text-red-500">*</span>
                 </label>
                 <input 
                     id="telephone"
@@ -123,6 +99,30 @@
                     </svg>
                     Please provide a correct phone number
                 </p>
+            </div>
+
+            <!-- email Field -->
+            <div class="relative">
+            <label for="email" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
+                Email address<span class="text-red-500">*</span>
+            </label>
+            <input 
+                id="email"
+                type="text"
+                formControlName="email"
+                placeholder="Enter email address"
+                class="mt-1 block w-full px-4 py-3 border-2 rounded-lg focus:ring-0 transition duration-200
+                    {{CandidateForm.get('email')?.invalid && CandidateForm.get('email')?.touched ? 
+                        'border-red-400 focus:border-red-500' : 
+                        'border-gray-200 focus:border-red-600'}}"
+            >
+            <p *ngIf="CandidateForm.get('email')?.invalid && CandidateForm.get('email')?.touched" 
+                class="mt-1 text-sm text-red-600 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Please provide a correct address
+            </p>
             </div>
 
             
@@ -211,102 +211,189 @@
                     </mat-chip-grid>
                 </div>
 
-            </div>
-            
-            <!-- CV File Upload -->
-            <div class="mt-8">
-            <h3 class="text-sm font-medium text-gray-700 mb-2">CV PDF</h3>
-            <div 
-                class="border-2 rounded-lg p-8 text-center transition-all duration-300 cursor-pointer group"
-                [class.border-gray-300]="!isDragging && !fileError && !selectedFile"
-                [class.border-red-500]="fileError"
-                [class.bg-red-50]="fileError"
-                [class.border-blue-300]="isDragging && !fileError"
-                [class.bg-blue-50]="isDragging && !fileError"
-                [class.border-green-300]="selectedFile && !fileError"
-                [class.bg-green-50]="selectedFile && !fileError"
-                (dragover)="onDragOver($event)"
-                (dragleave)="onDragLeave($event)"
-                (drop)="onDrop($event)"
-                (click)="fileInput.click()"
-            >
-                @if (!selectedFile) {
-                <div class="space-y-3">
-                    <div class="flex justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 group-hover:text-red-500 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                        </div>
+                    
+                        <!-- CV File Upload -->
+                        <div class="mt-8">
+                            <h3 class="text-sm font-medium text-gray-700 mb-2">CV PDF</h3>
+                            <div 
+                                class="border-2 rounded-lg p-8 text-center transition-all duration-300 cursor-pointer group"
+                                [class.border-gray-300]="!isDragging && !fileError && !selectedFile"
+                                [class.border-red-500]="fileError"
+                                [class.bg-red-50]="fileError"
+                                [class.border-blue-300]="isDragging && !fileError"
+                                [class.bg-blue-50]="isDragging && !fileError"
+                                [class.border-green-300]="selectedFile && !fileError"
+                                [class.bg-green-50]="selectedFile && !fileError"
+                                (dragover)="onDragOver($event)"
+                                (dragleave)="onDragLeave($event)"
+                                (drop)="onDrop($event)"
+                                (click)="fileInput.click()"
+                            >
+                                @if (!selectedFile) {
+                                <div class="space-y-3">
+                                    <div class="flex justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 group-hover:text-red-500 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    </div>
+                                    <div>
+                                    <p class="text-gray-700 font-medium">Upload the CV PDF file</p>
+                                    <p class="text-gray-500 text-sm mt-1">Drag and drop the CV here, or click to browse</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Maximum file size: 10MB</p>
+                                </div>
+                                } @else {
+                                <div class="flex flex-col items-center">
+                                    <!-- PDF icon and file info -->
+                                    <div class="h-16 w-16 flex items-center justify-center bg-red-100 rounded-lg mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                    <span class="text-lg font-medium text-gray-800 truncate max-w-xs">{{ selectedFile.name }}</span>
+                                    <span class="text-sm text-gray-500">{{ formatFileSize(selectedFile.size) }}</span>
+                                    <button 
+                                        type="button"
+                                        class="mt-4 px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                        (click)="removeFile(); $event.stopPropagation()"
+                                    >
+                                        Remove File
+                                    </button>
+                                    </div>
+                                </div>
+                                }
+                                
+                                <!-- @if (fileError) {
+                                <p class="text-red-600 mt-3 text-sm flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    {{ fileErrorMessage }}
+                                </p>
+                                } -->
+                            </div>
+                        
+                            <input 
+                                #fileInput 
+                                type="file" 
+                                accept="application/pdf" 
+                                class="hidden" 
+                                (change)="onFileSelected($event)"
+                            >
+                        </div>
+
+                        <div class="flex justify-end space-x-4 pt-8 border-t border-gray-100">
+                            <button 
+                                matButton 
+                                matStepperNext
+                            >
+                                Next
+                            </button>
+                        </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="recrutementForm" label="Recruitement details">
+                <form [formGroup]="recrutementForm" class="mt-5 flex flex-col gap-4! space-y-3!">
+
+                    <!-- Poste (position) Field -->
+                    <div class="relative">
+                        <label for="poste" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
+                            Position
+                        </label>
+                        <input 
+                            id="poste"
+                            type="text"
+                            formControlName="poste"
+                            placeholder="Enter desired position"
+                            class="mt-1 block w-full px-4 py-3 border-2 rounded-lg focus:ring-0 transition duration-200
+                                {{recrutementForm.get('poste')?.invalid && recrutementForm.get('poste')?.touched ? 
+                                    'border-red-400 focus:border-red-500' : 
+                                    'border-gray-200 focus:border-red-600'}}">
+
+                        <p *ngIf="recrutementForm.get('poste')?.invalid && recrutementForm.get('poste')?.touched" 
+                            class="mt-1 text-sm text-red-600 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            Please provide a correct position
+                        </p>
+
                     </div>
-                    <div>
-                    <p class="text-gray-700 font-medium">Upload the CV PDF file</p>
-                    <p class="text-gray-500 text-sm mt-1">Drag and drop the CV here, or click to browse</p>
+
+                    <!-- Date of HR interview Field -->
+                    <!--div class="relative">
+                        <label for="date" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
+                            HR interview<span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            id="date"
+                            type="datetime-local"
+                            formControlName="date"
+                            placeholder="Enter desired position"
+                            class="mt-1 block w-full px-4 py-3 border-2 rounded-lg focus:ring-0 transition duration-200
+                                {{recrutementForm.get('date')?.invalid && recrutementForm.get('date')?.touched ? 
+                                    'border-red-400 focus:border-red-500' : 
+                                    'border-gray-200 focus:border-red-600'}}"
+                        >
+                        <p *ngIf="recrutementForm.get('date')?.invalid && recrutementForm.get('date')?.touched" 
+                            class="mt-1 text-sm text-red-600 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            Please provide a correct date
+                        </p>
+                    </!--div-->
+
+                    <!-- Manager Select Field -->
+                    <div class="relative">
+                        <label for="manager" class="absolute -top-2.5 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-600">
+                            Manager
+                        </label>
+
+                        <mat-form-field appearance="outline" class="gray-outline w-full mt-2">
+                            <mat-select 
+                                id="manager"
+                                formControlName="manager" 
+                                placeholder="Select a manager"
+                                [disableOptionCentering]="true">
+                                <mat-option *ngFor="let manager of managers" [value]="manager">
+                                    {{ manager.fullName }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
-                    <p class="text-xs text-gray-500">Maximum file size: 10MB</p>
-                </div>
-                } @else {
-                <div class="flex flex-col items-center">
-                    <!-- PDF icon and file info -->
-                    <div class="h-16 w-16 flex items-center justify-center bg-red-100 rounded-lg mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    </div>
-                    <div class="flex flex-col items-center">
-                    <span class="text-lg font-medium text-gray-800 truncate max-w-xs">{{ selectedFile.name }}</span>
-                    <span class="text-sm text-gray-500">{{ formatFileSize(selectedFile.size) }}</span>
+                
+                    <div class="flex justify-end space-x-4 pt-8 border-t border-gray-100">
                     <button 
-                        type="button"
-                        class="mt-4 px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                        (click)="removeFile(); $event.stopPropagation()"
+                        type="button" 
+                        class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
+                        (click)="closeForm()"
                     >
-                        Remove File
+                        Cancel
+                    </button>
+                    <button 
+                        type="submit" 
+                        class="px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-800 to-blue-600 rounded-lg hover:from-blue-900 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center"
+                        [disabled]="CandidateForm.invalid || isSubmitting || !verifyRecruitementForm()"
+                        (click)="onSubmit()"
+                    >
+                        <span *ngIf="!isSubmitting">Submit</span>
+                        <span *ngIf="isSubmitting" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Processing...
+                        </span>
                     </button>
                     </div>
-                </div>
-                }
-                
-                @if (fileError) {
-                <p class="text-red-600 mt-3 text-sm flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    {{ fileErrorMessage }}
-                </p>
-                }
-            </div>
-            
-            <input 
-                #fileInput 
-                type="file" 
-                accept="application/pdf" 
-                class="hidden" 
-                (change)="onFileSelected($event)"
-            >
-            </div>
-            
-            <div class="flex justify-end space-x-4 pt-8 border-t border-gray-100">
-            <button 
-                type="button" 
-                class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
-                (click)="closeForm()"
-            >
-                Cancel
-            </button>
-            <button 
-                type="submit" 
-                class="px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-800 to-blue-600 rounded-lg hover:from-blue-900 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center"
-                [disabled]="CandidateForm.invalid || !selectedFile || isSubmitting"
-            >
-                <span *ngIf="!isSubmitting">Submit</span>
-                <span *ngIf="isSubmitting" class="flex items-center">
-                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processing...
-                </span>
-            </button>
-            </div>
-        </form>
-    </div>
+
+                </form>   
+            </mat-step>
+        </mat-stepper>
+     
+    <!--/div-->
+
 </div>

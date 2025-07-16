@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -6,8 +6,13 @@ import { MatIconModule } from '@angular/material/icon';
 import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar,MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatButtonModule} from '@angular/material/button';
 
 import { CandidatesService } from 'app/services/candidates-service';
+import { UsersService } from 'app/services/users-service';
+import { User } from 'app/models/user';
 
 @Component({
   selector: 'app-create-candidat',
@@ -15,14 +20,23 @@ import { CandidatesService } from 'app/services/candidates-service';
     CommonModule,
     MatIconModule,
     MatChipsModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatStepperModule
   ],
   templateUrl: './create-candidat.html',
   styleUrl: './create-candidat.scss',
   
 })
 export class CreateCandidat implements OnInit {
+
+  // List of all managers :  
+  managers : User[] = [];
+
+
   CandidateForm!: FormGroup;
+  recrutementForm!: FormGroup;
   
   keywords : string[] = [];
   
@@ -38,6 +52,7 @@ export class CreateCandidat implements OnInit {
   constructor(private formBuilder: FormBuilder,
     private dialogRef: MatDialogRef<CreateCandidat>,
     private candidatesService : CandidatesService,
+    private usersService : UsersService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -47,16 +62,22 @@ export class CreateCandidat implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    this.getAllManagers();
   }
 
   initializeForm(): void {
+
     this.CandidateForm = this.formBuilder.group({
       nom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ]],
       prenom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ]],
       telephone: ['', [Validators.required, Validators.pattern(/^[0-9-\s]{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
-      //poste: ['', Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ],
       competences: [[]],
+    });
+
+    this.recrutementForm = this.formBuilder.group({
+      poste: ['', [Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ]],
+      manager: ['', []],
     });
   }
 
@@ -154,8 +175,12 @@ export class CreateCandidat implements OnInit {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
+  verifyRecruitementForm = (): boolean =>
+    (this.recrutementForm.get('poste')?.value === '' && this.recrutementForm.get('manager')?.value === '') ||
+    (this.recrutementForm.get('poste')?.value !== '' && this.recrutementForm.get('manager')?.value !== '');
+
   onSubmit(): void {
-    if (this.CandidateForm.valid && this.selectedFile) {
+    if (this.CandidateForm.valid && this.verifyRecruitementForm() === true) {
       this.isSubmitting = true;
       
       const formData = {
@@ -168,11 +193,28 @@ export class CreateCandidat implements OnInit {
         cv: "testingcv"
         //this.selectedFile
       };
+
+      // console.log("Recruitement :  ", this.recrutementForm);
       
       console.log('Submitting candidate: ...', formData);
 
+      let sendRecrutementForm = null;
+      if (this.recrutementForm.get('poste')?.value !== '' && this.recrutementForm.get('manager')?.value !== '') {
+        sendRecrutementForm = {
+          position: this.recrutementForm.get('poste')?.value,
+          demandeur_id: this.recrutementForm.get('manager')?.value.id,
+        }
+        console.log("SEND RECRUTEMENT FORM ", sendRecrutementForm)
+      }
 
-      this.candidatesService.CreateNewCandidate(formData)
+      const newCandidateForm = {
+        candidate : formData,
+        recruitment : sendRecrutementForm
+      }
+
+      console.log("newCandidateForm ", newCandidateForm);
+
+      this.candidatesService.CreateNewCandidate(newCandidateForm)
         .subscribe({
           next: (response: any) => {
             this.isSubmitting = false;
@@ -204,28 +246,19 @@ export class CreateCandidat implements OnInit {
             );
           }
       });
-      
-      // setTimeout(() => {
-      //   this.isSubmitting = false;
-      //   console.log('Candidate submitted successfully!');
-      //   this.resetForm();
-      // }, 2000);
+
     } else {
       this.CandidateForm.markAllAsTouched();
-
+      this.recrutementForm.markAllAsTouched();
       
       if (!this.selectedFile) {
         this.fileError = true;
-        this.fileErrorMessage = 'Please select a PDF file';
       }
     }
   }
 
   closeForm(): void {
-    // Reset form and close modal/dialog
     this.resetForm();
-    console.log('Form closed');
-    // In real app, this would close the modal or navigate away
   }
 
   private resetForm(): void {
@@ -235,6 +268,19 @@ export class CreateCandidat implements OnInit {
     this.fileError = false;
     this.fileErrorMessage = '';
     this.isSubmitting = false;
+  }
+
+  // List of all managers
+  getAllManagers(): void {
+    this.usersService.getAllUsersByRole("MANAGER").subscribe({
+      next: (data) => {
+        this.managers = data;
+      },
+      error: (err) => {
+        // this.errorMessage = "An internal server error has occurred !";
+        console.error(err);
+      }
+    });
   }
 }
 
