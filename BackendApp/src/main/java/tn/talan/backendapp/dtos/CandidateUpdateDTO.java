@@ -1,6 +1,8 @@
 package tn.talan.backendapp.dtos;
 
 
+import tn.talan.backendapp.enums.Statut;
+
 import java.util.List;
 
 public class CandidateUpdateDTO {
@@ -11,18 +13,20 @@ public class CandidateUpdateDTO {
     private String telephone ;
     private List<String> skills;
     private String cv;
+    private Statut statut;
 
     public CandidateUpdateDTO() {
 
     }
 
-    public CandidateUpdateDTO(String nom, String prenom, String email, String telephone, List<String> skills, String cv) {
+    public CandidateUpdateDTO(String nom, String prenom, String email, String telephone, List<String> skills, String cv, Statut statut) {
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
         this.telephone = telephone;
         this.skills = skills;
         this.cv = cv;
+        this.statut = statut;
     }
 
     public String getPrenom() {
@@ -72,4 +76,11 @@ public class CandidateUpdateDTO {
     public void setCv(String cv) {
         this.cv = cv;
     }
+
+    public Statut getStatut() {
+        return statut;
+    }
+
+    public void setStatut(Statut statut) {
+        this.statut = statut;}
 }

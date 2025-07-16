@@ -10,7 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FeatherModule } from 'angular-feather';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AddInterviewComponent } from '../interviews/add-interview/add-interview';
-
+import { CandidatesService } from 'app/services/candidates-service';
 import { Candidate } from 'app/models/candidate';
 import { Recrutement } from 'app/models/recrutement';
 import { Evaluation } from 'app/models/evaluation';
@@ -92,6 +92,7 @@ export class CandidateHistory implements OnInit {
     private dialogRef: MatDialogRef<CandidateHistory>,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: Candidate,
+    private candidatesService: CandidatesService
     
   ) {}
   
@@ -105,18 +106,40 @@ export class CandidateHistory implements OnInit {
     this.editingEval.editing = false;
   }
   
-  changeStatus(newStatus: EvaluationStatus, eval_id : number) {
-    const evalu = this.recruitementData
-      .flatMap(item => item.evaluations || [])
-      .find(evaluation => evaluation && String(evaluation.id) === String(eval_id));  
-    if (evalu) {
-      evalu.statut = newStatus;
-      console.log("Updated evaluation ! ");
-      console.log("evalu : ",evalu);
-    }
+  changeStatus(newStatus: EvaluationStatus, eval_id: number) {
+  // Trouver l'évaluation à modifier dans recruitementData
+  const evalu = this.recruitementData
+    .flatMap(item => item.evaluations || [])
+    .find(evaluation => evaluation && String(evaluation.id) === String(eval_id));
 
-    this.closeDropdown();    
+  if (evalu) {
+    // Mise à jour locale immédiate de l'évaluation (optimiste)
+    evalu.statut = newStatus;
+    console.log("Updated evaluation locally:", evalu);
+
+    // Préparer la donnée à envoyer (pour le candidat)
+    const updatedCandidate = {
+      statut: newStatus
+    };
+
+    // Appeler le service pour mettre à jour le statut du candidat côté backend
+    this.candidatesService.updateCandidate(this.data.id, updatedCandidate).subscribe({
+      next: (res) => {
+        // Synchroniser la donnée locale pour l'UI
+        this.data.statut = newStatus;
+        console.log("Statut candidat mis à jour avec succès !");
+      },
+      error: (err) => {
+        console.error("Échec mise à jour statut candidat", err);
+        // En cas d'erreur, tu peux envisager de revenir en arrière côté UI (rollback)
+        //evalu.statut = /* valeur précédente ou null */;
+      }
+    });
   }
+
+  this.closeDropdown();
+}
+
 
   onClose(): void {
     this.dialogRef.close();

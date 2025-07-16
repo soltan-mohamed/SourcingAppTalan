@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { AuthService } from '@core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {FormsModule} from '@angular/forms';
@@ -31,7 +31,15 @@ export class Home implements OnInit {
   currentUser: any;
   isAuthenticated: boolean = true;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
+    // Subscribe to authentication status changes
+    this.authService.currentUser.subscribe(user => {
+      this.isAuthenticated = !!user;
+      this.currentUser = user;
+      if (user) {
+        this.role = user.roles?.[0] || ''; // Assuming roles is an array and we take the first role
+      }
+    });
 
   }
 
@@ -55,7 +63,11 @@ export class Home implements OnInit {
   }
 
   // Logout method
-  logout() {
+  logout():void {
+     const confirmed = window.confirm("Are you sure you want to logout?");
+  if (confirmed) {
+    this.authService.logout();
+  }
   }
 
   // Navigate to login page

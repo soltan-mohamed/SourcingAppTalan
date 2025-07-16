@@ -42,10 +42,41 @@ export class Candidates {
   ngOnInit(): void {
     this.candidatesSubscription = this.candidateService.candidates$.subscribe({
       next: (data) => {
-        this.candidates = data.map(candidate => ({
+        this.candidates = data.map(candidate => {
+          const name= `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
+          let type = '-';
+          if (candidate.statut === 'CONTACTED') {
+          type = '-';
+          }
+          else if (candidate.recrutements?.length > 0) {
+          const allEvaluations = candidate.recrutements.flatMap(r => r.evaluations || []);
+
+          // Trouver la première évaluation en cours
+          const inProgressEval = allEvaluations.find(e => e.statut === 'IN_PROGRESS');
+
+          if (inProgressEval) {
+            switch (inProgressEval.type) {
+              case 'rh':
+                type = 'RH';
+                break;
+              case 'technique':
+                type = 'TECHNIQUE';
+                break;
+              case 'managerial':
+                type = 'MANAGERIAL';
+                break;
+              default:
+                type = '-';
+            }
+          }
+        }
+
+        return {
           ...candidate,
-          name: `${candidate.prenom} ${candidate.nom.toUpperCase()}`
-        }));
+          name,
+          type
+        };
+        });
         console.log('Candidates updated:', data);
       },
       error: (err) => {
@@ -61,8 +92,8 @@ export class Candidates {
     { def: 'telephone', label: 'Phone', type: 'phone' },
     { def: 'email', label: 'Email', type: 'email' },
     { def: 'position', label: 'Position', type: 'text' },
-    //{ def: 'dateOfAdmission', label: 'Date', type: 'date' },
     { def: 'statut', label: 'Status', type: 'text' },
+    { def: 'type', label: 'type', type: 'text' },
     { def: 'cv', label: 'CV', type: 'file' },
     { def: 'actions', label: 'Actions', type: 'actionBtn' },
   ];
