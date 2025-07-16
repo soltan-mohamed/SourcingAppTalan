@@ -25,7 +25,7 @@ import { CandidateHistory } from 'app/components/candidate-history/candidate-his
     MatProgressBarModule,
     MatTooltipModule,
     MatButtonModule,
-    FeatherIconsComponent,
+   FeatherIconsComponent,
     MatDialogModule
   ],
   templateUrl: './table-card.component.html',
@@ -188,5 +188,22 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
         //console.log('Dialog was closed without saving');
       }
     });
+  }
+
+  openCvFile(cvPath: string): void {
+    if (cvPath) {
+      // Since we're now storing only filenames, show info about the file
+      const userChoice = confirm(
+        `CV File: ${cvPath}\n\n` 
+      );
+      
+      if (userChoice) {
+        // Try to open assuming file exists in uploads folder
+        const fullUrl = `http://localhost:9090/talan/uploads/${cvPath}`;
+        window.open(fullUrl, '_blank');
+      }
+    } else {
+      alert('No CV file available for this candidate.');
+    }
   }
 }

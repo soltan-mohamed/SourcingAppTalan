@@ -118,7 +118,7 @@ onSubmit() {
     } else if (roles.includes(Role.EVALUATEUR)) {
       this.router.navigate(['/evaluateur/dashboard']);
     } else if (roles.includes(Role.RECRUTEUR)) {
-      this.router.navigate(['/recruteur/dashboard/main']);
+      this.router.navigate(['/home']);
     } else {
       this.router.navigate(['/authentication/signin']);
     }

@@ -1,7 +1,9 @@
 package tn.talan.backendapp.controller;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 import tn.talan.backendapp.dtos.CandidateCreationResponse;
 import tn.talan.backendapp.dtos.CandidateUpdateDTO;
 import tn.talan.backendapp.dtos.CreateCandidatDTO;
@@ -13,10 +15,14 @@ import tn.talan.backendapp.repository.UserRepository;
 import tn.talan.backendapp.service.AuthenticationService;
 import tn.talan.backendapp.service.CandidateService;
 import org.springframework.web.bind.annotation.*;
+import tn.talan.backendapp.service.FileStorageService;
 import tn.talan.backendapp.service.RecrutementService;
 import tn.talan.backendapp.entity.Recrutement;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/candidats")
@@ -26,12 +32,31 @@ public class CandidateController {
     private final AuthenticationService authService;
     private final UserRepository userRepository;
     private final RecrutementService recrutementService;
+    private final FileStorageService fileStorageService;
 
-    public CandidateController(CandidateService service, AuthenticationService authService, UserRepository userRepository, RecrutementService recrutementService) {
+
+    public CandidateController(CandidateService service, AuthenticationService authService, UserRepository userRepository, RecrutementService recrutementService, FileStorageService fileStorageService) {
         this.authService = authService;
         this.service = service;
         this.userRepository = userRepository;
         this.recrutementService = recrutementService;
+        this.fileStorageService = fileStorageService;
+
+    }
+
+    @PostMapping("/{id}/upload-cv")
+    public ResponseEntity<?> uploadCv(
+            @PathVariable Long id,
+            @RequestParam("cv") MultipartFile file) {
+        try {
+            String fileName = fileStorageService.storeFile(file);
+            String filePath = "/uploads/" + fileName;
+            Map<String, Object> response = service.uploadCv(id, filePath);
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to store file", "details", e.getMessage()));
+        }
     }
 
     @GetMapping
@@ -64,26 +89,13 @@ public class CandidateController {
     }
 
 
-//    @PostMapping
-//    public Candidate create(@RequestBody Candidate candidate) {
-//        String email = authService.getCurrentUsername(); // get from token
-//        System.out.println("Username is : "+ email + "\n");
-//        User responsable = userRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("User not found: " + email));
-//        candidate.setResponsable(responsable);
-//        return service.save(candidate);
-//
-//    }
 
     @GetMapping("/not-vivier")
     public List<Candidate> getAllNotVivier() {
         return service.getAllNotVivierCandidates();
     }
 
-//    @PutMapping("/{id}")
-//    public Candidate update(@PathVariable Long id, @RequestBody Candidate candidate) {
-//        return service.update(id, candidate);
-//    }
+
 
     @PutMapping("/{id}")
     public Candidate update(@PathVariable Long id, @RequestBody CandidateUpdateDTO candidate) {

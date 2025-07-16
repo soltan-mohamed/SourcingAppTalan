@@ -14,6 +14,11 @@ import { CreateCandidat } from '../create-candidat/create-candidat';
 import { CandidatesService } from 'app/services/candidates-service';
 import { Candidate } from 'app/models/candidate';
 
+interface CandidateTableData extends Omit<Candidate, 'skills'> {
+  fullName: string;
+  skills: string;
+}
+
 @Component({
   selector: 'app-candidates',
   imports: [
@@ -31,7 +36,7 @@ import { Candidate } from 'app/models/candidate';
 })
 export class Candidates {
 
-  candidates : Candidate[] = [];
+  candidates: CandidateTableData[] = [];
   private candidatesSubscription: Subscription = new Subscription();
 
   constructor(
@@ -40,6 +45,7 @@ export class Candidates {
   ) {}
 
   ngOnInit(): void {
+
     this.candidatesSubscription = this.candidateService.candidates$.subscribe({
       next: (data) => {
         this.candidates = data.map(candidate => {
@@ -86,11 +92,19 @@ export class Candidates {
 
     this.loadCandidates();
   }
+
+  patchFormValues(candidate: Candidate): void {
+  }
+
+  getCurrentUser(): void {
+  }
   
   candidateColumnDefinitions = [
-    { def: 'name', label: 'Name', type: 'text' },
+    { def: 'fullName', label: 'Name', type: 'text' },
     { def: 'telephone', label: 'Phone', type: 'phone' },
     { def: 'email', label: 'Email', type: 'email' },
+    { def: 'skills', label: 'Skills', type: 'text' },
+
     { def: 'position', label: 'Position', type: 'text' },
     { def: 'statut', label: 'Status', type: 'text' },
     { def: 'type', label: 'type', type: 'text' },
@@ -104,22 +118,50 @@ export class Candidates {
       disableClose: false
     });
 
-    // dialogRef.afterClosed().subscribe((result: Publication) => {
-    //   if (result) {
-    //     // Reload publications from server after adding a new one
-    //     setTimeout(() => this.loadUserPublications(), 1000);
-    //   }
-    // });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Reload candidates after adding a new one
+        this.loadCandidates();
+      }
+    });
   }
 
   loadCandidates(): void {
     this.candidateService.getAllCandidates().subscribe({
       next: (data) => {
-        console.log('Candidates loaded successfully');
+        // Transform the data to match the table expectations
+        this.candidates = data.map(candidate => ({
+          ...candidate,
+          fullName: `${candidate.prenom} ${candidate.nom}`,
+          skills: candidate.skills ? candidate.skills.join(', ') : 'No skills'
+        })) as CandidateTableData[];
+        console.log('Candidates loaded successfully:', this.candidates);
+        
+        // Log CV information for debugging
+        this.candidates.forEach(candidate => {
+          console.log(`Candidate ${candidate.fullName}: CV = ${candidate.cv || 'No CV'}`);
+        });
       },
       error: (err) => {
         console.error('Error fetching candidates:', err);
       }
+    });
+  }
+
+  // Test method to check if CV upload is working
+  testCvUpload(): void {
+    console.log('Testing CV upload functionality...');
+    console.log('Current candidates:', this.candidates);
+    
+    // Check if any candidates have CV files
+    const candidatesWithCv = this.candidates.filter(c => c.cv);
+    const candidatesWithoutCv = this.candidates.filter(c => !c.cv);
+    
+    console.log(`Candidates with CV: ${candidatesWithCv.length}`);
+    console.log(`Candidates without CV: ${candidatesWithoutCv.length}`);
+    
+    candidatesWithCv.forEach(c => {
+      console.log(`${c.fullName} has CV: ${c.cv}`);
     });
   }
 

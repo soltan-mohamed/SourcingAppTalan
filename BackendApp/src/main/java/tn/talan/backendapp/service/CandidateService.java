@@ -5,12 +5,14 @@ import jakarta.transaction.Transactional;
 import tn.talan.backendapp.dtos.CandidateUpdateDTO;
 import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.enums.Statut;
+import tn.talan.backendapp.exceptions.ResourceNotFoundException;
 import tn.talan.backendapp.repository.CandidateRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional // Add this
@@ -19,6 +21,23 @@ public class CandidateService {
 
     public CandidateService(CandidateRepository repository) {
         this.repository = repository;
+    }
+
+    @Transactional
+    public Map<String, Object> uploadCv(Long id, String cvPath) {
+        Candidate candidate = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate not found with id: " + id));
+        candidate.setCv(cvPath);
+        Candidate saved = repository.save(candidate);
+
+        // Return only what you need in the response
+        return Map.of(
+                "id", saved.getId(),
+                "nom", saved.getNom(),
+                "prenom", saved.getPrenom(),
+                "cv", saved.getCv(),
+                "message", "CV uploaded successfully"
+        );
     }
 
     public List<Candidate> getAll() {
@@ -93,4 +112,3 @@ public class CandidateService {
         return candidate;
     }
 }
-
