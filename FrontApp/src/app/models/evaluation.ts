@@ -8,5 +8,6 @@ export interface Evaluation {
     statut: string,
     evaluateur_id: number,
     recrutement_id : number,
-    editing : boolean
+    editing : boolean,
+    editingText : boolean
 }
