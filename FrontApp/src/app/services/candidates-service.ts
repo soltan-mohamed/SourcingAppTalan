@@ -24,10 +24,15 @@ export class CandidatesService {
   }
 
   getAllCandidates(): Observable<Candidate[]> {
-    return this.http.get<Candidate[]>(`${backendUrl}/candidats/not-vivier`).pipe(
-      tap(candidates => {
-        this.candidatesSubject.next(candidates);
-      }),
+    return this.http.get<Candidate[]>(`${backendUrl}/candidats`).pipe(
+       tap(data => {
+      if (Array.isArray(data)) {
+        this.candidatesSubject.next(data);
+      } else {
+        console.warn("❗ Données candidates non valides :", data);
+        this.candidatesSubject.next([]);
+      }
+    }),
       catchError(error => {
         console.error('Error fetching candidates:', error);
         return throwError(() => error);

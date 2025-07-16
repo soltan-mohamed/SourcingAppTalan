@@ -25,4 +25,17 @@ export class InterviewService {
         })
       );
   }
+  updateEvaluation(id: number, updatedEvaluation: Partial<Evaluation>): Observable<Evaluation> {
+  return this.http.put<Evaluation>(`${backendUrl}/evaluations/${id}`, updatedEvaluation)
+    .pipe(
+      tap(res => {
+        console.log("✅ Évaluation mise à jour :", res);
+      }),
+      catchError(error => {
+        console.error("❌ Échec mise à jour évaluation :", error);
+        return throwError(() => error);
+      })
+    );
+}
+
 }

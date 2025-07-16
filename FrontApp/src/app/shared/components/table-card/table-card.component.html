@@ -94,7 +94,7 @@
                 @switch (row.statut) {
                 @case ('ACCEPTED') {
                 <div>
-                    <span class="badge badge-solid-green">{{ row.statut }}</span>
+                    <span class="badge badge-solid-accepted">{{ row.statut }}</span>
                 </div>
                 }
                 @case ('REJECTED') {
@@ -120,6 +120,11 @@
                 @case ("IN_PROGRESS") {
                 <div>
                     <span class="badge badge-solid-in-progress">in progress</span>
+                </div>
+                }
+                @case ("CANCELLED") {
+                <div>
+                    <span class="badge badge-solid-yellow">{{ row.statut }}</span>
                 </div>
                 }
                 }
