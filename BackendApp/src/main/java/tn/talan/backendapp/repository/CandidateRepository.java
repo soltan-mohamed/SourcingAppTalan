@@ -19,4 +19,13 @@ public interface CandidateRepository extends JpaRepository<Candidate,Long> {
 
     List<Candidate> findByStatutNotIn(List<Statut> statuts);
     List<Candidate> findByStatutIsNot(Statut statut);
+
+    List<Candidate> findByStatut(Statut statut);
+
+    @Query("SELECT DISTINCT c FROM Candidate c LEFT JOIN FETCH c.recrutements WHERE c.statut != 'VIVIER'")
+    List<Candidate> findNonVivierCandidates();
+
+    @Query("SELECT DISTINCT c FROM Candidate c LEFT JOIN FETCH c.recrutements WHERE c.statut = 'VIVIER'")
+    List<Candidate> findVivierCandidates();
+
 }

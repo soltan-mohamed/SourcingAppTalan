@@ -1,0 +1,114 @@
+<div class="p-6">
+  <div class="max-w-7xl mx-auto">
+    <mat-card class="bg-white shadow-xl rounded-xl overflow-hidden border-0">
+      
+      <mat-card-header class="flex justify-center bg-gradient-to-r from-blue-400 to-lime-700 px-6 py-8 border-0">
+        <div class="flex items-center justify-between w-full">
+          <div class="mb-4 flex justify-center items-center text-white">
+            <mat-icon class="mr-2">people</mat-icon>
+            <mat-card-title class="text-3xl! font-semibold text-white mb-0">
+              Vivier Candidates
+            </mat-card-title>
+          </div>
+
+          <div class="h-full mb-3 flex justify-center items-center">
+            <button 
+              (click)="refreshCandidates()" 
+              mat-fab 
+              color="primary"
+              class="bg-blue-300! hover:bg-blue-700 shadow-lg transition-all duration-200 transform hover:scale-105"
+              aria-label="Refresh candidates"
+              [disabled]="isRefreshing">
+              <mat-icon [class.animate-spin]="isRefreshing">refresh</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-header>
+
+<mat-card-content class="p-6">
+  <!-- AI Matching Search Bar -->
+  <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+    <div class="flex flex-col md:flex-row gap-4 items-center">
+      <mat-form-field class="w-full">
+        <mat-label>Search by skills (e.g., "Fullstack Java: Java, SpringBoot, Angular")</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="findMatches()">
+        <mat-hint>Enter technologies separated by commas</mat-hint>
+      </mat-form-field>
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="findMatches()"
+        [disabled]="isMatching">
+        <span *ngIf="!isMatching">Find Matches</span>
+        <span *ngIf="isMatching" class="flex items-center">
+          <mat-icon class="animate-spin mr-2">autorenew</mat-icon>
+          Matching...
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Add the matching progress indicator here -->
+  <div *ngIf="isMatching" class="mb-6 text-center py-4">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p class="mt-2 text-gray-600">Calculating matches...</p>
+  </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="bg-slate-50 px-6 py-2.5 border-b border-slate-200">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-4">
+                <h3 class="text-lg! font-semibold text-slate-700">
+                  {{ filteredCandidates.length }} Candidates
+                </h3>
+                <span *ngIf="searchQuery" class="text-sm text-gray-500">
+                  (Sorted by match relevance) 
+                </span>
+              </div>
+              
+              <div class="flex items-center space-x-2">
+                <button 
+                  mat-icon-button
+                  class="text-slate-400 hover:text-slate-600 transition-colors duration-150"
+                  matTooltip="Refresh"
+                  (click)="refreshCandidates()"
+                  [disabled]="isRefreshing">
+                  <mat-icon class="text-lg" [class.animate-spin]="isRefreshing">refresh</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enhanced Scrollable Table -->
+          <ng-scrollbar class="h-[500px]" visibility="hover">
+            <app-table-card 
+              [dataSource]="filteredCandidates" 
+              [columnDefinitions]="candidateColumnDefinitions"
+              class="professional-table">
+            </app-table-card>
+          </ng-scrollbar>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isRefreshing" class="text-center py-12">
+          <div class="text-slate-400 mb-4">
+            <mat-icon class="text-6xl mb-4 animate-spin">refresh</mat-icon>
+          </div>
+          <h3 class="text-lg font-medium text-slate-700 mb-2">Loading vivier candidates</h3>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isRefreshing && filteredCandidates.length === 0" class="text-center py-12">
+          <div class="text-slate-400 mb-4">
+            <mat-icon class="text-6xl mb-4">people_outline</mat-icon>
+          </div>
+          <h3 class="text-lg font-medium text-slate-700 mb-2">No candidates found</h3>
+          <p class="text-slate-500 mb-6">
+            <span *ngIf="searchQuery">No matches found for "{{searchQuery}}" </span>
+            <span *ngIf="!searchQuery">Candidates with VIVIER status will appear here</span>
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+
+  /* Match percentage styles */
+  .match-percentage-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .match-percentage-value {
+    min-width: 40px;
+    text-align: right;
+    font-weight: 500;
+  }
+  
+  .match-percentage-bar {
+    flex-grow: 1;
+    height: 8px;
+    border-radius: 4px;
+    background-color: #e5e7eb; /* Default/gray background */
+    overflow: hidden;
+  }
+  
+  .match-percentage-fill {
+    height: 100%;
+  }
+  
+  /* Color classes that match your getMatchPercentageStyle function */
+  .text-green-600 {
+    color: #16a34a;
+  }
+  .text-amber-500 {
+    color: #f59e0b;
+  }
+  .text-red-500 {
+    color: #ef4444;
+  }
+  
+  .bg-green-600 {
+    background-color: #16a34a;
+  }
+  .bg-amber-500 {
+    background-color: #f59e0b;
+  }
+  .bg-red-500 {
+    background-color: #ef4444;
+  }
+  
+  .font-medium {
+    font-weight: 500;
+  }

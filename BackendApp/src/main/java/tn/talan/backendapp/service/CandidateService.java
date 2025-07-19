@@ -48,6 +48,18 @@ public class CandidateService {
         return repository.findById(id).orElse(null);
     }
 
+    public List<Candidate> getAllVivierCandidates() {
+        return repository.findByStatut(Statut.VIVIER);
+    }
+
+    public List<Candidate> getAllNonVivierCandidates() {
+        return repository.findNonVivierCandidates();
+    }
+
+    public List<Candidate> getVivierCandidates() {
+        return repository.findVivierCandidates();
+    }
+
 
     public Candidate save(Candidate c) {
         return repository.save(c);
@@ -111,4 +123,6 @@ public class CandidateService {
 
         return candidate;
     }
+
+
 }

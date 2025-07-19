@@ -31,7 +31,7 @@
                             'text-white hover:bg-white/10': activeItem !== 'home'
                         }"
                         [routerLink]="['/home/list']"
-                        (click)="activeItem = 'home'"
+                        (click)="setActiveItem('home')"
                     >
                         <div class="flex items-center justify-center w-8 h-8">
                             <span class="material-symbols-outlined"
@@ -50,7 +50,7 @@
                             'text-white hover:bg-white/10': activeItem !== 'interviews'
                         }"
                         [routerLink]="['/home/my-interviews']"
-                        (click)="activeItem = 'interviews'"
+                        (click)="setActiveItem('interviews')"
                     >
                         <div class="flex items-center justify-center w-8 h-8">
                             <span class="material-symbols-outlined"
@@ -69,7 +69,7 @@
                             'text-white hover:bg-white/10': activeItem !== 'candidates'
                         }"
                         [routerLink]="['/home/list-candidates']"
-                        (click)="activeItem = 'candidates'"
+                        (click)="setActiveItem('candidates')"
                     >
                         <div class="flex items-center justify-center w-8 h-8">
                             <span class="material-symbols-outlined"
@@ -84,17 +84,17 @@
                     <!-- Sourcing -- Smart Matching -->
                     <div *ngIf="isAuthenticated" class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
                         [ngClass]="{
-                            'active-menu-item': activeItem === 'sourcing',
-                            'text-white hover:bg-white/10': activeItem !== 'sourcing'
+                            'active-menu-item': activeItem === 'vivier',
+                            'text-white hover:bg-white/10': activeItem !== 'vivier'
                         }"
-                        [routerLink]="['/home/my-account']"
-                        (click)="activeItem = 'sourcing'"
+                        [routerLink]="['/home/vivier-candidates']"
+                        (click)="setActiveItem('vivier')"
                     >
                         <div class="flex items-center justify-center w-8 h-8">
                             <span class="material-symbols-outlined"
-                                [ngClass]="{ 'text-red-500': activeItem === 'sourcing', 'text-white': activeItem !== 'sourcing' }"
+                                [ngClass]="{ 'text-red-500': activeItem === 'vivier', 'text-white': activeItem !== 'vivier' }"
                             >
-                                person_search
+                                inventory_2
                             </span>
                         </div>
                         <div class="ml-2"><span>Sourcing</span></div>
@@ -115,11 +115,7 @@
                         <div class="ml-2"><span>Logout</span></div>
                     </div>
 
-
-
                 </div>
-
-
 
             </div>
         </div>

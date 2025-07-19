@@ -12,11 +12,8 @@ import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.User;
 import tn.talan.backendapp.repository.RecrutementRepository;
 import tn.talan.backendapp.repository.UserRepository;
-import tn.talan.backendapp.service.AuthenticationService;
-import tn.talan.backendapp.service.CandidateService;
+import tn.talan.backendapp.service.*;
 import org.springframework.web.bind.annotation.*;
-import tn.talan.backendapp.service.FileStorageService;
-import tn.talan.backendapp.service.RecrutementService;
 import tn.talan.backendapp.entity.Recrutement;
 
 import java.io.IOException;
@@ -33,15 +30,32 @@ public class CandidateController {
     private final UserRepository userRepository;
     private final RecrutementService recrutementService;
     private final FileStorageService fileStorageService;
+    private final AiMatchingService aiMatchingService;
 
 
-    public CandidateController(CandidateService service, AuthenticationService authService, UserRepository userRepository, RecrutementService recrutementService, FileStorageService fileStorageService) {
+
+    public CandidateController(CandidateService service, AuthenticationService authService, UserRepository userRepository, RecrutementService recrutementService, FileStorageService fileStorageService, AiMatchingService aiMatchingService) {
         this.authService = authService;
         this.service = service;
         this.userRepository = userRepository;
         this.recrutementService = recrutementService;
         this.fileStorageService = fileStorageService;
 
+        this.aiMatchingService = aiMatchingService;
+    }
+
+    @PostMapping("/match")
+    public ResponseEntity<?> findMatches(@RequestBody Map<String, String> request) {
+        try {
+            String requirements = request.get("requirements");
+            List<Candidate> candidates = service.getAllVivierCandidates();
+
+            List<Map<String, Object>> matches = aiMatchingService.findMatches(requirements, candidates);
+            return ResponseEntity.ok(Map.of("matches", matches));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/{id}/upload-cv")
