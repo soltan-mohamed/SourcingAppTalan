@@ -81,8 +81,10 @@
                 <button 
                   mat-icon-button
                   class="text-slate-400 hover:text-slate-600 transition-colors duration-150"
-                  matTooltip="Refresh">
-                  <mat-icon class="text-lg">refresh</mat-icon>
+                  matTooltip="Refresh"
+                  (click)="refreshCandidates()"
+                  [disabled]="isRefreshing">
+                  <mat-icon class="text-lg" [class.animate-spin]="isRefreshing">refresh</mat-icon>
                 </button>
                 <button 
                   mat-icon-button

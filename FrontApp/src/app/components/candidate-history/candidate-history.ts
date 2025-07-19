@@ -122,48 +122,48 @@ export class CandidateHistory implements OnInit {
     console.log("Updated evaluation locally:", evalu);
 
     const updatedEval = {
-  statut: newStatus,
-  description: evalu.description,
-  type: evalu.type,
-  date: evalu.date,
-};
+      statut: newStatus,
+      description: evalu.description,
+      type: evalu.type,
+      date: evalu.date,
+    };
  this.interviewService.updateEvaluation(evalu.id, evalu).subscribe({
-  next: (res) => {
-    console.log("✅ Statut de l'évaluation mis à jour dans le backend.");
+      next: (res) => {
+        console.log("✅ Statut de l'évaluation mis à jour dans le backend.");
   },
   error: (err) => {
     console.error("❌ Erreur lors de la mise à jour du statut de l'évaluation :", err);
   }
 });
-    // Trouver toutes les évaluations avec une date valide
-  const allEvaluations = this.recruitementData
-    .flatMap(item => item.evaluations || [])
-    .filter(e => !!e.date);
+        // Trouver toutes les évaluations avec une date valide
+        const allEvaluations = this.recruitementData
+          .flatMap(item => item.evaluations || [])
+          .filter(e => !!e.date);
 
-  // Trier les évaluations par date décroissante
-  const lastEvaluation = allEvaluations
-    .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime())[0];
+        // Trier les évaluations par date décroissante
+        const lastEvaluation = allEvaluations
+          .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime())[0];
 
-  // Vérifier si l'évaluation modifiée est la plus récente
-  const isLastEvaluation = lastEvaluation?.id === evalu.id;
-    if (isLastEvaluation) {
-    const updatedCandidate = {
-      statut: newStatus
-    };
+        // Vérifier si l'évaluation modifiée est la plus récente
+        const isLastEvaluation = lastEvaluation?.id === evalu.id;
+        if (isLastEvaluation) {
+          const updatedCandidate = {
+            statut: newStatus
+          };
 
-    this.candidatesService.updateCandidate(this.data.id, updatedCandidate).subscribe({
-      next: () => {
-        this.data.statut = newStatus;
-        console.log("✅ Statut du candidat mis à jour !");
-      },
-      error: (err) => {
-        console.error("❌ Erreur lors de la mise à jour du statut candidat", err);
+          this.candidatesService.updateCandidate(this.data.id, updatedCandidate).subscribe({
+            next: () => {
+              this.data.statut = newStatus;
+              console.log("✅ Statut du candidat mis à jour !");
+            },
+            error: (err) => {
+              console.error("❌ Erreur lors de la mise à jour du statut candidat", err);
         // rollback optionnel
-      }
-    });
-  } else {
-    console.log("ℹ️ L'évaluation modifiée n'est pas la dernière => statut du candidat NON modifié.");
-  }
+            }
+          });
+        } else {
+          console.log("ℹ️ L'évaluation modifiée n'est pas la dernière => statut du candidat NON modifié.");
+        }
   }
   this.closeDropdown();
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
@@ -34,10 +34,11 @@ interface CandidateTableData extends Omit<Candidate, 'skills'> {
   templateUrl: './candidates.html',
   styleUrl: './candidates.scss'
 })
-export class Candidates {
+export class Candidates implements OnInit, OnDestroy {
 
   candidates: CandidateTableData[] = [];
   private candidatesSubscription: Subscription = new Subscription();
+  isRefreshing = false;
 
   constructor(
     private dialog: MatDialog,
@@ -97,10 +98,84 @@ export class Candidates {
     this.loadCandidates();
   }
 
+  ngOnDestroy(): void {
+    if (this.candidatesSubscription) {
+      this.candidatesSubscription.unsubscribe();
+    }
+  }
+
   patchFormValues(candidate: Candidate): void {
   }
 
   getCurrentUser(): void {
+  }
+
+  refreshCandidates(): void {
+    console.log('Refreshing candidates data...');
+    this.isRefreshing = true;
+    
+    // Force reload all candidates data from the backend
+    this.candidateService.refreshCandidates().subscribe({
+      next: (data) => {
+        console.log('Candidates data refreshed successfully:', data);
+        console.log(`Refreshed ${data.length} candidates with complete recruitment and evaluation data`);
+        this.isRefreshing = false;
+        
+        // The subscription will automatically update the candidates array
+        // Also manually update to ensure the latest data is displayed
+        this.candidates = data.map(candidate => {
+          const fullName = `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
+          let type = '-';
+
+          if (candidate.recrutements?.length > 0) {
+            const allEvaluations = candidate.recrutements
+              .flatMap(r => r.evaluations || [])
+              .filter(e => e.date)
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+            const lastEval = allEvaluations[0];
+
+            if (lastEval) {
+              switch (lastEval.type?.toLowerCase()) {
+                case 'rh':
+                  type = 'RH';
+                  break;
+                case 'technique':
+                  type = 'TECHNIQUE';
+                  break;
+                case 'managerial':
+                  type = 'MANAGERIAL';
+                  break;
+                default:
+                  type = '-';
+              }
+            }
+          }
+
+          return {
+            ...candidate,
+            fullName,
+            skills: candidate.skills ? candidate.skills.join(', ') : 'No skills',
+            type,
+            statut: candidate.statut
+          };
+        });
+        
+        // Log recruitment and evaluation data for debugging
+        this.candidates.forEach(candidate => {
+          if (candidate.recrutements?.length > 0) {
+            console.log(`${candidate.fullName} has ${candidate.recrutements.length} recruitment(s)`);
+            candidate.recrutements.forEach((recruitment, index) => {
+              console.log(`  Recruitment ${index + 1}: ${recruitment.position || 'N/A'} with ${recruitment.evaluations?.length || 0} evaluations`);
+            });
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error refreshing candidates:', err);
+        this.isRefreshing = false;
+      }
+    });
   }
   
   candidateColumnDefinitions = [
