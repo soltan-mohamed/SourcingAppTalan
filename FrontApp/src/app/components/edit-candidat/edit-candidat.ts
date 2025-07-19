@@ -9,8 +9,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { Candidate } from 'app/models/candidate';
 import { CandidatesService } from 'app/services/candidates-service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { backendUrl } from '@shared/backendUrl';
 
 
 @Component({
@@ -45,12 +43,8 @@ export class EditCandidat implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: Candidate,
     public dialogRef: MatDialogRef<EditCandidat>,
     public candidateService : CandidatesService,
-    private snackBar : MatSnackBar,
-        private http: HttpClient
-
+    private snackBar : MatSnackBar
   ) {}
-
-
 
   onClose(): void {
     this.dialogRef.close();
@@ -202,30 +196,21 @@ export class EditCandidat implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.CandidateForm.valid) {
+    if (this.CandidateForm.valid && this.selectedFile) {
       this.isSubmitting = true;
-
-      const formData = new FormData();
       
-      // Add candidate data
-      formData.append('candidate', JSON.stringify({
+      const formData = {
         nom: this.CandidateForm.get('nom')?.value,
         prenom: this.CandidateForm.get('prenom')?.value,
         email: this.CandidateForm.get('email')?.value,
         telephone: this.CandidateForm.get('telephone')?.value,
-        skills: this.keywords
-      }));
+        skills: this.keywords,
+        //file: this.selectedFile
+      };
+      
+      console.log('Submitting candidate: ...', formData);
 
-      // Add CV file if selected
-      if (this.selectedFile) {
-        formData.append('cv', this.selectedFile);
-      }
-
-      const headers = new HttpHeaders();
-      headers.append('Content-Type', 'multipart/form-data');
-      headers.append('Accept', 'application/json');
-
-      this.http.put<any>(`${backendUrl}/candidats/${this.data.id}`, formData, { headers })
+      this.candidateService.updateCandidate(this.data.id,formData)
         .subscribe({
           next: (response: any) => {
             this.isSubmitting = false;
@@ -244,6 +229,7 @@ export class EditCandidat implements OnInit {
           error: (error: any) => {
             this.isSubmitting = false;
             console.error('Error updating candidate:', error);
+
             this.snackBar.open(
               'Failed to update candidate: ' + (error.error?.message || 'Unknown error'),
               'Close',
@@ -255,7 +241,15 @@ export class EditCandidat implements OnInit {
               }
             );
           }
-        });
+      });
+      
+      // setTimeout(() => {
+      //   this.isSubmitting = false;
+      //   console.log('Candidate submitted successfully!');
+        
+      //   // Close dialog and return the updated data
+      //   this.dialogRef.close(formData);
+      // }, 2000);
     } else {
       this.CandidateForm.markAllAsTouched();
       

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -13,8 +13,6 @@ import {MatButtonModule} from '@angular/material/button';
 import { CandidatesService } from 'app/services/candidates-service';
 import { UsersService } from 'app/services/users-service';
 import { User } from 'app/models/user';
-import { AuthService } from '@core/service/auth.service';
-import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-create-candidat',
@@ -53,10 +51,9 @@ export class CreateCandidat implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
     private dialogRef: MatDialogRef<CreateCandidat>,
-    private candidatesService: CandidatesService,
-    private usersService: UsersService,
-    private snackBar: MatSnackBar,
-    private authService: AuthService
+    private candidatesService : CandidatesService,
+    private usersService : UsersService,
+    private snackBar: MatSnackBar
   ) {}
 
   onClose(): void {
@@ -73,7 +70,7 @@ export class CreateCandidat implements OnInit {
     this.CandidateForm = this.formBuilder.group({
       nom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ]],
       prenom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ]],
-      telephone: ['', [Validators.required, Validators.pattern(/^[0-9+\-\s()]{8,15}$/)]],
+      telephone: ['', [Validators.required, Validators.pattern(/^[0-9-\s]{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
       competences: [[]],
     });
@@ -178,104 +175,87 @@ export class CreateCandidat implements OnInit {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  private sanitizePhoneNumber(phone: string): string {
-    if (!phone) return '';
-    // Remove all non-digit characters except + at the beginning
-    return phone.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
-  }
-
   verifyRecruitementForm = (): boolean =>
     (this.recrutementForm.get('poste')?.value === '' && this.recrutementForm.get('manager')?.value === '') ||
     (this.recrutementForm.get('poste')?.value !== '' && this.recrutementForm.get('manager')?.value !== '');
 
   onSubmit(): void {
-    this.CandidateForm.markAllAsTouched();
+    if (this.CandidateForm.valid && this.verifyRecruitementForm() === true) {
+      this.isSubmitting = true;
+      
+      const formData = {
+        nom: this.CandidateForm.get('nom')?.value,
+        prenom: this.CandidateForm.get('prenom')?.value,
+        email: this.CandidateForm.get('email')?.value,
+        telephone: this.CandidateForm.get('telephone')?.value,
+        statut : "CONTACTED",
+        skills: this.keywords,
+        cv: "testingcv"
+        //this.selectedFile
+      };
 
-    if (this.CandidateForm.invalid) {
-      this.showError('Please fill all required fields correctly');
-      return;
-    }
+      // console.log("Recruitement :  ", this.recrutementForm);
+      
+      console.log('Submitting candidate: ...', formData);
 
-    if (!this.selectedFile) {
-      this.fileError = true;
-      this.fileErrorMessage = 'Please upload a CV file';
-      return;
-    }
-
-    this.proceedWithSubmission();
-  }
-
-private proceedWithSubmission(): void {
-  this.isSubmitting = true;
-
-  // Use only the filename instead of base64 data
-  const formData = {
-    nom: this.CandidateForm.get('nom')?.value?.trim(),
-    prenom: this.CandidateForm.get('prenom')?.value?.trim(),
-    email: this.CandidateForm.get('email')?.value?.trim(),
-    telephone: this.sanitizePhoneNumber(this.CandidateForm.get('telephone')?.value),
-    skills: this.keywords.length > 0 ? this.keywords : [],
-    cv: this.selectedFile?.name || null // Store only the filename
-  };
-
-  // Create recruitment form data if provided
-  let sendRecrutementForm = null;
-  if (this.recrutementForm.get('poste')?.value !== '' && this.recrutementForm.get('manager')?.value !== '') {
-    const managerValue = this.recrutementForm.get('manager')?.value;
-    sendRecrutementForm = {
-      position: this.recrutementForm.get('poste')?.value,
-      demandeur_id: typeof managerValue === 'object' ? managerValue.id : managerValue,
-    };
-  }
-
-  const newCandidateForm = {
-    candidate: formData,
-    recruitment: sendRecrutementForm
-  };
-
-  // Add debug logging
-  console.log('Sending candidate data:', JSON.stringify(newCandidateForm, null, 2));
-
-  this.candidatesService.CreateNewCandidate(newCandidateForm)
-    .subscribe({
-      next: (response) => {
-        this.isSubmitting = false;
-        if (response?.candidate) {
-          this.showSuccess('Candidate created successfully');
-          this.dialogRef.close(true);
-        } else {
-          this.showError('Failed to create candidate: No candidate returned');
+      let sendRecrutementForm = null;
+      if (this.recrutementForm.get('poste')?.value !== '' && this.recrutementForm.get('manager')?.value !== '') {
+        sendRecrutementForm = {
+          position: this.recrutementForm.get('poste')?.value,
+          demandeur_id: this.recrutementForm.get('manager')?.value.id,
         }
-      },
-      error: (err: { status: number; message: any; }) => {
-        this.isSubmitting = false;
-        console.error('Full error:', err);
-        if (err.status === 403) {
-          this.showError('Permission denied. Please check your user role or login status.');
-        } else if (err.status === 401) {
-          this.showError('Session expired. Please login again.');
-          this.authService.logout();
-        } else {
-          this.showError(`Failed to create candidate: ${err.message || 'Unknown error'}`);
-        }
+        console.log("SEND RECRUTEMENT FORM ", sendRecrutementForm)
       }
-    });
-}
 
-  showError(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
+      const newCandidateForm = {
+        candidate : formData,
+        recruitment : sendRecrutementForm
+      }
+
+      console.log("newCandidateForm ", newCandidateForm);
+
+      this.candidatesService.CreateNewCandidate(newCandidateForm)
+        .subscribe({
+          next: (response: any) => {
+            this.isSubmitting = false;
+            this.snackBar.open(
+              'Success creating new candidate',
+              'Close',
+              {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                panelClass: ['success-snackbar']
+              }
+            );
+            this.dialogRef.close(response);
+          },
+          error: (error: any) => {
+            this.isSubmitting = false;
+            console.error('Error creating canddiate:', error);
+
+            this.snackBar.open(
+              'Failed to create new candidate: ' + (error.error?.message || 'Unknown error'),
+              'Close',
+              {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+              }
+            );
+          }
+      });
+
+    } else {
+      this.CandidateForm.markAllAsTouched();
+      this.recrutementForm.markAllAsTouched();
+      
+      if (!this.selectedFile) {
+        this.fileError = true;
+      }
+    }
   }
-
-  showSuccess(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
-  }
-
 
   closeForm(): void {
     this.resetForm();
