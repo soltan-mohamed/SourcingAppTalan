@@ -1,33 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@core';
-import {MatButtonModule} from '@angular/material/button';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import {FormsModule} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
-
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.html',
   styleUrl: './home.scss',
-  imports: [MatSidenavModule,
-     MatButtonModule,
-     FormsModule,
-     MatIconModule,
-     NgClass,
-     CommonModule,
-     RouterModule
+  imports: [
+    MatSidenavModule,
+    MatButtonModule,
+    FormsModule,
+    MatIconModule,
+    NgClass,
+    CommonModule,
+    RouterModule
   ]
 })
 export class Home implements OnInit {
-  role : string = "";
-  fullName : string = "";
-  sideBarOpened: boolean = true; // Set to true to keep sidebar open by default
-  activeItem: string = 'home';
+  role: string = "";
+  fullName: string = "";
+  sideBarOpened: boolean = true;
+  activeItem: string = '';
   currentUser: any;
   isAuthenticated: boolean = true;
 
@@ -37,40 +38,66 @@ export class Home implements OnInit {
       this.isAuthenticated = !!user;
       this.currentUser = user;
       if (user) {
-        this.role = user.roles?.[0] || ''; // Assuming roles is an array and we take the first role
+        this.role = user.roles?.[0] || '';
       }
     });
 
+    // Subscribe to route changes
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      this.setActiveItemBasedOnRoute(event.url);
+    });
   }
 
   ngOnInit() {
+    const userString = localStorage.getItem("currentUser");
+    this.currentUser = userString ? JSON.parse(userString) : null;
+    this.fullName = this.currentUser?.fullName || '';
 
-    const userString = localStorage.getItem("currentUser")
-    this.currentUser = userString ? JSON.parse(userString) : null ;
-    this.fullName = this.currentUser.fullName;
+    // Set initial active item from localStorage or based on route
+    const savedActiveItem = localStorage.getItem('activeMenuItem');
+    if (savedActiveItem) {
+      this.activeItem = savedActiveItem;
+    } else {
+      this.setActiveItemBasedOnRoute(this.router.url);
+    }
+  }
 
-    // Set active item based on current route
-    const currentUrl = this.router.url;
-    if (currentUrl.includes('/home/list')) {
+  setActiveItemBasedOnRoute(url: string): void {
+    if (url.includes('/home/list')) {
       this.activeItem = 'home';
-    } else if (currentUrl.includes('/home/my-account')) {
+    } else if (url.includes('/home/my-interviews')) {
+      this.activeItem = 'interviews';
+    } else if (url.includes('/home/list-candidates')) {
+      this.activeItem = 'candidates';
+    } else if (url.includes('/home/vivier-candidates')) {
+      this.activeItem = 'vivier';
+    } else if (url.includes('/home/my-account')) {
       this.activeItem = 'manage-accounts';
-    } else if (currentUrl.includes('/home/my-publications')) {
+    } else if (url.includes('/home/my-publications')) {
       this.activeItem = 'my-publications';
     } else {
       this.activeItem = 'home';
     }
+    
+    // Save to localStorage
+    localStorage.setItem('activeMenuItem', this.activeItem);
   }
 
-  // Logout method
-  logout():void {
-     const confirmed = window.confirm("Are you sure you want to logout?");
-  if (confirmed) {
-    this.authService.logout();
-  }
+  setActiveItem(item: string): void {
+    this.activeItem = item;
+    localStorage.setItem('activeMenuItem', item);
   }
 
-  // Navigate to login page
+  logout(): void {
+    const confirmed = window.confirm("Are you sure you want to logout?");
+    if (confirmed) {
+      localStorage.removeItem('activeMenuItem');
+      this.authService.logout();
+    }
+  }
+
   navigateToLogin() {
     this.router.navigate(['/login']);
   }

@@ -110,41 +110,32 @@ export class CandidateHistory implements OnInit {
     this.editingEval.editing = false;
   }
   
-  changeStatus(newStatus: EvaluationStatus, eval_id: number) {
+changeStatus(newStatus: EvaluationStatus, eval_id: number) {
   // Trouver l'évaluation à modifier dans recruitementData
   const evalu = this.recruitementData
     .flatMap(item => item.evaluations || [])
     .find(evaluation => evaluation && String(evaluation.id) === String(eval_id));
 
   if (evalu) {
-    // Mise à jour locale immédiate de l'évaluation (optimiste)
-    evalu.statut = newStatus;
-    console.log("Updated evaluation locally:", evalu);
-
     const updatedEval = {
       statut: newStatus,
       description: evalu.description,
       type: evalu.type,
       date: evalu.date,
     };
- this.interviewService.updateEvaluation(evalu.id, evalu).subscribe({
+    
+    this.interviewService.updateEvaluation(evalu.id, updatedEval).subscribe({
       next: (res) => {
         console.log("✅ Statut de l'évaluation mis à jour dans le backend.");
-  },
-  error: (err) => {
-    console.error("❌ Erreur lors de la mise à jour du statut de l'évaluation :", err);
-  }
-});
-        // Trouver toutes les évaluations avec une date valide
+        evalu.statut = newStatus;
+        
         const allEvaluations = this.recruitementData
           .flatMap(item => item.evaluations || [])
           .filter(e => !!e.date);
 
-        // Trier les évaluations par date décroissante
         const lastEvaluation = allEvaluations
           .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime())[0];
 
-        // Vérifier si l'évaluation modifiée est la plus récente
         const isLastEvaluation = lastEvaluation?.id === evalu.id;
         if (isLastEvaluation) {
           const updatedCandidate = {
@@ -155,15 +146,22 @@ export class CandidateHistory implements OnInit {
             next: () => {
               this.data.statut = newStatus;
               console.log("✅ Statut du candidat mis à jour !");
+              
+              // Close the dialog if status changed to VIVIER
+              if (newStatus === 'VIVIER') {
+                this.dialogRef.close({ statusChanged: true });
+              }
             },
             error: (err) => {
               console.error("❌ Erreur lors de la mise à jour du statut candidat", err);
-        // rollback optionnel
             }
           });
-        } else {
-          console.log("ℹ️ L'évaluation modifiée n'est pas la dernière => statut du candidat NON modifié.");
         }
+      },
+      error: (err) => {
+        console.error("❌ Erreur lors de la mise à jour du statut de l'évaluation :", err);
+      }
+    });
   }
   this.closeDropdown();
 }

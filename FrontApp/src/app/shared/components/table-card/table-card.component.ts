@@ -153,24 +153,23 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
-  openHistory(row: T): void {
-    const dialogRef = this.dialog.open(CandidateHistory, {
-      width: '90vw',       
-      maxWidth: 'none',
-      disableClose: false,
-      data: row 
-    });
+@Input() refreshCallback?: () => void;
 
-    // Handle the dialog result
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        //console.log('Dialog was closed with data:', result);
-        // Handle the updated candidate data
-      } else {
-        //console.log('Dialog was closed without saving');
-      }
-    });
-  }
+// Update the openHistory method
+openHistory(row: T): void {
+  const dialogRef = this.dialog.open(CandidateHistory, {
+    width: '90vw',       
+    maxWidth: 'none',
+    disableClose: false,
+    data: row 
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.statusChanged && this.refreshCallback) {
+      this.refreshCallback();
+    }
+  });
+}
 
   editCall(row: T): void {
     const dialogRef = this.dialog.open(EditCandidat, {

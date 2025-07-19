@@ -9,6 +9,7 @@ import { Page404Component } from './authentication/page404/page404.component';
 import { Home } from './components/home/home';
 import { Candidates } from './components/candidates/candidates';
 import { InterviewsComponent } from './components/interviews/interviews';
+import { VivierCandidatesComponent } from './components/vivier-candidates/vivier-candidates.component';
 export const APP_ROUTE: Route[] = [
   {
     path: '',
@@ -41,7 +42,9 @@ export const APP_ROUTE: Route[] = [
     component: Home,
     children : [
       {path : 'list-candidates', component : Candidates },
-      { path: 'my-interviews', component: InterviewsComponent }
+      { path: 'my-interviews', component: InterviewsComponent },
+        { path: 'vivier-candidates', component: VivierCandidatesComponent }
+
 
     ]
   },
