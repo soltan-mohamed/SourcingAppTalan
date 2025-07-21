@@ -247,7 +247,7 @@
 
                                         </span>
 
-                                        <button *ngIf="node.data.editingText" class="text-blue-400 hover:text-blue-600" (click)="editDescription(node.data)">
+                                        <button *ngIf="node.data.editingText" (click)="saveDescription(node.data)" class="text-blue-400 hover:text-blue-600">
                                             <span class="text-5xl material-symbols-outlined">
                                                 check_small
                                             </span>

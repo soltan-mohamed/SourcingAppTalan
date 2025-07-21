@@ -109,62 +109,87 @@ export class CandidateHistory implements OnInit {
   closeDropdown() {
     this.editingEval.editing = false;
   }
-  
-changeStatus(newStatus: EvaluationStatus, eval_id: number) {
-  // Trouver l'évaluation à modifier dans recruitementData
-  const evalu = this.recruitementData
-    .flatMap(item => item.evaluations || [])
-    .find(evaluation => evaluation && String(evaluation.id) === String(eval_id));
 
-  if (evalu) {
-    const updatedEval = {
-      statut: newStatus,
-      description: evalu.description,
-      type: evalu.type,
-      date: evalu.date,
-    };
-    
-    this.interviewService.updateEvaluation(evalu.id, updatedEval).subscribe({
-      next: (res) => {
-        console.log("✅ Statut de l'évaluation mis à jour dans le backend.");
-        evalu.statut = newStatus;
-        
-        const allEvaluations = this.recruitementData
-          .flatMap(item => item.evaluations || [])
-          .filter(e => !!e.date);
+  saveDescription(evalu : Evaluation) {
 
-        const lastEvaluation = allEvaluations
-          .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime())[0];
+    if (evalu.description) {
+      const updatedEval = {
+        statut: evalu.statut,
+        description: evalu.description,
+        type: evalu.type,
+        date: evalu.date,
+      };
 
-        const isLastEvaluation = lastEvaluation?.id === evalu.id;
-        if (isLastEvaluation) {
-          const updatedCandidate = {
-            statut: newStatus
-          };
-
-          this.candidatesService.updateCandidate(this.data.id, updatedCandidate).subscribe({
-            next: () => {
-              this.data.statut = newStatus;
-              console.log("✅ Statut du candidat mis à jour !");
-              
-              // Close the dialog if status changed to VIVIER
-              if (newStatus === 'VIVIER') {
-                this.dialogRef.close({ statusChanged: true });
-              }
-            },
-            error: (err) => {
-              console.error("❌ Erreur lors de la mise à jour du statut candidat", err);
-            }
-          });
+      this.interviewService.updateEvaluation(evalu.id, updatedEval).subscribe({
+        next: (res) => {
+          console.log("✅ Evaluation description updated successfully ");
+          
+        },
+        error: (err) => {
+          console.error("❌ Error while updating status description", err);
         }
-      },
-      error: (err) => {
-        console.error("❌ Erreur lors de la mise à jour du statut de l'évaluation :", err);
-      }
-    });
+      });
+
+      evalu.editingText = !evalu.editingText;
+
+    }
+
   }
-  this.closeDropdown();
-}
+
+  
+  changeStatus(newStatus: EvaluationStatus, eval_id: number) {
+    const evalu = this.recruitementData
+      .flatMap(item => item.evaluations || [])
+      .find(evaluation => evaluation && String(evaluation.id) === String(eval_id));
+
+    if (evalu) {
+      const updatedEval = {
+        statut: newStatus,
+        description: evalu.description,
+        type: evalu.type,
+        date: evalu.date,
+      };
+      
+      this.interviewService.updateEvaluation(evalu.id, updatedEval).subscribe({
+        next: (res) => {
+          console.log("✅ Statut de l'évaluation mis à jour dans le backend.");
+          evalu.statut = newStatus;
+          
+          const allEvaluations = this.recruitementData
+            .flatMap(item => item.evaluations || [])
+            .filter(e => !!e.date);
+
+          const lastEvaluation = allEvaluations
+            .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime())[0];
+
+          const isLastEvaluation = lastEvaluation?.id === evalu.id;
+          if (isLastEvaluation) {
+            const updatedCandidate = {
+              statut: newStatus
+            };
+
+            this.candidatesService.updateCandidate(this.data.id, updatedCandidate).subscribe({
+              next: () => {
+                this.data.statut = newStatus;
+                console.log("✅ Statut du candidat mis à jour !");
+                
+                if (newStatus === 'VIVIER') {
+                  this.dialogRef.close({ statusChanged: true });
+                }
+              },
+              error: (err) => {
+                console.error("❌ Erreur lors de la mise à jour du statut candidat", err);
+              }
+            });
+          }
+        },
+        error: (err) => {
+          console.error("❌ Erreur lors de la mise à jour du statut de l'évaluation :", err);
+        }
+      });
+    }
+    this.closeDropdown();
+  }
 
 
   onClose(): void {
@@ -280,6 +305,12 @@ changeStatus(newStatus: EvaluationStatus, eval_id: number) {
       width: '30vw',
       maxWidth: 'none',
       data: recruitment!.id
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'success') {
+        this.data.statut = 'SCHEDULED';
+      }
     });
   }
 
