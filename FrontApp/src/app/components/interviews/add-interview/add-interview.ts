@@ -83,7 +83,7 @@ export class AddInterviewComponent {
                 panelClass: ['success-snackbar']
               }
             );
-            this.dialogRef.close(response);
+            this.dialogRef.close('success');
           },
           error: (error: any) => {
             this.isSubmitting = false;
