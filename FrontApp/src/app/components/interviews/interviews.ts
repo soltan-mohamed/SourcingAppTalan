@@ -12,6 +12,7 @@ import { EditInterviewComponent } from './edit-interview/edit-interview';
 import { Evaluation } from 'app/models/evaluation';
 import { InterviewService } from 'app/services/interview-service';
 import { AuthService } from '@core/service/auth.service';
+import { InterviewStateService } from 'app/services/interview-state';
 
 @Component({
   selector: 'app-interviews',
@@ -44,7 +45,7 @@ export class InterviewsComponent implements OnInit {
 
   // Removed duplicate editInterview function
 
-  constructor(private dialog: MatDialog,private interviewService: InterviewService,private authService: AuthService) {}
+  constructor(private dialog: MatDialog,private interviewService: InterviewService,private authService: AuthService, private interviewStateService: InterviewStateService) {}
   addInterview() {
   const dialogRef = this.dialog.open(AddInterviewComponent,{
     panelClass: 'add-interview-dialog-panel'
@@ -72,7 +73,36 @@ export class InterviewsComponent implements OnInit {
   dialogRef.afterClosed().subscribe(result => {
     if (result) {
       // Update your interviews list with the edited data if needed
+      // 1. Reconstruire la date complète au format ISO
+      const newDateTime = new Date(`${result.date}T${result.time}:00`);
+
+      // 2. Préparer l'objet DTO pour la mise à jour
+      const updatePayload = {
+        date: newDateTime.toISOString(),
+        evaluateur_id: result.evaluatorId // Assurez-vous que le nom correspond à ce qu'attend votre backend
+      };
+      // 3. Appeler le service pour sauvegarder
+      this.interviewService.updateEvaluation(interview.id, updatePayload).subscribe({
+        next: (updatedInterview) => {
+          // 4. Mettre à jour la liste locale pour un affichage immédiat
+          const index = this.interviews.findIndex(i => i.id === interview.id);
+          if (index > -1) {
+            // Remplacer l'ancien objet par celui retourné par le backend
+            this.interviews[index] = updatedInterview;
+            // Forcer la détection de changement si le dataSource ne se met pas à jour
+            this.interviews = [...this.interviews]; 
+          }
+          console.log('Interview updated successfully!', updatedInterview);
+          this.interviewStateService.notifyInterviewUpdated(updatedInterview);
+
+          // 5. (IMPORTANT) Notifier les autres composants du changement (voir Étape 3)
+        },
+        error: (err) => {
+          console.error('Failed to update interview', err);
+        }
+      });
     }
+    
   });
 }
 
