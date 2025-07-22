@@ -61,38 +61,50 @@ export class Candidates {
         this.candidates = data.map(candidate => {
           const name= `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
           let type = '-';
+          let position = 'Not available';
           if (candidate.recrutements?.length > 0) {
-    const allEvaluations = candidate.recrutements
-      .flatMap(r => r.evaluations || [])
-      .filter(e => e.date) // On garde uniquement celles avec une date
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            const allRecrutements = candidate.recrutements
+                .flatMap(r => r || [])
+                .filter(r => r.date)
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            const lastRecrutement = allRecrutements[0];
 
-    const lastEval = allEvaluations[0];
-
-    if (lastEval) {
-      switch (lastEval.type?.toLowerCase()) {
-        case 'rh':
-          type = 'RH';
-          break;
-        case 'technique':
-          type = 'TECHNIQUE';
-          break;
-        case 'managerial':
-          type = 'MANAGERIAL';
-          break;
-        default:
-                type = '-';
+            if (lastRecrutement) {
+              position = lastRecrutement.position;
             }
-    }
-  }
 
-  return {
-    ...candidate,
-    name,
-    type,
-    statut: candidate.statut // 👈 s'assurer qu'on garde bien statut
-  };
-});
+            const allEvaluations = lastRecrutement.evaluations
+              .flatMap(r => r || [])
+              .filter(e => e.date) // On garde uniquement celles avec une date
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+            const lastEval = allEvaluations[0];
+
+            if (lastEval) {
+              switch (lastEval.type?.toLowerCase()) {
+                case 'rh':
+                  type = 'RH';
+                  break;
+                case 'technique':
+                  type = 'TECH';
+                  break;
+                case 'managerial':
+                  type = 'MNGRL';
+                  break;
+                default:
+                  type = '-';
+              }
+            }
+          }
+
+          return {
+            ...candidate,
+            name,
+            type,
+            statut: candidate.statut,
+            position : position
+          };
+        });
         console.log('Candidates updated:', data);
       },
       error: (err) => {
