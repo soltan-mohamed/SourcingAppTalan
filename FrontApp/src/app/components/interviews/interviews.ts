@@ -9,9 +9,9 @@ import { FeatherModule } from 'angular-feather';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AddInterviewComponent } from './add-interview/add-interview';
 import { EditInterviewComponent } from './edit-interview/edit-interview';
-
-
-
+import { Evaluation } from 'app/models/evaluation';
+import { InterviewService } from 'app/services/interview-service';
+import { AuthService } from '@core/service/auth.service';
 
 @Component({
   selector: 'app-interviews',
@@ -33,24 +33,8 @@ export class InterviewsComponent implements OnInit {
   
   displayedColumns: string[] = ['candidate', 'date', 'time', 'type','position','evaluator','days left','actions'];
 
-  interviews = [
-    {
-      candidate: 'Abir Omezine',
-      date: '2025-08-16',
-      time: '10:00',
-      position: 'ai Engineer',
-      type: 'RH',
-      evaluator: 'Anouar Khemeja',
-    },
-    {
-      candidate: 'Maya Kefi',
-      date: '2025-09-01',
-      time: '11:00',
-      position: 'java developer',
-      type: 'managerial',
-      evaluator: 'Safouane Chabchoub',
-    }
-  ];
+  interviews: Evaluation[] = [];
+
 
    get dataSource() {
     return this.searchDate
@@ -60,7 +44,7 @@ export class InterviewsComponent implements OnInit {
 
   // Removed duplicate editInterview function
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog,private interviewService: InterviewService,private authService: AuthService) {}
   addInterview() {
   const dialogRef = this.dialog.open(AddInterviewComponent,{
     panelClass: 'add-interview-dialog-panel'
@@ -94,7 +78,27 @@ export class InterviewsComponent implements OnInit {
 
  
 
-  ngOnInit(): void {}
-
-
+  ngOnInit(): void {
+     this.loadInterviews();
 }
+ loadInterviews(): void {
+ console.log("Loading interviews for the authenticated user...");
+
+    this.interviewService.getMyInterviews().subscribe({ // ✅ APPEL DE LA BONNE MÉTHODE
+      next: (interviews) => {
+        console.log("Interviews received:", interviews);
+        this.interviews = interviews.filter(interview => 
+          interview.statut === 'SCHEDULED' // Vous pouvez conserver ce filtre côté client si besoin
+        );
+      },
+      error: (err) => {
+        // L'erreur 500 ne devrait plus se produire.
+        // Vous pourriez avoir une erreur 401/403 si le token n'est pas valide ou manquant.
+        console.error('Error fetching my interviews:', err);
+      }
+    });
+  }
+}
+
+
+

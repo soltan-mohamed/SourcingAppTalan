@@ -2,7 +2,9 @@ package tn.talan.backendapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import tn.talan.backendapp.dtos.EvaluationDTO;
 import tn.talan.backendapp.dtos.EvaluationUpdateDTO;
 import tn.talan.backendapp.entity.Evaluation;
 import tn.talan.backendapp.dtos.createEvaluationDTO;
@@ -34,6 +36,13 @@ public class EvaluationController {
     public Evaluation getById(@PathVariable Long id) {
         return service.getById(id);
     }
+
+    @GetMapping("/my-interviews")
+    public List<EvaluationDTO> getMyInterviews(Authentication authentication) {
+        String email = authentication.getName(); // Comes from the JWT
+        return service.getMyInterviews(email);
+    }
+
 
     @PostMapping
     public Evaluation create(@RequestBody createEvaluationDTO e) {

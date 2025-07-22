@@ -13,6 +13,9 @@ public class EvaluationDTO {
     private LocalDateTime date;
     private String description;
     private User evaluateur;
+    private String evaluatorName;
+    private String candidateName;
+    private String position ;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -31,5 +34,14 @@ public class EvaluationDTO {
 
     public User getEvaluateur() { return evaluateur; }
     public void setEvaluateur(User evaluateurFullName) { this.evaluateur = evaluateur; }
+
+    public String getEvaluatorName() { return evaluatorName; }
+    public void setEvaluatorName(String name) { this.evaluatorName = name; }
+
+    public String getCandidateName() { return candidateName; }
+    public void setCandidateName(String name) { this.candidateName = name; }
+
+    public String getPosition() { return position; }
+    public void setPosition(String position) { this.position = position; }
 }
 

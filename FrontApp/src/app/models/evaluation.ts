@@ -6,8 +6,18 @@ export interface Evaluation {
     date: string,
     type: string,
     statut: string,
-    evaluateur_id: number,
-    recrutement_id : number,
+    evaluateur?: {
+    id: number;
+    fullName: string;
+  };
+     recrutement?: {
+    id: number;
+    poste: string;
+    candidate?: {
+      id: number;
+      fullName: string;
+    };
+  };
     editing : boolean,
     editingText : boolean
 }

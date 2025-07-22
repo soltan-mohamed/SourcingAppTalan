@@ -11,17 +11,17 @@
 
     <ng-container matColumnDef="candidate">
       <th mat-header-cell *matHeaderCellDef> Candidate </th>
-      <td mat-cell *matCellDef="let element"> {{element.candidate}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.candidateName}} </td>
     </ng-container>
 
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef> Date </th>
-      <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.date | date:'yyyy-MM-dd'}} </td>
     </ng-container>
 
     <ng-container matColumnDef="time">
       <th mat-header-cell *matHeaderCellDef> Time </th>
-      <td mat-cell *matCellDef="let element"> {{element.time}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.date | date:'HH:mm'}} </td>
     </ng-container>
 
     <ng-container matColumnDef="type">
@@ -36,7 +36,7 @@
 
     <ng-container matColumnDef="evaluator">
       <th mat-header-cell *matHeaderCellDef class="text-center"> Evaluator </th>
-      <td mat-cell *matCellDef="let element" class="text-center"> {{element.evaluator}} </td>
+      <td mat-cell *matCellDef="let element" class="text-center"> {{element.evaluatorName}} </td>
     </ng-container>
 
     <ng-container matColumnDef="days left">
