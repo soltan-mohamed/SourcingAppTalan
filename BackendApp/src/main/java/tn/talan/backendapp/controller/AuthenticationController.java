@@ -42,7 +42,8 @@ public class AuthenticationController {
                 .setToken(jwtToken)
                 .setExpiresIn(jwtService.getExpirationTime())
                 .setFullName(authenticatedUser.getFullName())
-                .setRoles(authenticatedUser.getRoles()); // Utilisez getRoles() au lieu de getRole()
+                .setRoles(authenticatedUser.getRoles()) // Utilisez getRoles() au lieu de getRole()
+                .setId(Long.valueOf(authenticatedUser.getId()));
 
         return ResponseEntity.ok(loginResponse);
     }

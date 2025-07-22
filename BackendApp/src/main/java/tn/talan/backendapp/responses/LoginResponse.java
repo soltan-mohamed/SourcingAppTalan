@@ -13,13 +13,21 @@ public class LoginResponse {
     private String token;
     private long expiresIn;
     private String fullName;
+    private Long id;
     private Set<Role> roles; // Changé de Role à Set<Role>
 
     public String getToken() {
         return token;
     }
 
+    public Long getId() {
+        return id;
+    }
 
+    public LoginResponse setId(Long id) {
+        this.id = id;
+        return this;
+    }
 
     public long getExpiresIn() {
         return expiresIn;

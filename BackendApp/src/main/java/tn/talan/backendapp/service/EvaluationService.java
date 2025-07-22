@@ -3,7 +3,9 @@ package tn.talan.backendapp.service;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tn.talan.backendapp.dtos.EvaluationDTO;
 import tn.talan.backendapp.dtos.EvaluationUpdateDTO;
+import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.Evaluation;
 import tn.talan.backendapp.entity.Recrutement;
 import tn.talan.backendapp.entity.User;
@@ -18,6 +20,8 @@ import tn.talan.backendapp.enums.Statut;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EvaluationService {
@@ -38,6 +42,34 @@ public class EvaluationService {
 
     public Evaluation getById(Long id) {
         return repository.findById(id).orElse(null);
+    }
+
+    public List<EvaluationDTO> getMyInterviews(String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Evaluation> evaluations = repository.findByEvaluateur(user);
+
+        // Convertir la liste d'entités en liste de DTOs
+        return evaluations.stream()
+                .map(this::convertToDto) // Utiliser une méthode de conversion
+                .collect(Collectors.toList());
+    }
+
+    private EvaluationDTO convertToDto(Evaluation evaluation) {
+        EvaluationDTO dto = new EvaluationDTO();
+        dto.setId(evaluation.getId());
+        dto.setDate(evaluation.getDate());
+        dto.setType(evaluation.getType()); // Assurez-vous que c'est une chaîne
+        dto.setStatut(evaluation.getStatut());
+
+        // Accéder aux objets liés pour obtenir les informations
+        dto.setEvaluatorName(evaluation.getEvaluateur().getFullName());
+        Candidate c = evaluation.getRecrutement().getCandidate();
+        dto.setCandidateName(c.getPrenom() + " " + c.getNom()); // EXEMPLE : dépend de votre entité Recrutement
+        dto.setPosition(evaluation.getRecrutement().getPosition());   // EXEMPLE : dépend de votre entité Recrutement
+
+        return dto;
     }
 
     public Evaluation save(createEvaluationDTO e) {
