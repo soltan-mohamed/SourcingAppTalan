@@ -77,6 +77,7 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
 
   private initializeTable() {
     this.dataSourceTable = new MatTableDataSource(this.dataSource);
+    console.log("DATESOURCETABLE ", this.dataSourceTable);
     this.setDisplayedColumns();
     //console.log('Table initialized with displayedColumns:', this.displayedColumns);
   }

@@ -175,7 +175,7 @@
             <button [disabled]="row.editable === false" mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)">
                 <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
             </button>
-            <button *ngIf="row.statut === 'CONTACTED'" mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="newHiringProcess(row)">
+            <button *ngIf="row.hirable === true" mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="newHiringProcess(row)">
                 <app-feather-icons [icon]="'user-plus'" [class]="'tbl-fav-edit'"></app-feather-icons>
             </button>
         </mat-cell>

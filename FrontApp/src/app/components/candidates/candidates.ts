@@ -60,6 +60,10 @@ export class Candidates {
       next: (data) => {
         this.candidates = data.map(candidate => {
           const name= `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
+
+          let editable : boolean;
+          editable = this.currentUser.id === candidate.responsable.id || this.isUserManager(candidate.responsable);
+          let hirable = this.isHirable(candidate);
           let type = '-';
           let position = 'Not available';
           if (candidate.recrutements?.length > 0) {
@@ -102,7 +106,9 @@ export class Candidates {
             name,
             type,
             statut: candidate.statut,
-            position : position
+            position : position,
+            editable,
+            hirable
           };
         });
         console.log('Candidates updated:', data);
@@ -153,6 +159,23 @@ export class Candidates {
 
   isUserManager(user : any) : boolean {
     return user.roles.includes("MANAGER") ? true : false;
+  }
+
+  isHirable(candidate : Candidate) : boolean {
+    
+    if (candidate.statut === 'CONTACTED') return true;
+
+    const allRecrutements = candidate.recrutements
+        .flatMap(r => r || [])
+        .filter(r => r.date)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const lastRecrutement = allRecrutements[0];
+
+    if (lastRecrutement.statut === "'NOT_RECRUITED'") {
+      return true;
+    }
+
+    return false;
   }
 
 

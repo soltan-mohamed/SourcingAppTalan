@@ -147,7 +147,7 @@
 
                         </div>
 
-                        <button *ngIf="recruitment.evaluations && recruitment.evaluations.length > 0"  
+                        <button [disabled]="!recruitment.evaluations || recruitment.evaluations.length === 0"
                                 matIconButton matTreeNodeToggle class="mr-3"
                                 [attr.aria-label]="'Toggle ' + node.name">
                             <mat-icon class="mat-icon-rtl-mirror text-blue-600">
