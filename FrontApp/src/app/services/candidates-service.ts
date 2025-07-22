@@ -25,6 +25,18 @@ export class CandidatesService {
     return this.candidatesSubject.value;
   }
 
+  get currentVivierCandidates(): Candidate[] {
+    return this.vivierCandidatesSubject.value;
+  }
+
+  getCandidateById(id: number): Candidate | undefined {
+    const regularCandidate = this.candidatesSubject.value.find(c => c.id === id);
+    if (regularCandidate) return regularCandidate;
+    
+    const vivierCandidate = this.vivierCandidatesSubject.value.find(c => c.id === id);
+    return vivierCandidate;
+  }
+
   getAllCandidates(): Observable<Candidate[]> {
     return this.http.get<Candidate[]>(`${backendUrl}/candidats`).pipe(
       tap(data => {
@@ -37,6 +49,27 @@ export class CandidatesService {
       map(data => data.filter(c => c.statut !== 'VIVIER')), // Return only non-VIVIER for backward compatibility
       catchError(error => {
         console.error('Error fetching candidates:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // Method to ensure both regular and vivier candidates are loaded
+  loadAllCandidatesData(): Observable<{regular: Candidate[], vivier: Candidate[]}> {
+    return this.http.get<Candidate[]>(`${backendUrl}/candidats`).pipe(
+      tap(data => {
+        const regularCandidates = data.filter(c => c.statut !== 'VIVIER');
+        const vivierCandidates = data.filter(c => c.statut === 'VIVIER');
+        
+        this.candidatesSubject.next(regularCandidates);
+        this.vivierCandidatesSubject.next(vivierCandidates);
+      }),
+      map(data => ({
+        regular: data.filter(c => c.statut !== 'VIVIER'),
+        vivier: data.filter(c => c.statut === 'VIVIER')
+      })),
+      catchError(error => {
+        console.error('Error fetching all candidates data:', error);
         return throwError(() => error);
       })
     );
@@ -76,9 +109,14 @@ export class CandidatesService {
       .pipe(
         tap(newCandidate => {
           const currentCandidates = this.currentCandidates;
+          const currentVivierCandidates = this.currentVivierCandidates;
           const actualCandidate = newCandidate.candidate || newCandidate;
           
-          if (actualCandidate.statut !== 'VIVIER') {
+          if (actualCandidate.statut === 'VIVIER') {
+            // Add to vivier candidates
+            this.vivierCandidatesSubject.next([...currentVivierCandidates, actualCandidate]);
+          } else {
+            // Add to regular candidates
             if (Array.isArray(currentCandidates)) {
               this.candidatesSubject.next([...currentCandidates, actualCandidate]);
             } else {
@@ -103,19 +141,35 @@ export class CandidatesService {
         const currentVivierCandidates = this.vivierCandidatesSubject.value;
         
         if (updatedCandidate.statut === 'VIVIER') {
-          // Remove from regular candidates and add to vivier
+          // Remove from regular candidates and add/update in vivier
           const updatedCandidates = currentCandidates.filter(c => c.id !== id);
           this.candidatesSubject.next(updatedCandidates);
           
-          if (!currentVivierCandidates.some(c => c.id === id)) {
+          // Update or add to vivier candidates
+          const existingVivierIndex = currentVivierCandidates.findIndex(c => c.id === id);
+          if (existingVivierIndex >= 0) {
+            // Update existing candidate in vivier
+            const updatedVivierCandidates = [...currentVivierCandidates];
+            updatedVivierCandidates[existingVivierIndex] = updatedCandidate;
+            this.vivierCandidatesSubject.next(updatedVivierCandidates);
+          } else {
+            // Add new candidate to vivier
             this.vivierCandidatesSubject.next([...currentVivierCandidates, updatedCandidate]);
           }
         } else {
-          // Remove from vivier and add to regular if not already there
+          // Remove from vivier and add/update in regular candidates
           const updatedVivierCandidates = currentVivierCandidates.filter(c => c.id !== id);
           this.vivierCandidatesSubject.next(updatedVivierCandidates);
           
-          if (!currentCandidates.some(c => c.id === id)) {
+          // Update or add to regular candidates
+          const existingCandidateIndex = currentCandidates.findIndex(c => c.id === id);
+          if (existingCandidateIndex >= 0) {
+            // Update existing candidate in regular list
+            const updatedCandidates = [...currentCandidates];
+            updatedCandidates[existingCandidateIndex] = updatedCandidate;
+            this.candidatesSubject.next(updatedCandidates);
+          } else {
+            // Add new candidate to regular list
             this.candidatesSubject.next([...currentCandidates, updatedCandidate]);
           }
         }
@@ -153,6 +207,27 @@ export class CandidatesService {
   }
 
   getVivierCandidates(): Observable<Candidate[]> {
+    // If vivier candidates are not loaded, load all candidates first
+    if (this.vivierCandidatesSubject.value.length === 0) {
+      return this.loadAllCandidatesAndReturnVivier();
+    }
     return this.vivierCandidates$;
+  }
+
+  private loadAllCandidatesAndReturnVivier(): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(`${backendUrl}/candidats`).pipe(
+      tap(data => {
+        const regularCandidates = data.filter(c => c.statut !== 'VIVIER');
+        const vivierCandidates = data.filter(c => c.statut === 'VIVIER');
+        
+        this.candidatesSubject.next(regularCandidates);
+        this.vivierCandidatesSubject.next(vivierCandidates);
+      }),
+      map(data => data.filter(c => c.statut === 'VIVIER')), // Return only VIVIER candidates
+      catchError(error => {
+        console.error('Error fetching vivier candidates:', error);
+        return throwError(() => error);
+      })
+    );
   }
 }
