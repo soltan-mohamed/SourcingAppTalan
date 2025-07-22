@@ -61,41 +61,38 @@ export class Candidates {
         this.candidates = data.map(candidate => {
           const name= `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
           let type = '-';
-          let editable : boolean;
-          editable = this.currentUser.id === candidate.responsable.id || this.isUserManager(candidate.responsable);
-          if (candidate.statut === 'CONTACTED') {
-          type = '-';
-          }
-          else if (candidate.recrutements?.length > 0) {
-          const allEvaluations = candidate.recrutements.flatMap(r => r.evaluations || []);
+          if (candidate.recrutements?.length > 0) {
+    const allEvaluations = candidate.recrutements
+      .flatMap(r => r.evaluations || [])
+      .filter(e => e.date) // On garde uniquement celles avec une date
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-          // Trouver la première évaluation en cours
-          const inProgressEval = allEvaluations.find(e => e.statut === 'IN_PROGRESS');
+    const lastEval = allEvaluations[0];
 
-          if (inProgressEval) {
-            switch (inProgressEval.type) {
-              case 'rh':
-                type = 'RH';
-                break;
-              case 'technique':
-                type = 'TECHNIQUE';
-                break;
-              case 'managerial':
-                type = 'MANAGERIAL';
-                break;
-              default:
+    if (lastEval) {
+      switch (lastEval.type?.toLowerCase()) {
+        case 'rh':
+          type = 'RH';
+          break;
+        case 'technique':
+          type = 'TECHNIQUE';
+          break;
+        case 'managerial':
+          type = 'MANAGERIAL';
+          break;
+        default:
                 type = '-';
             }
-          }
-        }
+    }
+  }
 
-        return {
-          ...candidate,
-          name,
-          type,
-          editable
-        };
-        });
+  return {
+    ...candidate,
+    name,
+    type,
+    statut: candidate.statut // 👈 s'assurer qu'on garde bien statut
+  };
+});
         console.log('Candidates updated:', data);
       },
       error: (err) => {

@@ -10,6 +10,8 @@ import { Evaluation } from 'app/models/evaluation';
 })
 export class InterviewService {
 
+  private apiUrl = 'http://localhost:9090/talan/api/evaluations';
+  
   constructor(private http: HttpClient) { }
 
   CreateNewInterview(interview: Evaluation): Observable<any> {
@@ -37,5 +39,16 @@ export class InterviewService {
       })
     );
 }
+
+getMyInterviews(): Observable<Evaluation[]> {
+   return this.http.get<Evaluation[]>(`${this.apiUrl}/my-interviews`);
+  
+}
+
+getInterviewsAssignedTo(userId: number, roles: string[]): Observable<Evaluation[]> {
+    // Example query params for filtering by user and role
+    const roleQuery = roles.length ? `?roles=${roles.join(',')}` : '';
+    return this.http.get<Evaluation[]>(`${backendUrl}/evaluations/assigned-to/${userId}${roleQuery}`);
+  }
 
 }

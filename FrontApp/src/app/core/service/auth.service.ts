@@ -101,6 +101,11 @@ export class AuthService {
   }
 
   private storeAuthData(user: User, token: string): void {
+     // S'assurer que l'objet user contient l'id
+   if (!user.id) {
+    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+    user.id = tokenPayload.id;  // 👈 only works if the token has 'id'
+  }
     localStorage.setItem('currentUser', JSON.stringify(user));
     localStorage.setItem('token', token);
     this.currentUserSubject.next(user);
@@ -151,6 +156,15 @@ public isValidToken(token: string): boolean {
   if (!token) return false;
   const parts = token.split('.');
   return parts.length === 3; // Valid JWT has 3 parts
+}
+
+private extractIdFromToken(token: string): number | null {
+  try {
+    const decoded = this.jwtHelper.decodeToken(token);
+    return decoded?.id ?? null;
+  } catch {
+    return null;
+  }
 }
 
 }
