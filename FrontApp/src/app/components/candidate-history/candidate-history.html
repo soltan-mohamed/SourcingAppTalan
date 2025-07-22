@@ -101,7 +101,6 @@
                 </div>
             </div>
 
-        <!-- Replace your single mat-tree with this structure -->
         <div *ngFor="let recruitment of data.recrutements; let i = index" 
             class="mb-6 last:mb-0">
         
@@ -115,6 +114,39 @@
                     matTreeNodePadding matTreeNodeToggle
                     [cdkTreeNodeTypeaheadLabel]="node.name" class="mb-1">
                     <div class="flex w-full items-center p-4">
+
+                        <div [ngSwitch]="recruitment.statut">
+
+                            <div *ngSwitchCase="'RECRUITED'" class="icon recruited">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+
+                            <div *ngSwitchCase="'NOT_RECRUITED'" class="icon not-recruited">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+
+                            <div *ngSwitchCase="'IN_PROGRESS'" class="icon in-progress">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9M4.582 9H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </div>
+
+                            <div *ngSwitchDefault class="icon unknown">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v1m0 14v1m8-8h1M4 12H3m15.364-6.364l.707.707M5.636 18.364l-.707.707M18.364 18.364l.707-.707M5.636 5.636l-.707-.707" />
+                                </svg>
+                            </div>
+
+                        </div>
+
                         <button *ngIf="recruitment.evaluations && recruitment.evaluations.length > 0"  
                                 matIconButton matTreeNodeToggle class="mr-3"
                                 [attr.aria-label]="'Toggle ' + node.name">
@@ -125,7 +157,15 @@
                         <div class="flex-1">
                             <span class="flex justify-between">
                                 <h5 class="font-semibold text-gray-900 text-lg">{{ node.name }}</h5>
-                                <p class="ml-1 mt-0 text-sm text-gray-600">
+                                <p class="flex justify-center">
+                                    <span class="text-blue-400 material-symbols-outlined">
+                                            edit_calendar
+                                    </span>
+                                    <span class="font-medium">
+                                        {{ formatContactDate(recruitment.date) }}
+                                    </span>
+                                </p>
+                                <p class="ml-1 mt-0 text-sm font-medium">
                                     {{ recruitment.evaluations.length || 0 }} evaluations
                                 </p>
                             </span>

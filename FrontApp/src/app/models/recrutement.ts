@@ -6,5 +6,6 @@ export interface Recrutement {
     position: string,
     statut: string,
     demandeur: User,
-    evaluations: Evaluation[]
+    evaluations: Evaluation[],
+    date : string
 }

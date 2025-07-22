@@ -273,4 +273,14 @@ export class EditCandidat implements OnInit {
     this.fileErrorMessage = '';
     this.isSubmitting = false;
   }
+
+  getInitials(name: string): string {
+    if (!name) return '';
+    return name
+      .trim()
+      .split(/\s+/)
+      .map(word => word.charAt(0).toUpperCase())
+      .join('');
+  }
+
 }
