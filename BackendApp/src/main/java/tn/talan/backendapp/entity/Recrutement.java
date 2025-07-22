@@ -7,9 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import tn.talan.backendapp.enums.StatutRecrutement;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +46,10 @@ public class Recrutement {
     @OneToMany(mappedBy = "recrutement", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Evaluation> evaluations = new ArrayList<>();
+
+    @CreationTimestamp
+    @Column(name = "date", nullable = false, updatable = false)
+    private LocalDate date;
 
     public Recrutement(String position, StatutRecrutement statut, User demandeur, Candidate candidate) {
         this.position = position;

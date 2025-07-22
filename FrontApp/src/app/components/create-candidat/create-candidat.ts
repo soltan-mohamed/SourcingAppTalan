@@ -282,4 +282,39 @@ export class CreateCandidat implements OnInit {
       }
     });
   }
+
+  getInitials(): string {
+    const userString = localStorage.getItem('currentUser');
+    
+    if (!userString ) {
+      return "";
+    }
+    
+    const userJson = JSON.parse(userString) as User;
+    const name = userJson.fullName;
+
+    if (!name) return '';
+
+    return name
+      .trim()
+      .split(/\s+/)
+      .map(word => word.charAt(0).toUpperCase())
+      .join('');
+  }
+
+  getUserName(): string {
+    const userString = localStorage.getItem('currentUser');
+    
+    if (!userString ) {
+      return "";
+    }
+    
+    const userJson = JSON.parse(userString) as User;
+    const name = userJson.fullName;
+
+    if (!name) return '';
+
+    return name;
+  }
+
 }
