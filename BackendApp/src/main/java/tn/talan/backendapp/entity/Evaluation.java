@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import tn.talan.backendapp.enums.LieuEvaluation;
 import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.enums.TypeEvaluation;
 
@@ -30,6 +31,9 @@ public class Evaluation {
     @Enumerated(EnumType.STRING)
     private Statut statut;
 
+    @Enumerated(EnumType.STRING)
+    private LieuEvaluation lieuEvaluation;
+
     @ManyToOne
     @JoinColumn(name = "evaluateur_id")
     private User evaluateur;
@@ -39,12 +43,13 @@ public class Evaluation {
     @JsonBackReference
     private Recrutement recrutement;
 
-    public Evaluation(String description, LocalDateTime date, TypeEvaluation type, Statut statut, User evaluateur, Recrutement recrutement) {
+    public Evaluation(String description, LocalDateTime date, TypeEvaluation type, Statut statut, LieuEvaluation lieuEvaluation, User evaluateur, Recrutement recrutement) {
         this.description = description;
         this.date = date;
         this.type = type;
         this.statut = statut;
         this.evaluateur = evaluateur;
         this.recrutement = recrutement;
+        this.lieuEvaluation = lieuEvaluation;
     }
 }

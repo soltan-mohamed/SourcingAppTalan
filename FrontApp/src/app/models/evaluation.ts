@@ -6,6 +6,7 @@ export interface Evaluation {
     date: string,
     type: string,
     statut: string,
+    lieuEvaluation : string,
     evaluateur?: {
     id: number;
     fullName: string;

@@ -101,212 +101,231 @@
                 </div>
             </div>
 
-        <div *ngFor="let recruitment of data.recrutements; let i = index" 
-            class="mb-6 last:mb-0">
-        
-            <mat-tree [dataSource]="getDataSourceForRecruitment(recruitment)" 
-                        [treeControl]="treeControls[i]" 
-                        class="min-w-full! hover:shadow-md transition-shadow evaluation-tree bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
-                
-                <!-- (Recruitment Process) -->
-                <mat-tree-node 
-                    *matTreeNodeDef="let node; when: hasChild" 
-                    matTreeNodePadding matTreeNodeToggle
-                    [cdkTreeNodeTypeaheadLabel]="node.name" class="mb-1">
-                    <div class="flex w-full items-center p-4">
+            <div *ngFor="let recruitment of data.recrutements; let i = index" 
+                class="mb-6 last:mb-0">
+            
+                <mat-tree [dataSource]="getDataSourceForRecruitment(recruitment)" 
+                            [treeControl]="treeControls[i]" 
+                            class="min-w-full! hover:shadow-md transition-shadow evaluation-tree bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+                    
+                    <!-- (Recruitment Process) -->
+                    <mat-tree-node 
+                        *matTreeNodeDef="let node; when: hasChild" 
+                        matTreeNodePadding matTreeNodeToggle
+                        [cdkTreeNodeTypeaheadLabel]="node.name" class="mb-1">
+                        <div class="flex w-full items-center p-4">
 
-                        <div [ngSwitch]="recruitment.statut">
+                            <div [ngSwitch]="recruitment.statut">
 
-                            <div *ngSwitchCase="'RECRUITED'" class="icon recruited">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
+                                <div *ngSwitchCase="'RECRUITED'" class="icon recruited">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+
+                                <div *ngSwitchCase="'NOT_RECRUITED'" class="icon not-recruited">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </div>
+
+                                <div *ngSwitchCase="'IN_PROGRESS'" class="icon in-progress">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9M4.582 9H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </div>
+
+                                <div *ngSwitchDefault class="icon unknown">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v1m0 14v1m8-8h1M4 12H3m15.364-6.364l.707.707M5.636 18.364l-.707.707M18.364 18.364l.707-.707M5.636 5.636l-.707-.707" />
+                                    </svg>
+                                </div>
+
                             </div>
 
-                            <div *ngSwitchCase="'NOT_RECRUITED'" class="icon not-recruited">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </div>
-
-                            <div *ngSwitchCase="'IN_PROGRESS'" class="icon in-progress">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9M4.582 9H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                            </div>
-
-                            <div *ngSwitchDefault class="icon unknown">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v1m0 14v1m8-8h1M4 12H3m15.364-6.364l.707.707M5.636 18.364l-.707.707M18.364 18.364l.707-.707M5.636 5.636l-.707-.707" />
-                                </svg>
-                            </div>
-
-                        </div>
-
-                        <button [disabled]="!recruitment.evaluations || recruitment.evaluations.length === 0"
-                                matIconButton matTreeNodeToggle class="mr-3"
-                                [attr.aria-label]="'Toggle ' + node.name">
-                            <mat-icon class="mat-icon-rtl-mirror text-blue-600">
-                                {{treeControls[i].isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-                            </mat-icon>
-                        </button>
-                        <div class="flex-1">
-                            <span class="flex justify-between">
-                                <h5 class="font-semibold text-gray-900 text-lg">{{ node.name }}</h5>
-                                <p class="flex justify-center">
-                                    <span class="text-blue-400 material-symbols-outlined">
-                                            edit_calendar
-                                    </span>
-                                    <span class="font-medium">
-                                        {{ formatContactDate(recruitment.date) }}
-                                    </span>
-                                </p>
-                                <p class="ml-1 mt-0 text-sm font-medium">
-                                    {{ recruitment.evaluations.length || 0 }} evaluations
-                                </p>
-                            </span>
-                            <p class="flex text-sm text-gray-600 ">
-                                <svg xmlns="http://www.w3.org/2000/svg" 
-                                    class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" 
-                                            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
-                                </svg>
-                                Manager : {{recruitment.demandeur.fullName}}
-                            </p>
-
-                        </div>
-                        <div class="flex justify-center items-center">
-                            <button class="add-btn" mat-icon-button matTooltip="Add Interview" 
-                                    (click)="openNewInterview(recruitment)">
-                                <feather-icon name="plus"></feather-icon>
+                            <button [disabled]="!recruitment.evaluations || recruitment.evaluations.length === 0"
+                                    matIconButton matTreeNodeToggle class="mr-3"
+                                    [attr.aria-label]="'Toggle ' + node.name">
+                                <mat-icon class="mat-icon-rtl-mirror text-blue-600">
+                                    {{treeControls[i].isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                                </mat-icon>
                             </button>
-                        </div>
-                    </div>
-                </mat-tree-node>
-
-                <!-- (Evaluation Cards) -->
-                <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class="mb-3">
-                    <div class="min-w-[95%] bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow evaluation-card">
-                        <!-- Card Header -->
-                        <div class="flex items-start justify-between mb-3">
-                            <div class="flex items-center w-[30%]">
-                                <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 mr-3 flex-shrink-0">
-                                    <span class="text-sm font-medium text-blue-600">
-                                        {{ getEvaluationIndex(node.data, recruitment) }}
-                                    </span>
-                                </div>
-                                <div>
-                                    <h6 class="font-semibold text-gray-900 text-base">
-                                        {{ node.data.type || 'Evaluation Step' }}
-                                    </h6>
-
-                                    <div class="flex items-center mt-1 relative">
-                                        <span [class]="'px-2 py-1 rounded-full text-xs font-medium flex items-center cursor-pointer ' + getStatusColor(node.data.statut)"
-                                            (click)="toggleDropdown($event, node.data)">
-                                        <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                [attr.d]="getStatusIcon(node.data.statut)"></path>
-                                        </svg>
-                                        <span>{{ node.data.statut }}</span>
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="hover:cursor-pointer ml-1">
-                                            <path d="M8 4L5 7H11L8 4Z" fill="currentColor"/>
-                                            <path d="M8 12L11 9H5L8 12Z" fill="currentColor"/>
-                                        </svg>
+                            <div class="flex-1">
+                                <span class="flex justify-between">
+                                    <h5 class="font-semibold text-gray-900 text-lg">{{ node.name }}</h5>
+                                    <p class="flex justify-center">
+                                        <span class="text-blue-400 material-symbols-outlined">
+                                                edit_calendar
                                         </span>
+                                        <span class="font-medium">
+                                            {{ formatContactDate(recruitment.date) }}
+                                        </span>
+                                    </p>
+                                    <p class="ml-1 mt-0 text-sm font-medium">
+                                        {{ recruitment.evaluations.length || 0 }} evaluations
+                                    </p>
+                                </span>
+                                <p class="flex text-sm text-gray-600 ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" 
+                                        class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
+                                    </svg>
+                                    Manager : {{recruitment.demandeur.fullName}}
+                                </p>
 
-                                        <!-- Dropdown Menu -->
+                            </div>
+                            <div class="flex justify-center items-center">
+                                <button class="add-btn" mat-icon-button matTooltip="Add Interview" 
+                                        (click)="openNewInterview(recruitment)">
+                                    <feather-icon name="plus"></feather-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </mat-tree-node>
+
+                    <!-- (Evaluation Cards) -->
+                    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class="mb-3">
+                        <div class="min-w-[95%] bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow evaluation-card">
+                            <!-- Card Header -->
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center w-[30%]">
+                                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 mr-3 flex-shrink-0">
+                                        <span class="text-sm font-medium text-blue-600">
+                                            {{ getEvaluationIndex(node.data, recruitment) }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <h6 class="font-semibold text-gray-900 text-base">
+                                            {{ node.data.type || 'Evaluation Step' }}
+                                        </h6>
+
+                                        <div class="flex items-center mt-1 relative">
+                                            <span [class]="'px-2 py-1 rounded-full text-xs font-medium flex items-center cursor-pointer ' + getStatusColor(node.data.statut)"
+                                                (click)="toggleDropdown($event, node.data)">
+                                            <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                    [attr.d]="getStatusIcon(node.data.statut)"></path>
+                                            </svg>
+                                            <span>{{ node.data.statut }}</span>
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="hover:cursor-pointer ml-1">
+                                                <path d="M8 4L5 7H11L8 4Z" fill="currentColor"/>
+                                                <path d="M8 12L11 9H5L8 12Z" fill="currentColor"/>
+                                            </svg>
+                                            </span>
+
+                                            <!-- Dropdown Menu -->
+                                            <div *ngIf="node.data.editing" 
+                                                class="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-[120px]"
+                                                (click)="$event.stopPropagation()">
+                                            <div *ngFor="let status of evaluationStatus" 
+                                                class="px-3 py-2 text-xs hover:bg-gray-100 cursor-pointer flex items-center"
+                                                (click)="changeStatus(status, node.data.id)"
+                                                [class.bg-blue-50]="status === node.data.statut">
+                                                <svg [class]="'stroke-' + getStatusColor(status)" class="h-3 w-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                        [attr.d]="getStatusIcon(status)"></path>
+                                                </svg>
+                                                <span>{{ status }}</span>
+                                            </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- close dropdown when clicking -->
                                         <div *ngIf="node.data.editing" 
-                                            class="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-[120px]"
-                                            (click)="$event.stopPropagation()">
-                                        <div *ngFor="let status of evaluationStatus" 
-                                            class="px-3 py-2 text-xs hover:bg-gray-100 cursor-pointer flex items-center"
-                                            (click)="changeStatus(status, node.data.id)"
-                                            [class.bg-blue-50]="status === node.data.statut">
-                                            <svg [class]="'stroke-' + getStatusColor(status)" class="h-3 w-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                    [attr.d]="getStatusIcon(status)"></path>
-                                            </svg>
-                                            <span>{{ status }}</span>
-                                        </div>
-                                        </div>
+                                            class="hover:cursor-pointer fixed inset-0 z-5" 
+                                            (click)="closeDropdown()">
+                                        </div>         
                                     </div>
-
-                                    <!-- close dropdown when clicking -->
-                                    <div *ngIf="node.data.editing" 
-                                        class="hover:cursor-pointer fixed inset-0 z-5" 
-                                        (click)="closeDropdown()">
-                                    </div>         
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between w-[70%]">
-                                <!-- Date -->
-                                <div *ngIf="node.data.date" class="flex items-center text-sm text-gray-600">
-                                    <span class="text-blue-400 material-symbols-outlined">
-                                        edit_calendar
-                                    </span>
-                                    <span class="font-medium">{{ formatContactDate(node.data.date) }}</span>
                                 </div>
 
-                                <!-- Evaluator -->
-                                <div *ngIf="node.data.evaluateur" class="flex items-center text-sm text-gray-600">
-                                    <span class="text-blue-400 material-symbols-outlined">
-                                    account_box
-                                    </span>
-                                    <span class="font-medium">Evaluator : </span> {{ node.data.evaluateur.fullName }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Card Content -->
-                        <div class="ml-11 space-y-2">
-
-                            <!-- Notes -->
-                            <div class="mt-3">
-                                <div class="bg-gray-50 border-l-4 max-w-full border-blue-400 p-3 rounded-r">
-                                    <div class="flex justify-between">
-                                        <span class="flex">
-                                            <svg class="h-4 w-4 text-blue-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                            </svg>
-
-                                            <textarea 
-                                                [disabled]="!node.data.editingText" 
-                                                rows="2" cols="100" 
-                                                [(ngModel)]="node.data.description"
-                                                [ngClass]="node.data.description === defaultEvalDesc  ? 'text-gray-400' : 'text-black'">
-                                                                                        
-                                            </textarea>
-
+                                <div class="flex justify-between w-[70%]">
+                                    <!-- Date -->
+                                    <div *ngIf="node.data.date" class="flex items-center text-sm text-gray-600">
+                                        <span class="text-blue-400 material-symbols-outlined">
+                                            edit_calendar
                                         </span>
+                                        <span class="font-medium">{{ formatContactDate(node.data.date) }}</span>
+                                    </div>
 
-                                        <button *ngIf="node.data.editingText" (click)="saveDescription(node.data)" class="text-blue-400 hover:text-blue-600">
-                                            <span class="text-5xl material-symbols-outlined">
-                                                check_small
+                                    <div *ngIf="node.data.lieuEvaluation" class="flex items-center text-sm text-gray-600">
+                                        <span [ngSwitch]="node.data.lieuEvaluation" class="flex justify-center items-center">
+
+                                            <span *ngSwitchCase="'ONLINE'" class="flex justify-center items-center" >
+                                                <span class="text-blue-400 material-symbols-outlined">
+                                                    video_chat
+                                                </span>
+                                                <span class="font-medium">Online</span>
                                             </span>
-                                        </button>
-                                        <button class="text-blue-400 hover:text-blue-600" (click)="editDescription(node.data)">
-                                            <span class="text-3xl material-symbols-outlined">
-                                                draw
+
+                                            <span *ngSwitchCase="'PRESENTIEL'" class="flex justify-center items-center" >
+                                                <span class="text-blue-400 material-symbols-outlined">
+                                                    apartment
+                                                </span>
+                                                <span class="font-medium">On Site</span>
+                                            </span>                                            
+                                        </span>
+                                    </div>
+
+                                    <!-- Evaluator -->
+                                    <div *ngIf="node.data.evaluateur" class="flex items-center text-sm text-gray-600">
+                                        <span class="text-blue-400 material-symbols-outlined">
+                                        account_box
+                                        </span>
+                                        <span class="font-medium">Evaluator : </span> {{ node.data.evaluateur.fullName }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Content -->
+                            <div class="ml-11 space-y-2">
+
+                                <!-- Notes -->
+                                <div class="mt-3">
+                                    <div class="bg-gray-50 border-l-4 max-w-full border-blue-400 p-3 rounded-r">
+                                        <div class="flex justify-between">
+                                            <span class="flex">
+                                                <svg class="h-4 w-4 text-blue-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+
+                                                <textarea 
+                                                    [disabled]="!node.data.editingText" 
+                                                    rows="2" cols="100" 
+                                                    [(ngModel)]="node.data.description"
+                                                    [ngClass]="node.data.description === defaultEvalDesc  ? 'text-gray-400' : 'text-black'">
+                                                                                            
+                                                </textarea>
+
                                             </span>
-                                        </button>
+
+                                            <button *ngIf="node.data.editingText" (click)="saveDescription(node.data)" class="text-blue-400 hover:text-blue-600">
+                                                <span class="text-5xl material-symbols-outlined">
+                                                    check_small
+                                                </span>
+                                            </button>
+                                            <button class="text-blue-400 hover:text-blue-600" (click)="editDescription(node.data)">
+                                                <span class="text-3xl material-symbols-outlined">
+                                                    draw
+                                                </span>
+                                            </button>
 
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </mat-tree-node>
-            </mat-tree>
-        </div>
+                    </mat-tree-node>
+                </mat-tree>
+            </div>
         </div>
     </div>
 
