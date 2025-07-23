@@ -1,10 +1,7 @@
 package tn.talan.backendapp.dtos;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import tn.talan.backendapp.entity.Recrutement;
 import tn.talan.backendapp.enums.LieuEvaluation;
 import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.enums.TypeEvaluation;
@@ -29,7 +26,7 @@ public class createEvaluationDTO {
 
     private LieuEvaluation lieuEvaluation;
 
-    public createEvaluationDTO(String description, LocalDateTime date, Long recrutement_id, Integer evaluateur_id, Statut statut, TypeEvaluation type, LieuEvaluation lieuEvaluation) {
+    public createEvaluationDTO(String description, LocalDateTime date, Long recrutement_id, Long evaluateur_id, Statut statut, TypeEvaluation type, LieuEvaluation lieuEvaluation) {
         this.description = description;
         this.date = date;
         this.recrutement_id = recrutement_id;
