@@ -73,16 +73,20 @@ export class InterviewsComponent implements OnInit {
   dialogRef.afterClosed().subscribe(result => {
     if (result) {
       // Update your interviews list with the edited data if needed
-      // 1. Reconstruire la date complète au format ISO
-      const newDateTime = new Date(`${result.date}T${result.time}:00`);
+       console.log("Payload received from dialog, sending to service:", result);
 
       // 2. Préparer l'objet DTO pour la mise à jour
-      const updatePayload = {
-        date: newDateTime.toISOString(),
-        evaluateur_id: result.evaluatorId // Assurez-vous que le nom correspond à ce qu'attend votre backend
-      };
+  //     const updatePayload = {
+  //       id: interview.id,
+  //      date: new Date(`${result.date}T${result.time}:00`).toISOString(),
+  //       evaluateur_id: result.evaluatorId ,
+  //       type: result.type,
+  // description: result.description ?? '',
+  // statut: interview.statut ?? 'SCHEDULED',
+  // position: result.position
+  //     };
       // 3. Appeler le service pour sauvegarder
-      this.interviewService.updateEvaluation(interview.id, updatePayload).subscribe({
+      this.interviewService.updateEvaluation(interview.id, result).subscribe({
         next: (updatedInterview) => {
           // 4. Mettre à jour la liste locale pour un affichage immédiat
           const index = this.interviews.findIndex(i => i.id === interview.id);
