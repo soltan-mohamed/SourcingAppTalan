@@ -9,6 +9,7 @@ import tn.talan.backendapp.exceptions.ResourceNotFoundException;
 import tn.talan.backendapp.repository.CandidateRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -60,7 +61,6 @@ public class CandidateService {
         return repository.findVivierCandidates();
     }
 
-
     public Candidate save(Candidate c) {
         return repository.save(c);
     }
@@ -88,6 +88,7 @@ public class CandidateService {
             c.setSkills(updated.getSkills());
             c.setCv(updated.getCv());
             c.setStatut(updated.getStatut());
+            c.setHiringDate(updated.getHiringDate());
             return repository.save(c);
         }
         return null;
@@ -120,9 +121,34 @@ public class CandidateService {
             candidate.setStatut(dto.getStatut());
         }
 
+        candidate.setHiringDate(dto.getHiringDate());
 
         return candidate;
     }
 
+    public List<Candidate> getCandidatesWithoutExperience() {
+        return repository.findCandidatesWithoutExperience();
+    }
 
+    public List<Candidate> getCandidatesWithExperienceGreaterThan(int years) {
+        LocalDate dateThreshold = LocalDate.now().minusYears(years);
+        return repository.findCandidatesWithExperienceGreaterThan(dateThreshold);
+    }
+
+    public List<Candidate> getCandidatesWithExperienceLessThan(int years) {
+        LocalDate dateThreshold = LocalDate.now().minusYears(years);
+        return repository.findCandidatesWithExperienceLessThan(dateThreshold);
+    }
+
+    public String calculateExperiencePeriod(Long candidateId) {
+        Candidate candidate = repository.findById(candidateId)
+                .orElseThrow(() -> new EntityNotFoundException("Candidate not found"));
+        return candidate.getExperiencePeriod();
+    }
+
+    public double calculateExperienceInYears(Long candidateId) {
+        Candidate candidate = repository.findById(candidateId)
+                .orElseThrow(() -> new EntityNotFoundException("Candidate not found"));
+        return candidate.getExperienceInYears();
+    }
 }

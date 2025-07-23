@@ -115,27 +115,24 @@ export class CandidateHistory implements OnInit ,OnDestroy{
 
   saveDescription(evalu : Evaluation) {
 
-    if (evalu.description) {
-      const updatedEval = {
-        statut: evalu.statut,
-        description: evalu.description,
-        type: evalu.type,
-        date: evalu.date,
-      };
+    const updatedEval = {
+      statut: evalu.statut,
+      description: evalu.description,
+      type: evalu.type,
+      date: evalu.date,
+    };
 
-      this.interviewService.updateEvaluation(evalu.id, updatedEval).subscribe({
-        next: (res) => {
-          console.log("✅ Evaluation description updated successfully ");
-          
-        },
-        error: (err) => {
-          console.error("❌ Error while updating status description", err);
-        }
-      });
+    this.interviewService.updateEvaluation(evalu.id, updatedEval).subscribe({
+      next: (res) => {
+        console.log("✅ Evaluation description updated successfully ");
+        
+      },
+      error: (err) => {
+        console.error("❌ Error while updating status description", err);
+      }
+    });
 
-      evalu.editingText = !evalu.editingText;
-
-    }
+    evalu.editingText = !evalu.editingText;
 
   }
 
@@ -352,6 +349,8 @@ export class CandidateHistory implements OnInit ,OnDestroy{
 
   editDescription(evalu : Evaluation) : void {
     evalu.editingText = !evalu.editingText;
-    evalu.description = "";
+    if (evalu.description === this.defaultEvalDesc) {
+      evalu.description = "";
+    }
   }
 }

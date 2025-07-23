@@ -14,5 +14,7 @@ export interface Candidate {
   cv?: string;
   responsable : User;
   dateCreation : string;
+  hiringDate?: string;
+  experiencePeriod?: string;
   recrutements : Recrutement[]
 }

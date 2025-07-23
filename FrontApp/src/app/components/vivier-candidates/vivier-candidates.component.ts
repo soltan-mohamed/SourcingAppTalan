@@ -51,7 +51,7 @@ export class VivierCandidatesComponent implements OnInit, OnDestroy {
   isRefreshing = false;
   isMatching = false;
   searchQuery = '';
-  matchingApiUrl = 'http://localhost:5000/match'; // Your Flask API URL
+  matchingApiUrl = 'http://localhost:5000/match';
 
 candidateColumnDefinitions = [
   { def: 'fullName', label: 'Name', type: 'text' },
@@ -62,6 +62,7 @@ candidateColumnDefinitions = [
     styles: (value: number) => this.getMatchPercentageStyle(value)
   },
   { def: 'skillsDisplay', label: 'Skills', type: 'text' },
+  { def: 'experiencePeriod', label: 'Years of Experience', type: 'experience' },
   { def: 'telephone', label: 'Phone', type: 'phone' },
   { def: 'email', label: 'Email', type: 'email' },
   { def: 'position', label: 'Position', type: 'text' },
@@ -115,7 +116,7 @@ getMatchPercentageStyle(value: number) {
       skills: candidate.skills || [],
       skillsDisplay: this.formatSkills(candidate.skills),
       type: this.getLastEvaluationType(candidate),
-      matchPercentage: 0 // Initialize match percentage
+      matchPercentage: 0
     }));
   }
 

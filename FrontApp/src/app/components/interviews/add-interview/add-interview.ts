@@ -53,6 +53,7 @@ export class AddInterviewComponent {
       date: ['', [ Validators.required ]],
       type: ['', [Validators.required ]],
       evaluator: [0, [Validators.required ]],
+      lieuEvaluation : ['' , [Validators.required]]
     });
   }
 
@@ -62,6 +63,7 @@ export class AddInterviewComponent {
         description : "",
         date : this.newInterviewForm.get('date')!.value,
         type : this.newInterviewForm.get('type')!.value,
+        lieuEvaluation : this.newInterviewForm.get('lieuEvaluation')!.value,
         statut : "SCHEDULED",
         evaluateur_id : Number(this.newInterviewForm.get('evaluator')!.value),
         recrutement_id : this.recrutementId

@@ -83,7 +83,7 @@ public class EvaluationService {
         User evaluateur = userRepo.findById(e.getEvaluateur_id())
                 .orElseThrow( () -> new RuntimeException("User with id "+e.getEvaluateur_id()+" not found: " ) );
 
-        Evaluation evaluation = new Evaluation(e.getDescription(), e.getDate(), e.getType(), e.getStatut(), evaluateur, recrutement);
+        Evaluation evaluation = new Evaluation(e.getDescription(), e.getDate(), e.getType(), e.getStatut(), e.getLieuEvaluation(), evaluateur, recrutement);
 
 
         return repository.save(evaluation);

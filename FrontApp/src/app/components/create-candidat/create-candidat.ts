@@ -72,6 +72,7 @@ export class CreateCandidat implements OnInit {
       prenom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2) ]],
       telephone: ['', [Validators.required, Validators.pattern(/^[0-9-\s]{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
+      hiringDate: [''],
       competences: [[]],
     });
 
@@ -188,6 +189,7 @@ export class CreateCandidat implements OnInit {
         prenom: this.CandidateForm.get('prenom')?.value,
         email: this.CandidateForm.get('email')?.value,
         telephone: this.CandidateForm.get('telephone')?.value,
+        hiringDate: this.CandidateForm.get('hiringDate')?.value || null, // Ensure null if empty
         statut : "CONTACTED",
         skills: this.keywords,
         cv: "testingcv"
@@ -315,6 +317,44 @@ export class CreateCandidat implements OnInit {
     if (!name) return '';
 
     return name;
+  }
+
+  // Method to calculate experience preview based on current form value
+  getExperiencePreview(): string {
+    const hiringDateValue = this.CandidateForm.get('hiringDate')?.value;
+    
+    if (!hiringDateValue || hiringDateValue.trim() === '') {
+      return '0-1 year';
+    }
+    
+    const hiringDate = new Date(hiringDateValue);
+    const currentDate = new Date();
+    
+    // Calculate the difference
+    const diffTime = Math.abs(currentDate.getTime() - hiringDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffYears = Math.floor(diffDays / 365);
+    const diffMonths = Math.floor((diffDays % 365) / 30);
+    
+    if (diffYears === 0) {
+      if (diffMonths === 0) {
+        return '0-1 year';
+      } else if (diffMonths < 12) {
+        return diffMonths + ' month' + (diffMonths > 1 ? 's' : '');
+      }
+    }
+    
+    if (diffYears > 0 && diffMonths > 0) {
+      return diffYears + ' year' + (diffYears > 1 ? 's' : '') + ' ' + diffMonths + ' month' + (diffMonths > 1 ? 's' : '');
+    } else {
+      return diffYears + ' year' + (diffYears > 1 ? 's' : '');
+    }
+  }
+
+  // Method to check if hiring date has a value
+  hasHiringDate(): boolean {
+    const hiringDateValue = this.CandidateForm.get('hiringDate')?.value;
+    return hiringDateValue && hiringDateValue.trim() !== '';
   }
 
 }
