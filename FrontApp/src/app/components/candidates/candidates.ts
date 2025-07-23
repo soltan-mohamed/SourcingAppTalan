@@ -43,82 +43,87 @@ export class Candidates {
     private userService : UsersService
   ) {}
 
-  ngOnInit(): void {
-
+   ngOnInit(): void {
     this.userService.getCurrentUser().subscribe({
       next: (user) => {
-        // console.log('Current user:', user);
         this.currentUser = user;
+        
+        // Now that we have the user, we can safely subscribe to candidates
+        this.candidatesSubscription = this.candidateService.candidates$.subscribe({
+          next: (data) => {
+            this.candidates = data.map(candidate => {
+              const name= `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
+
+              let editable : boolean = false; // Default to false
+              let hirable : boolean = false; // Default to false
+              
+              // Add a null check for currentUser
+              if (this.currentUser && candidate.responsable) {
+                editable = this.currentUser.id === candidate.responsable.id || this.isUserManager(candidate.responsable);
+              }
+              
+              hirable = this.isHirable(candidate);
+              let type = '-';
+              let position = 'Not available';
+              if (candidate.recrutements?.length > 0) {
+                const allRecrutements = candidate.recrutements
+                    .flatMap(r => r || [])
+                    .filter(r => r.date)
+                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                const lastRecrutement = allRecrutements[0];
+
+                if (lastRecrutement) {
+                  position = lastRecrutement.position;
+                }
+
+                const allEvaluations = lastRecrutement.evaluations
+                  .flatMap(r => r || [])
+                  .filter(e => e.date) // On garde uniquement celles avec une date
+                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+                const lastEval = allEvaluations[0];
+
+                if (lastEval) {
+                  switch (lastEval.type?.toLowerCase()) {
+                    case 'rh':
+                      type = 'RH';
+                      break;
+                    case 'technique':
+                      type = 'TECH';
+                      break;
+                    case 'managerial':
+                      type = 'MNGRL';
+                      break;
+                    default:
+                      type = '-';
+                  }
+                }
+              }
+
+              return {
+                ...candidate,
+                name,
+                type,
+                statut: candidate.statut,
+                position : position,
+                editable,
+                hirable
+              };
+            });
+            console.log('Candidates updated:', data);
+          },
+          error: (err) => {
+            console.error('Error receiving candidates:', err);
+          }
+        });
+
+        // It's also good practice to load candidates after setting up the subscription
+        this.loadCandidates();
       },
       error: (error) => {
         console.error('Failed to fetch current user:', error);
       }
     });
-
-
-    this.candidatesSubscription = this.candidateService.candidates$.subscribe({
-      next: (data) => {
-        this.candidates = data.map(candidate => {
-          const name= `${candidate.prenom} ${candidate.nom.toUpperCase()}`;
-
-          let editable : boolean;
-          editable = this.currentUser.id === candidate.responsable.id || this.isUserManager(candidate.responsable);
-          let hirable = this.isHirable(candidate);
-          let type = '-';
-          let position = 'Not available';
-          if (candidate.recrutements?.length > 0) {
-            const allRecrutements = candidate.recrutements
-                .flatMap(r => r || [])
-                .filter(r => r.date)
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            const lastRecrutement = allRecrutements[0];
-
-            if (lastRecrutement) {
-              position = lastRecrutement.position;
-            }
-
-            const allEvaluations = lastRecrutement.evaluations
-              .flatMap(r => r || [])
-              .filter(e => e.date)
-              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-            const lastEval = allEvaluations[0];
-
-            if (lastEval) {
-              switch (lastEval.type?.toLowerCase()) {
-                case 'rh':
-                  type = 'RH';
-                  break;
-                case 'technique':
-                  type = 'TECH';
-                  break;
-                case 'managerial':
-                  type = 'MNGRL';
-                  break;
-                default:
-                  type = '-';
-              }
-            }
-          }
-
-          return {
-            ...candidate,
-            name,
-            type,
-            statut: candidate.statut,
-            position : position,
-            editable,
-            hirable
-          };
-        });
-        console.log('Candidates updated:', data);
-      },
-      error: (err) => {
-        console.error('Error receiving candidates:', err);
-      }
-    });
-
-    this.loadCandidates();
   }
   
   candidateColumnDefinitions = [
@@ -159,7 +164,7 @@ export class Candidates {
 
   isHirable(candidate : Candidate) : boolean {
     
-    if (candidate.statut === 'CONTACTED') return true;
+    if (candidate?.statut === 'CONTACTED') return true;
 
     const allRecrutements = candidate.recrutements
         .flatMap(r => r || [])
@@ -167,7 +172,7 @@ export class Candidates {
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     const lastRecrutement = allRecrutements[0];
 
-    if (lastRecrutement.statut === "'NOT_RECRUITED'") {
+    if (lastRecrutement?.statut === 'NOT_RECRUITED') {
       return true;
     }
 

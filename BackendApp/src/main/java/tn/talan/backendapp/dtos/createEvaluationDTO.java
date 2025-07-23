@@ -23,7 +23,7 @@ public class createEvaluationDTO {
 
     private Statut statut;
 
-    private Integer evaluateur_id;
+    private Long evaluateur_id;
 
     private Long recrutement_id;
 

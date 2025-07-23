@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject,OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTreeModule, MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
@@ -17,7 +17,8 @@ import { Evaluation } from 'app/models/evaluation';
 import { EvaluationStatus } from 'app/models/EvaluationStatus';
 import { EvaluationStatusList } from 'app/models/EvaluationStatus';
 import { InterviewService } from 'app/services/interview-service';
-
+import { Subscription } from 'rxjs';
+import { InterviewStateService } from 'app/services/interview-state';
 // Flat node interface for the tree
 interface FlatNode {
   expandable: boolean;
@@ -40,7 +41,8 @@ interface FlatNode {
   templateUrl: './candidate-history.html',
   styleUrl: './candidate-history.scss'
 })
-export class CandidateHistory implements OnInit {
+export class CandidateHistory implements OnInit ,OnDestroy{
+  private updateSubscription!: Subscription;
   recruitementData: Recrutement[] = [];
   loading = false;
   editingEval! : Evaluation;
@@ -96,7 +98,8 @@ export class CandidateHistory implements OnInit {
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: Candidate,
     private candidatesService: CandidatesService,
-    private interviewService: InterviewService
+    private interviewService: InterviewService,
+     private interviewStateService: InterviewStateService
     
   ) {}
   
@@ -196,6 +199,38 @@ export class CandidateHistory implements OnInit {
   ngOnInit(): void {
     console.log("Received history data : ", this.data);
     this.loadCandidateData();
+    this.updateSubscription = this.interviewStateService.interviewUpdated$.subscribe(
+      (updatedEvaluation: Evaluation) => {
+        console.log('CandidateHistory received an update notification for evaluation ID:', updatedEvaluation.id);
+        this.updateLocalEvaluation(updatedEvaluation);
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    // Très important pour éviter les fuites de mémoire !
+    if (this.updateSubscription) {
+      this.updateSubscription.unsubscribe();
+    }
+  }
+
+  private updateLocalEvaluation(updatedEval: Evaluation): void {
+    // Parcourir les recrutements pour trouver la bonne évaluation et la remplacer
+    if (this.data && this.data.recrutements) {
+      for (const recrutement of this.data.recrutements) {
+        if (recrutement.evaluations) {
+          const index = recrutement.evaluations.findIndex(e => e.id === updatedEval.id);
+          if (index > -1) {
+            // Remplacer l'évaluation obsolète par la nouvelle
+            recrutement.evaluations[index] = updatedEval;
+            console.log('Local evaluation updated in CandidateHistory.');
+            // Forcer la mise à jour de l'arbre si nécessaire
+            this.loadCandidateData(); // Solution simple pour rafraîchir la vue de l'arbre
+            break; 
+          }
+        }
+      }
+    }
   }
 
   private loadCandidateData(): void {
