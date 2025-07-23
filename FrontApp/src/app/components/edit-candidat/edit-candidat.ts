@@ -61,6 +61,7 @@ export class EditCandidat implements OnInit {
       prenom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2)]],
       telephone: ['', [Validators.required, Validators.pattern(/^[0-9-\s]{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
+      hiringDate: [''],
       skills: [[]],
     });
   }
@@ -76,6 +77,7 @@ export class EditCandidat implements OnInit {
         nom: this.data.nom,
         telephone: this.data.telephone || '',
         email: this.data.email || '',
+        hiringDate: this.data.hiringDate || '',
         //statut : this.data.statut,
       });
       
@@ -196,19 +198,24 @@ export class EditCandidat implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.CandidateForm.valid && this.selectedFile) {
+    if (this.CandidateForm.valid) {
       this.isSubmitting = true;
+      
+      // Get hiring date value and ensure it's null if empty
+      const hiringDateValue = this.CandidateForm.get('hiringDate')?.value;
+      const hiringDate = hiringDateValue && hiringDateValue.trim() !== '' ? hiringDateValue : null;
       
       const formData = {
         nom: this.CandidateForm.get('nom')?.value,
         prenom: this.CandidateForm.get('prenom')?.value,
         email: this.CandidateForm.get('email')?.value,
         telephone: this.CandidateForm.get('telephone')?.value,
+        hiringDate: hiringDate,
         skills: this.keywords,
         //file: this.selectedFile
       };
       
-      console.log('Submitting candidate: ...', formData);
+      console.log('Submitting candidate with hiring date:', hiringDate);
 
       this.candidateService.updateCandidate(this.data.id,formData)
         .subscribe({
@@ -272,6 +279,44 @@ export class EditCandidat implements OnInit {
     this.fileError = false;
     this.fileErrorMessage = '';
     this.isSubmitting = false;
+  }
+
+  // Method to calculate experience preview based on current form value
+  getExperiencePreview(): string {
+    const hiringDateValue = this.CandidateForm.get('hiringDate')?.value;
+    
+    if (!hiringDateValue || hiringDateValue.trim() === '') {
+      return '0-1 year';
+    }
+    
+    const hiringDate = new Date(hiringDateValue);
+    const currentDate = new Date();
+    
+    // Calculate the difference
+    const diffTime = Math.abs(currentDate.getTime() - hiringDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffYears = Math.floor(diffDays / 365);
+    const diffMonths = Math.floor((diffDays % 365) / 30);
+    
+    if (diffYears === 0) {
+      if (diffMonths === 0) {
+        return '0-1 year';
+      } else if (diffMonths < 12) {
+        return diffMonths + ' month' + (diffMonths > 1 ? 's' : '');
+      }
+    }
+    
+    if (diffYears > 0 && diffMonths > 0) {
+      return diffYears + ' year' + (diffYears > 1 ? 's' : '') + ' ' + diffMonths + ' month' + (diffMonths > 1 ? 's' : '');
+    } else {
+      return diffYears + ' year' + (diffYears > 1 ? 's' : '');
+    }
+  }
+
+  // Method to check if hiring date has a value
+  hasHiringDate(): boolean {
+    const hiringDateValue = this.CandidateForm.get('hiringDate')?.value;
+    return hiringDateValue && hiringDateValue.trim() !== '';
   }
 
   getInitials(name: string): string {

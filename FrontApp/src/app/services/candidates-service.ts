@@ -46,7 +46,7 @@ export class CandidatesService {
         this.candidatesSubject.next(regularCandidates);
         this.vivierCandidatesSubject.next(vivierCandidates);
       }),
-      map(data => data.filter(c => c.statut !== 'VIVIER')), // Return only non-VIVIER for backward compatibility
+      map(data => data.filter(c => c.statut !== 'VIVIER')),
       catchError(error => {
         console.error('Error fetching candidates:', error);
         return throwError(() => error);
@@ -214,6 +214,49 @@ export class CandidatesService {
     return this.vivierCandidates$;
   }
 
+  // Get experience period for a specific candidate
+  getCandidateExperience(candidateId: number): Observable<any> {
+    return this.http.get<any>(`${backendUrl}/candidats/${candidateId}/experience-period`).pipe(
+      catchError(error => {
+        console.error('Error fetching candidate experience:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // Update hiring date for a candidate
+  updateCandidateHiringDate(candidateId: number, hiringDate: string): Observable<Candidate> {
+    return this.http.put<Candidate>(`${backendUrl}/candidats/${candidateId}/hiring-date`, null, {
+      params: { hiringDate }
+    }).pipe(
+      tap(updatedCandidate => {
+        // Update the candidate in the appropriate subject
+        const currentCandidates = this.candidatesSubject.value;
+        const currentVivierCandidates = this.vivierCandidatesSubject.value;
+        
+        if (updatedCandidate.statut === 'VIVIER') {
+          const index = currentVivierCandidates.findIndex(c => c.id === candidateId);
+          if (index >= 0) {
+            const updatedVivierCandidates = [...currentVivierCandidates];
+            updatedVivierCandidates[index] = updatedCandidate;
+            this.vivierCandidatesSubject.next(updatedVivierCandidates);
+          }
+        } else {
+          const index = currentCandidates.findIndex(c => c.id === candidateId);
+          if (index >= 0) {
+            const updatedCandidates = [...currentCandidates];
+            updatedCandidates[index] = updatedCandidate;
+            this.candidatesSubject.next(updatedCandidates);
+          }
+        }
+      }),
+      catchError(error => {
+        console.error('Error updating hiring date:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   private loadAllCandidatesAndReturnVivier(): Observable<Candidate[]> {
     return this.http.get<Candidate[]>(`${backendUrl}/candidats`).pipe(
       tap(data => {
@@ -223,7 +266,7 @@ export class CandidatesService {
         this.candidatesSubject.next(regularCandidates);
         this.vivierCandidatesSubject.next(vivierCandidates);
       }),
-      map(data => data.filter(c => c.statut === 'VIVIER')), // Return only VIVIER candidates
+      map(data => data.filter(c => c.statut === 'VIVIER')),
       catchError(error => {
         console.error('Error fetching vivier candidates:', error);
         return throwError(() => error);

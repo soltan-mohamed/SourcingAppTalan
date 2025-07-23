@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import tn.talan.backendapp.enums.Statut;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +48,9 @@ public class Candidate {
     @Column(name = "date_creation", nullable = false, updatable = false)
     private LocalDate dateCreation;
 
+    @Column(name = "hiring_date", nullable = true)
+    private LocalDate hiringDate;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "candidate_skills", joinColumns = @JoinColumn(name = "candidate_id"))
     @Column(name = "skill")
@@ -62,4 +66,46 @@ public class Candidate {
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Recrutement> recrutements;
+
+    @Transient
+    private String experiencePeriod;
+
+
+    public String getExperiencePeriod() {
+        if (hiringDate == null) {
+            return "0-1 year";
+        }
+
+        LocalDate currentDate = LocalDate.now();
+        Period period = Period.between(hiringDate, currentDate);
+
+        int years = period.getYears();
+        int months = period.getMonths();
+
+        if (years == 0) {
+            if (months == 0) {
+                return "0-1 year";
+            } else if (months < 12) {
+                return months + " month" + (months > 1 ? "s" : "");
+            }
+        }
+
+        if (years > 0 && months > 0) {
+            return years + " year" + (years > 1 ? "s" : "") + " " + months + " month" + (months > 1 ? "s" : "");
+        } else {
+            return years + " year" + (years > 1 ? "s" : "");
+        }
+    }
+
+
+    public double getExperienceInYears() {
+        if (hiringDate == null) {
+            return 0.5;
+        }
+
+        LocalDate currentDate = LocalDate.now();
+        Period period = Period.between(hiringDate, currentDate);
+
+        return period.getYears() + (period.getMonths() / 12.0);
+    }
 }

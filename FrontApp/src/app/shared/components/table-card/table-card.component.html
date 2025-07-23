@@ -149,6 +149,26 @@
     }
     
     @else {
+    @if (column.type === 'experience') {
+    <ng-container [matColumnDef]="column.def">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+            <span class="column-label truncate-text">{{ column.label }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+            <span class="mobile-label"></span>
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="truncate-text text-blue-700 font-medium">
+                    {{ row[column.def] || 'No experience' }}
+                </span>
+            </div>
+        </mat-cell>
+    </ng-container>
+    }
+    
+    @else {
     <ng-container [matColumnDef]="column.def">
         <mat-header-cell *matHeaderCellDef mat-sort-header>
             <span class="column-label truncate-text">{{ column.label }}</span>
@@ -167,6 +187,7 @@
     }
     }
     }
+}
     
     <!-- actions -->
     <ng-container matColumnDef="actions">
