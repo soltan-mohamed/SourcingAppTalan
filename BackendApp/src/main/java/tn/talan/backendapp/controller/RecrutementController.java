@@ -52,7 +52,8 @@ public class RecrutementController {
         String email = authService.getCurrentUsername(); // get from token
         User responsable = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found: " + email));
-        User demandeur = userRepository.findById(recrutementDTO.getDemandeur_id())
+        Long demandeurId = recrutementDTO.getDemandeur_id().longValue();
+        User demandeur = userRepository.findById(demandeurId)
                 .orElseThrow(() -> new RuntimeException("Demandeur not found: " + email));
 
         Candidate candidate = candidateRepository.findById(recrutementDTO.getCandidate_id())

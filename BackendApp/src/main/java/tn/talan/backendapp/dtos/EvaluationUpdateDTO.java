@@ -10,6 +10,7 @@ public class EvaluationUpdateDTO {
     private TypeEvaluation type;
     private Statut statut;
     private LocalDateTime date;
+    private Long evaluateurId;
 
     // Getter et Setter pour description
     public String getDescription() {
@@ -45,5 +46,13 @@ public class EvaluationUpdateDTO {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public Long getEvaluateurId() {
+        return evaluateurId;
+    }
+
+    public void setEvaluateurId(Long evaluateurId) {
+        this.evaluateurId = evaluateurId;
     }
 }

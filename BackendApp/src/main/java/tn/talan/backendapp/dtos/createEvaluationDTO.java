@@ -18,11 +18,11 @@ public class createEvaluationDTO {
 
     private Statut statut;
 
-    private Integer evaluateur_id;
+    private Long evaluateur_id;
 
     private Long recrutement_id;
 
-    public createEvaluationDTO(String description, LocalDateTime date, Long recrutement_id, Integer evaluateur_id, Statut statut, TypeEvaluation type) {
+    public createEvaluationDTO(String description, LocalDateTime date, Long recrutement_id, Long evaluateur_id, Statut statut, TypeEvaluation type) {
         this.description = description;
         this.date = date;
         this.recrutement_id = recrutement_id;
@@ -66,11 +66,11 @@ public class createEvaluationDTO {
         this.statut = statut;
     }
 
-    public Integer getEvaluateur_id() {
+    public Long getEvaluateur_id() {
         return evaluateur_id;
     }
 
-    public void setEvaluateur_id(Integer evaluateur_id) {
+    public void setEvaluateur_id(Long evaluateur_id) {
         this.evaluateur_id = evaluateur_id;
     }
 

@@ -96,10 +96,26 @@ public class EvaluationService {
         e.setType(dto.getType());
         e.setStatut(dto.getStatut());
 
+        if (dto.getDescription() != null) {
+            e.setDescription(dto.getDescription());
+        }
+
+        if (dto.getType() != null) {
+            e.setType(dto.getType());
+        }
+
+        if (dto.getStatut() != null) {
+            e.setStatut(dto.getStatut());
+        }
         if (dto.getDate() != null) {
             e.setDate(dto.getDate()); // ⚠️ attention au format
         }
 
+        if (dto.getEvaluateurId() != null) {
+            User evaluateur = userRepo.findById(dto.getEvaluateurId())
+                    .orElseThrow(() -> new EntityNotFoundException("Utilisateur évaluateur non trouvé avec l'id : " + dto.getEvaluateurId()));
+            e.setEvaluateur(evaluateur);
+        }
         return repository.save(e);
     }
 
