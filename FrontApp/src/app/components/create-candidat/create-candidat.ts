@@ -49,6 +49,9 @@ export class CreateCandidat implements OnInit {
   // Form submission state
   isSubmitting: boolean = false;
 
+  // Stepper state
+  currentStepIndex: number = 0;
+
   constructor(private formBuilder: FormBuilder,
     private dialogRef: MatDialogRef<CreateCandidat>,
     private candidatesService : CandidatesService,
@@ -355,6 +358,21 @@ export class CreateCandidat implements OnInit {
   hasHiringDate(): boolean {
     const hiringDateValue = this.CandidateForm.get('hiringDate')?.value;
     return hiringDateValue && hiringDateValue.trim() !== '';
+  }
+
+  // Method to handle stepper selection change
+  onStepChange(event: any): void {
+    this.currentStepIndex = event.selectedIndex;
+  }
+
+  // Method to check if a step is active
+  isStepActive(stepIndex: number): boolean {
+    return this.currentStepIndex === stepIndex;
+  }
+
+  // Method to check if a step is completed
+  isStepCompleted(stepIndex: number): boolean {
+    return this.currentStepIndex > stepIndex;
   }
 
 }

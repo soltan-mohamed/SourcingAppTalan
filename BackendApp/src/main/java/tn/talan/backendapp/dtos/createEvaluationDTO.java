@@ -1,10 +1,7 @@
 package tn.talan.backendapp.dtos;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import tn.talan.backendapp.entity.Recrutement;
 import tn.talan.backendapp.enums.LieuEvaluation;
 import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.enums.TypeEvaluation;
