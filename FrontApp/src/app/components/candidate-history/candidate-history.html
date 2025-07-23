@@ -247,11 +247,20 @@
 
                                 <div class="flex justify-between w-[70%]">
                                     <!-- Date -->
-                                    <div *ngIf="node.data.date" class="flex items-center text-sm text-gray-600">
-                                        <span class="text-blue-400 material-symbols-outlined">
-                                            edit_calendar
-                                        </span>
-                                        <span class="font-medium">{{ formatContactDate(node.data.date) }}</span>
+                                    <div *ngIf="node.data.date" class="flex flex-col items-center text-sm text-gray-600">
+                                        <div class="flex gap-1 items-center justify-start  w-full">
+                                            <span class="text-blue-400 material-symbols-outlined">
+                                                edit_calendar
+                                            </span>
+                                            <span class="font-medium">{{ formatContactDate(node.data.date) }}</span>
+                                        </div>
+                                        <div class="flex gap-1 items-center justify-start w-full">
+                                            <span class="text-blue-400 material-symbols-outlined">
+                                                alarm
+                                            </span>     
+                                            <span class="font-medium">{{formatContactTime(node.data.date) }}</span>                       
+                                        </div>
+                                        
                                     </div>
 
                                     <div *ngIf="node.data.lieuEvaluation" class="flex items-center text-sm text-gray-600">
