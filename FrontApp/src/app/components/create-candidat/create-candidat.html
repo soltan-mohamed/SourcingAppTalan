@@ -15,8 +15,52 @@
 
     <!--div class="px-6 py-6 !overflow-y-scroll flex-1"-->
 
-        <mat-stepper class="px-6! py-6! !overflow-y-scroll flex-1!" [linear]="false" #stepper>
-            <mat-step [stepControl]="CandidateForm" label="Candidate details">
+        <!-- Step Progress Indicator -->
+        <div class="px-6 pt-4 pb-2">
+            <div class="flex items-center justify-center mb-2">
+                <div class="flex items-center space-x-8 max-w-lg w-full justify-center">
+                    <div class="flex items-center space-x-1 cursor-pointer group" (click)="stepper.selectedIndex = 0">
+                        <div [class]="'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 group-hover:scale-105 ' + 
+                                     (isStepActive(0) ? 'bg-blue-600 text-white ring-4 ring-blue-100' : 
+                                      isStepCompleted(0) ? 'bg-green-600 text-white group-hover:bg-green-700' : 'bg-gray-200 text-gray-600 group-hover:bg-gray-300')">
+                            <span *ngIf="!isStepCompleted(0)">1</span>
+                            <svg *ngIf="isStepCompleted(0)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        
+                        <span [class]="'text-sm font-medium transition-all duration-300 group-hover:text-blue-700 ' + 
+                                     (isStepActive(0) ? 'text-blue-600' : 
+                                      isStepCompleted(0) ? 'text-green-600' : 'text-gray-500')">
+                            Candidate Details
+                        </span>
+                    </div>
+                    
+                    <div [class]="'flex-1 h-0.5 mx-4 transition-all duration-300 min-w-[120px] ' + 
+                                 (isStepCompleted(0) ? 'bg-green-600' : 
+                                  isStepActive(0) ? 'bg-blue-200' : 'bg-gray-200')"></div>
+                    
+                    <div class="flex items-center space-x-1 cursor-pointer group" (click)="stepper.selectedIndex = 1">
+                        <div [class]="'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 group-hover:scale-105 ' + 
+                                     (isStepActive(1) ? 'bg-blue-600 text-white ring-4 ring-blue-100' : 
+                                      isStepCompleted(1) ? 'bg-green-600 text-white group-hover:bg-green-700' : 'bg-gray-200 text-gray-600 group-hover:bg-gray-300')">
+                            <span *ngIf="!isStepCompleted(1)">2</span>
+                            <svg *ngIf="isStepCompleted(1)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <span [class]="'text-sm font-medium transition-all duration-300 group-hover:text-blue-700 ' + 
+                                     (isStepActive(1) ? 'text-blue-600' : 
+                                      isStepCompleted(1) ? 'text-green-600' : 'text-gray-500')">
+                            Recruitment Details
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <mat-stepper class="!px-6 !py-6 !overflow-y-scroll flex-1" [linear]="false" #stepper (selectionChange)="onStepChange($event)">
+            <mat-step [stepControl]="CandidateForm">
                 <form [formGroup]="CandidateForm" class="space-y-10">
                     <div class="w-full gap-2! bg-gray-100 rounded-full h-1.5 mb-6">
                         <!-- Progress indicator -->
@@ -331,17 +375,21 @@
             >
             </div>
 
-                        <div class="flex justify-end space-x-4 pt-8 border-t border-gray-100">
+                        <div class="flex justify-center space-x-4 pt-8 border-t border-gray-100">
                             <button 
-                                matButton 
-                                matStepperNext
+                                type="button"
+                                (click)="stepper.selectedIndex = 1"
+                                class="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 flex items-center space-x-2"
                             >
-                                Next
+                                <span>Continue to Recruitment</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
                             </button>
                         </div>
                 </form>
             </mat-step>
-            <mat-step [stepControl]="recrutementForm" label="Recruitement details">
+            <mat-step [stepControl]="recrutementForm">
                 <form [formGroup]="recrutementForm" class="mt-5 flex flex-col gap-4! space-y-3!">
 
                     <!-- Poste (position) Field -->
@@ -412,7 +460,7 @@
                         </mat-form-field>
                     </div>
                 
-                    <div class="flex justify-end space-x-4 pt-8 border-t border-gray-100">
+                    <div class="flex justify-center space-x-4 pt-8 border-t border-gray-100">
                     <button 
                         type="button" 
                         class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
@@ -426,7 +474,7 @@
                         [disabled]="CandidateForm.invalid || isSubmitting || !verifyRecruitementForm()"
                         (click)="onSubmit()"
                     >
-                        <span *ngIf="!isSubmitting">Submit</span>
+                        <span *ngIf="!isSubmitting">Submit Application</span>
                         <span *ngIf="isSubmitting" class="flex items-center">
                             <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

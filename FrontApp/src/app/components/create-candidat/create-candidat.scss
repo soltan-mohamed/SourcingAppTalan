@@ -1,0 +1,36 @@
+/* TailwindCSS-based styling for create-candidat component */
+
+/* Hide the default Material stepper header since we use custom TailwindCSS progress indicator */
+::ng-deep {
+  .mat-stepper-horizontal .mat-horizontal-stepper-header-container {
+    display: none !important;
+  }
+  
+  /* Remove default padding from step content to let TailwindCSS handle spacing */
+  .mat-step-content {
+    padding-top: 0;
+  }
+  
+  /* Style the stepper container to work better with TailwindCSS */
+  .mat-stepper-horizontal {
+    width: 100%;
+  }
+}
+
+/* 
+Alternative TailwindCSS @apply approach (if PostCSS is properly configured):
+
+::ng-deep {
+  .mat-stepper-horizontal .mat-horizontal-stepper-header-container {
+    @apply hidden;
+  }
+  
+  .mat-step-content {
+    @apply pt-0;
+  }
+  
+  .mat-stepper-horizontal {
+    @apply w-full;
+  }
+}
+*/
