@@ -79,7 +79,7 @@ export class Candidates {
 
             const allEvaluations = lastRecrutement.evaluations
               .flatMap(r => r || [])
-              .filter(e => e.date) // On garde uniquement celles avec une date
+              .filter(e => e.date)
               .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
             const lastEval = allEvaluations[0];
@@ -126,6 +126,7 @@ export class Candidates {
     { def: 'telephone', label: 'Phone', type: 'phone' },
     { def: 'email', label: 'Email', type: 'email' },
     { def: 'position', label: 'Position', type: 'text' },
+    { def: 'experiencePeriod', label: 'Years of Experience', type: 'experience' }, // New column
     { def: 'statut', label: 'Status', type: 'text' },
     { def: 'type', label: 'type', type: 'text' },
     { def: 'cv', label: 'CV', type: 'file' },
@@ -138,12 +139,7 @@ export class Candidates {
       disableClose: false
     });
 
-    // dialogRef.afterClosed().subscribe((result: Publication) => {
-    //   if (result) {
-    //     // Reload publications from server after adding a new one
-    //     setTimeout(() => this.loadUserPublications(), 1000);
-    //   }
-    // });
+
   }
 
   loadCandidates(): void {
