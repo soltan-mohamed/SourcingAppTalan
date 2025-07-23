@@ -256,6 +256,25 @@ export class CandidateHistory implements OnInit {
     return icons[status] || icons['IN_PROGRESS'];
   }
 
+  formatContactTime(dateString: string | null | undefined): string {
+    if (!dateString) return 'N/A';
+
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Invalid Time';
+      }
+
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false // use true for 12-hour format (AM/PM)
+      });
+    } catch (error) {
+      return 'Invalid Time';
+    }
+  }
+
 
   formatContactDate(dateString: string | null | undefined): string {
     if (!dateString) return 'N/A';

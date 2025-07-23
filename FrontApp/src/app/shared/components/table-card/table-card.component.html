@@ -1,17 +1,5 @@
 <table mat-table [dataSource]="dataSourceTable" matSort class="mat-cell advance-table">
-    <!-- Checkbox Column -->
-    <!--ng-container matColumnDef="select" >
-        <mat-header-cell *matHeaderCellDef mat-sort-header>
-            <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
-                color="primary" [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-            </mat-checkbox>
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" color="primary">
-            </mat-checkbox>
-        </mat-cell>
-    </ng-container-->
+
     @for (column of columnDefinitions; track column) {
     <!-- Skip rendering if column.label is "select" or "action" -->
     @if (column.type === 'check' || column.type === 'actionBtn') {
@@ -193,6 +181,9 @@
     <ng-container matColumnDef="actions">
         <mat-header-cell class="column-label pr-0" *matHeaderCellDef>Actions</mat-header-cell>
         <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
+            <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="openHistory(row)">
+                <app-feather-icons [icon]="'refresh-ccw'" [class]="'tbl-fav-loop'"></app-feather-icons>
+            </button>
             <button [disabled]="row.editable === false" mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)">
                 <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
             </button>
