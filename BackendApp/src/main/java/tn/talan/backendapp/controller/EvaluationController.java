@@ -2,6 +2,7 @@ package tn.talan.backendapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tn.talan.backendapp.dtos.EvaluationDTO;
@@ -50,8 +51,12 @@ public class EvaluationController {
     }
 
     @PutMapping("/{id}")
-    public Evaluation update(@PathVariable Long id, @RequestBody EvaluationUpdateDTO dto) {
-        return service.update(id, dto);
+    public ResponseEntity<Evaluation> updateEvaluation(
+            @PathVariable Long id,
+            @RequestBody EvaluationUpdateDTO dto
+    ) {
+        Evaluation updated = service.update(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")

@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Integer> {
+public interface UserRepository extends CrudRepository<User, Long> {
     Optional<User> findByEmail(String email);
     List<User> findByRolesContaining(Role roles);
 }
