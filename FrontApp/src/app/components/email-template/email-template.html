@@ -1,0 +1,124 @@
+  <div class="email-container max-h-[90vh] flex flex-col overflow-hidden min-w-full">
+        <div class="email-header">
+            <h2>📧 Recruitment Email Template</h2>
+        </div>
+
+        <div class="overflow-y-scroll w-full flex-1 p-8">
+
+            <div class="flex p-2 justify-center">
+                <div class="flex gap-2 w-[80%]">
+
+                    <button (click)="changeLanguage('FR')" [ngClass]="lang === 'FR' ? '!bg-gray-200' : ''" class="w-[50%] h-full flex items-center gap-1 leading-none" matButton="filled">
+                        🇫🇷
+                        <svg width="30" height="20" viewBox="0 0 3 2" class="inline-block align-middle">
+                            <rect width="1" height="2" fill="#002395"/>
+                            <rect x="1" width="1" height="2" fill="#ffffff"/>
+                            <rect x="2" width="1" height="2" fill="#ed2939"/>
+                        </svg>
+                    </button>
+
+
+                    <button (click)="changeLanguage('EN')" [ngClass]="lang === 'EN' ? '!bg-gray-200' : ''"  class="w-[50%] h-full flex items-center gap-1 leading-none" matButton="filled">
+                        🇬🇧
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" width="30" height="20" class="inline-block align-middle">
+                        <rect width="60" height="40" fill="#012169"/>
+                        <path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="10"/>
+                        <path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="6"/>
+                        <rect x="25" width="10" height="40" fill="#fff"/>
+                        <rect y="15" width="60" height="10" fill="#fff"/>
+                        <rect x="27" width="6" height="40" fill="#C8102E"/>
+                        <rect y="17" width="60" height="6" fill="#C8102E"/>
+                        </svg>
+
+                    
+                    </button>
+
+                </div>
+            </div>
+
+
+            <div class="subject-line">
+                <span>
+                    <strong *ngIf="lang === 'EN'" >Subject: </strong> 
+                    <strong *ngIf="lang === 'FR'" >Objet: </strong> 
+                    <p *ngIf = "lang === 'EN'">{{data.evaluation.type}} interview for {{data.position}} position at Talan Tunisie</p>
+                    <p *ngIf = "lang === 'FR'">Entretien {{data.evaluation.type}} pour le poste de  {{data.position}} au sein de Talan Tunisie</p>
+                </span>
+            </div>
+
+            <div class="destination-line">
+                <p><strong>Destination: </strong> {{data.candidate.email}} </p>
+            </div>
+        
+            <div class="email-content" id="emailContent">
+                <p> 
+                    <span *ngIf="lang === 'EN'">Dear </span><span *ngIf="lang === 'FR'">Bonjour </span> <span class="highlight"> {{data.candidate.name}}</span>,
+                </p>
+                
+                <p *ngIf="lang === 'EN'">I hope this email finds you well. My name is <span class="highlight"> {{getUserName()}} </span>, and I'm a <span class="highlight"> recruiter </span> at <span class="highlight"> Talan Tunisie </span>.</p>
+                <p *ngIf="lang === 'FR'">
+                    J’espère que vous allez bien. Je m’appelle <span class="highlight"> {{getUserName()}} </span>, et je suis <span class="highlight"> membre de l'équipe de recrutement </span> chez <span class="highlight"> Talan Tunisie </span>.
+                </p>
+                
+                <p *ngIf = "lang === 'EN'">I'm reaching out because we have an exciting opportunity for a <span class="highlight"> {{data.position}} </span> position at our <span class="highlight"> Talan </span> office that I believe would be a perfect fit for your skills and experience.</p>
+                <p *ngIf = "lang === 'FR'">
+                    Je me permets de vous contacter car nous avons une opportunité intéressante pour un poste de <span class="highlight"> {{data.position}} </span> au sein de notre organisme <span class="highlight"> Talan</span>, qui, je pense, correspond parfaitement à vos compétences et à votre expérience.
+                </p>
+
+                <span *ngIf="data.evaluation.type === 'RH'">
+                    <span *ngIf="lang === 'EN'">
+                        <p><strong>What we're offering:</strong></p>
+                        <ul>
+                            <li>Competitive salary package<span *ngIf="false"> ( salaryRange )</span></li>
+                            <li>Comprehensive benefits including health, dental, and vision</li>
+                            <li>Flexible work arrangements and remote options</li>
+                            <li>Professional development opportunities</li>
+                            <li>Collaborative and innovative work environment</li>
+                        </ul>
+                    </span>
+
+                </span>
+                
+                <p *ngIf="lang === 'EN'">I would love to schedule a brief 15-20 minute call on <span class="highlight">{{formatContactDate(data.evaluation.date)}}</span> at <span class="highlight">{{formatContactTime(data.evaluation.date)}}</span> Tunis Time to discuss this opportunity in more detail and learn more about your career goals. Would you be available for a conversation this week or next?</p>
+                <p *ngIf="lang === 'FR'">
+                    Je vous propose de planifier un bref appel de 15 à 20 minutes le 
+                    <span class="highlight">{{formatContactDate(data.evaluation.date)}}</span> à 
+                    <span class="highlight">{{formatContactTime(data.evaluation.date)}}</span>, heure de Tunis, 
+                    afin de discuter plus en détail de cette opportunité et d’en savoir plus sur vos objectifs de carrière. 
+                    Seriez-vous disponible pour un échange à cette date?
+                </p>
+
+
+                <p *ngIf="lang === 'EN'">Please feel free to reach out to me directly at <span class="highlight"> recruiterContact || '[Recruiter Contact]' </span> or simply reply to this email.</p>
+                <p *ngIf="lang === 'FR'">
+                    N’hésitez pas à me contacter directement à l’adresse suivante : <span class="highlight"> recruiterContact || '[Coordonnées du recruteur]' </span> ou simplement à répondre à cet e-mail.
+                </p>
+
+                <p *ngIf="lang === 'EN'">Thank you for your time, and I look forward to hearing from you soon!</p>
+                <p *ngIf="lang === 'FR'">Merci pour votre temps, et j’espère avoir de vos nouvelles très bientôt&nbsp;!</p>
+
+                <div *ngIf="lang === 'EN'" class="signature">
+                    <p>Best regards,<br>
+                    <strong> {{getUserName()}} </strong><br>
+                    Recruiter <br>
+                    Talan Tunisie <br>
+                    recruiterContact || '[Recruiter Contact]' </p>
+                </div>
+                <div *ngIf="lang === 'FR'" class="signature">
+                    <p>Cordialement,<br>
+                    <strong>{{getUserName()}}</strong><br>
+                    Membre de l'équipe de recrutement<br>
+                    Talan Tunisie<br>
+                    recruiterContact || '[Coordonnées du recruteur]'</p>
+                </div>
+
+            </div>
+
+            <div class="copy-actions">
+                <button class="copy-btn" (click)="copyEmailTemplate()">
+                    Copy Email Template
+                </button>
+            </div>
+
+        </div>
+    </div>
