@@ -16,5 +16,6 @@ export interface Candidate {
   dateCreation : string;
   hiringDate?: string;
   experiencePeriod?: string;
-  recrutements : Recrutement[]
+  recrutements : Recrutement[];
+  editable?: boolean;
 }

@@ -19,6 +19,7 @@ import { EvaluationStatusList } from 'app/models/EvaluationStatus';
 import { InterviewService } from 'app/services/interview-service';
 import { Subscription } from 'rxjs';
 import { InterviewStateService } from 'app/services/interview-state';
+import { EmailTemplate } from '../email-template/email-template';
 // Flat node interface for the tree
 interface FlatNode {
   expandable: boolean;
@@ -371,5 +372,27 @@ export class CandidateHistory implements OnInit ,OnDestroy{
     if (evalu.description === this.defaultEvalDesc) {
       evalu.description = "";
     }
+  }
+
+  openEmailTemplate(recrutement : any, evaluation : Evaluation, candidate : Candidate) : void {
+
+    const emailTemplateData = {
+      ...recrutement,
+      evaluation,
+      candidate
+    }
+
+    delete emailTemplateData.evaluations
+
+    console.log("Email Template Data  ", emailTemplateData);
+
+    const emailDialogRef = this.dialog.open(EmailTemplate, {
+      panelClass: 'add-interview-dialog-panel',
+      width: '30vw',
+      // height: '80vw',
+      maxWidth: 'none',
+      data: emailTemplateData
+    });
+
   }
 }

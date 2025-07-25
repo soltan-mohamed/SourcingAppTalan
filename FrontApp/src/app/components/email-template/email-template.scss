@@ -1,0 +1,124 @@
+
+    .email-container {
+        margin: 0 auto;
+        background: #ffff;
+        // border: 2px solid #e1e8ed;
+        // border-radius: 12px;
+        // padding: 5px;
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .email-header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 33px;
+        // margin: -30px -30px 30px -30px;
+        // border-radius: 12px 12px 0 0;
+        text-align: center;
+    }
+
+    .email-header h2 {
+        margin: 0;
+        font-size: 1.5em;
+        font-weight: 300;
+    }
+
+    .email-content {
+        font-size: 16px;
+    }
+
+    .email-content p {
+        margin-bottom: 16px;
+    }
+
+    .email-content ul {
+        margin: 16px 0;
+        padding-left: 24px;
+    }
+
+    .email-content li {
+     margin-bottom: 8px;
+    }
+
+    .subject-line {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        border-left: 4px solid #4facfe;
+    }
+
+    .destination-line {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        border-left: 4px solid #31d83f;
+    }
+
+    .subject-line strong {
+        color: #4facfe;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .destination-line strong {
+        color: #31d83f;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .highlight {
+        color: #4facfe;
+        font-weight: 600;
+    }
+
+    .signature {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .copy-actions {
+        margin-top: 25px;
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    .copy-btn {
+        background: linear-gradient(135deg, #31c031 0%, #3755ff 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .copy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .email-container {
+            margin: 10px;
+            padding: 20px;
+        }
+
+        .email-header {
+            margin: -20px -20px 20px -20px;
+            padding: 15px;
+        }
+    }
