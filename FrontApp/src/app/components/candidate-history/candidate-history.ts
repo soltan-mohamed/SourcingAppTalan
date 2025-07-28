@@ -360,11 +360,22 @@ export class CandidateHistory implements OnInit ,OnDestroy{
       data: recruitment!.id
     });
 
+        
     dialogRef.afterClosed().subscribe(result => {
-      if (result === 'success') {
+      if (result.success === true && this.data && recruitment) {
+
         this.data.statut = 'SCHEDULED';
+
+        recruitment.evaluations.push(result.evaluation);
+
+        this.loadCandidateData();
+
+
+
+        
       }
     });
+   
   }
 
   editDescription(evalu : Evaluation) : void {
