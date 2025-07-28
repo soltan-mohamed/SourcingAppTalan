@@ -178,34 +178,15 @@
     <ng-container matColumnDef="actions">
         <mat-header-cell class="column-label pr-0" *matHeaderCellDef>Actions</mat-header-cell>
         <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-            <div class="flex items-center space-x-1">
-                <button 
-                    mat-icon-button 
-                    class="!w-6 !h-6 !min-w-6 !p-0 hover:bg-blue-50 transition-colors duration-200" 
-                    (click)="$event.stopPropagation()" 
-                    (click)="openHistory(row)"
-                    matTooltip="View History">
-                    <app-feather-icons [icon]="'refresh-ccw'" class="!w-3 !h-3 text-blue-600"></app-feather-icons>
-                </button>
-                <button 
-                    [disabled]="row.editable === false" 
-                    mat-icon-button 
-                    class="!w-6 !h-6 !min-w-6 !p-0 hover:bg-green-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
-                    (click)="$event.stopPropagation()" 
-                    (click)="editCall(row)"
-                    matTooltip="Edit Candidate">
-                    <app-feather-icons [icon]="'edit'" class="!w-3 !h-3 text-green-600"></app-feather-icons>
-                </button>
-                <button 
-                    *ngIf="row.hirable === true"  
-                    mat-icon-button 
-                    class="!w-6 !h-6 !min-w-6 !p-0 hover:bg-purple-50 transition-colors duration-200" 
-                    (click)="$event.stopPropagation()" 
-                    (click)="newHiringProcess(row)"
-                    matTooltip="Start Hiring Process">
-                    <app-feather-icons [icon]="'user-plus'" class="!w-3 !h-3 text-purple-600"></app-feather-icons>
-                </button>
-            </div>
+            <button mat-icon-button color="" (click)="$event.stopPropagation()" (click)="openHistory(row)">
+                <app-feather-icons [icon]="'refresh-ccw'" [class]="'tbl-fav-loop'"></app-feather-icons>
+            </button>
+            <button [disabled]="row.editable === false" mat-icon-button color="" (click)="$event.stopPropagation()" (click)="editCall(row)">
+                <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+            </button>
+            <button *ngIf="row.hirable === false" mat-icon-button color="" (click)="$event.stopPropagation()" (click)="newHiringProcess(row)">
+                <app-feather-icons [icon]="'user-plus'" [class]="'tbl-fav-edit'"></app-feather-icons>
+            </button>
         </mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
