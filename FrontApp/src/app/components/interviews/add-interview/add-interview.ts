@@ -113,7 +113,12 @@ export class AddInterviewComponent {
                 panelClass: ['success-snackbar']
               }
             );
-            this.dialogRef.close('success');
+
+            this.dialogRef.close({ 
+              success: true, 
+              evaluation: response, 
+              message: 'Interview created successfully'
+            });          
           },
           error: (error: any) => {
             this.isSubmitting = false;
