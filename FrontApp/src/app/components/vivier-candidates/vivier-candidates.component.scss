@@ -1,50 +1,194 @@
 
-  /* Match percentage styles */
-  .match-percentage-cell {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+/* Enhanced Vivier Candidates Styling - Compatible with Tailwind CSS */
+
+.professional-table {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mat-table-background-color: transparent;
+  --mat-table-header-container-background-color: #f8fafc;
+  --mat-table-row-item-container-background-color: #ffffff;
+}
+
+/* Custom Angular Material overrides that work with Tailwind */
+::ng-deep .mat-mdc-form-field {
+  .mat-mdc-form-field-flex {
+    border-radius: 8px;
   }
   
-  .match-percentage-value {
-    min-width: 40px;
-    text-align: right;
-    font-weight: 500;
+  .mat-mdc-form-field-outline {
+    border-radius: 8px;
+  }
+}
+
+::ng-deep .mat-mdc-select-panel {
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Search Criteria Menu Styling - Compatible with Tailwind CSS */
+::ng-deep .search-criteria-menu {
+  .mat-mdc-menu-panel {
+    border-radius: 12px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid #e2e8f0 !important;
+    background: white !important;
+    max-width: 400px !important;
+    min-width: 320px !important;
+    overflow: visible !important;
   }
   
-  .match-percentage-bar {
-    flex-grow: 1;
-    height: 8px;
-    border-radius: 4px;
-    background-color: #e5e7eb; /* Default/gray background */
-    overflow: hidden;
+  .mat-mdc-menu-content {
+    padding: 0 !important;
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    background: white !important;
   }
-  
-  .match-percentage-fill {
-    height: 100%;
+
+  /* Custom scrollbar for menu */
+  .mat-mdc-menu-content::-webkit-scrollbar {
+    width: 6px;
   }
-  
-  /* Color classes that match your getMatchPercentageStyle function */
-  .text-green-600 {
-    color: #16a34a;
+
+  .mat-mdc-menu-content::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
   }
-  .text-amber-500 {
-    color: #f59e0b;
+
+  .mat-mdc-menu-content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
   }
-  .text-red-500 {
-    color: #ef4444;
+
+  .mat-mdc-menu-content::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
   }
-  
-  .bg-green-600 {
-    background-color: #16a34a;
-  }
-  .bg-amber-500 {
-    background-color: #f59e0b;
-  }
-  .bg-red-500 {
-    background-color: #ef4444;
-  }
-  
-  .font-medium {
-    font-weight: 500;
-  }
+}
+
+/* Enhanced checkbox styling for search criteria */
+::ng-deep .search-criteria-menu input[type="checkbox"] {
+  appearance: none !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 0.25rem !important;
+  background-color: white !important;
+  cursor: pointer !important;
+  position: relative !important;
+  transition: all 0.15s ease-in-out !important;
+  margin: 0 !important;
+}
+
+::ng-deep .search-criteria-menu input[type="checkbox"]:checked {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+}
+
+::ng-deep .search-criteria-menu input[type="checkbox"]:checked::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 1px !important;
+  left: 4px !important;
+  width: 4px !important;
+  height: 8px !important;
+  border: solid white !important;
+  border-width: 0 2px 2px 0 !important;
+  transform: rotate(45deg) !important;
+}
+
+::ng-deep .search-criteria-menu input[type="checkbox"]:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+::ng-deep .search-criteria-menu input[type="checkbox"]:hover:not(:checked) {
+  border-color: #9ca3af !important;
+  background-color: #f9fafb !important;
+}
+
+/* Material icon adjustments */
+::ng-deep .search-criteria-menu .mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  line-height: 18px !important;
+}
+
+/* Override Material Design default styles */
+::ng-deep .search-criteria-menu .mat-mdc-menu-item {
+  padding: 0 !important;
+  height: auto !important;
+  min-height: auto !important;
+  line-height: normal !important;
+}
+
+::ng-deep .search-criteria-menu .mat-mdc-menu-item .mat-mdc-menu-item-text {
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+/* Button styling overrides */
+::ng-deep .search-criteria-menu button {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+}
+
+/* Enhanced focus states for better accessibility */
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
+  border-color: #3b82f6 !important;
+  border-width: 2px !important;
+}
+
+::ng-deep .mat-mdc-form-field:not(.mat-form-field-disabled) .mat-mdc-form-field-outline:hover {
+  border-color: #6b7280 !important;
+}
+
+/* Match percentage styles */
+.match-percentage-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.match-percentage-value {
+  min-width: 40px;
+  text-align: right;
+  font-weight: 500;
+}
+
+.match-percentage-bar {
+  flex-grow: 1;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #e5e7eb; /* Default/gray background */
+  overflow: hidden;
+}
+
+.match-percentage-fill {
+  height: 100%;
+}
+
+/* Color classes that match your getMatchPercentageStyle function */
+.text-green-600 {
+  color: #16a34a;
+}
+.text-amber-500 {
+  color: #f59e0b;
+}
+.text-red-500 {
+  color: #ef4444;
+}
+
+.bg-green-600 {
+  background-color: #16a34a;
+}
+.bg-amber-500 {
+  background-color: #f59e0b;
+}
+.bg-red-500 {
+  background-color: #ef4444;
+}
+
+.font-medium {
+  font-weight: 500;
+}

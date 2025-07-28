@@ -50,7 +50,7 @@ export class Candidates implements OnInit, OnDestroy {
   allStatuses: string[] = [];
   experienceRanges: ExperienceRange[] = EXPERIENCE_RANGES;
   searchCriteria: SearchCriteria[] = SEARCH_CRITERIA;
-  selectedCriteria: string[] = ['name', 'email', 'phone', 'position']; // Default to all criteria
+  selectedCriteria: string[] = ['name', 'email', 'phone', 'position'];
   searchForm: FormGroup;
   isSearching = false;
   

@@ -197,4 +197,27 @@ public class CandidateService {
 
         return repository.searchNonVivierCandidates(searchText, searchCriteria, statut, minExperience, maxExperience, minExperienceDate, maxExperienceDate);
     }
+
+    public List<Candidate> searchVivierCandidates(String searchText, String searchCriteria, Integer minExperience, Integer maxExperience) {
+        LocalDate minExperienceDate = null;
+        LocalDate maxExperienceDate = null;
+
+        // Handle special case for 0-1 years (candidates with no hiring date or very recent hiring date)
+        if (minExperience != null && maxExperience != null && minExperience == 0 && maxExperience == 1) {
+            // For 0-1 years, we want candidates with null hiring date OR hired within the last year
+            maxExperienceDate = LocalDate.now().minusYears(1);
+            // minExperienceDate stays null for this case
+        } else {
+            // For other ranges, calculate dates normally
+            if (minExperience != null && minExperience > 0) {
+                minExperienceDate = LocalDate.now().minusYears(minExperience);
+            }
+
+            if (maxExperience != null && maxExperience > 0) {
+                maxExperienceDate = LocalDate.now().minusYears(maxExperience);
+            }
+        }
+
+        return repository.searchVivierCandidates(searchText, searchCriteria, minExperience, maxExperience, minExperienceDate, maxExperienceDate);
+    }
 }
