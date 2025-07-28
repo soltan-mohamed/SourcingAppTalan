@@ -398,7 +398,6 @@ export class Candidates implements OnInit, OnDestroy {
     return `Search by ${this.getSelectedCriteriaLabels().toLowerCase()}...`;
   }
 
-  // Helper methods for template binding
   getCriteriaLabel(criteriaKey: string): string {
     const criteria = this.searchCriteria.find(c => c.key === criteriaKey);
     return criteria?.label || '';
@@ -409,7 +408,6 @@ export class Candidates implements OnInit, OnDestroy {
     return criteria?.icon || '';
   }
 
-  // Helper methods for status styling
   getStatusClass(status: string): string {
     const statusClasses: { [key: string]: string } = {
       'ACCEPTED': 'bg-green-500',
