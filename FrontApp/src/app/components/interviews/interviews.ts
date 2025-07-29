@@ -86,7 +86,14 @@ export class InterviewsComponent implements OnInit {
   // position: result.position
   //     };
       // 3. Appeler le service pour sauvegarder
-      this.interviewService.updateEvaluation(interview.id, result).subscribe({
+      const updatePayload = {
+  evaluateurId: result.evaluatorId,
+  date: new Date(result.date).toISOString(),
+  description: result.description,
+  type: result.type,
+  statut: result.statut
+};
+      this.interviewService.updateEvaluation(interview.id, updatePayload).subscribe({
         next: (updatedInterview) => {
           // 4. Mettre à jour la liste locale pour un affichage immédiat
           const index = this.interviews.findIndex(i => i.id === interview.id);
@@ -98,9 +105,11 @@ export class InterviewsComponent implements OnInit {
           }
           console.log('Interview updated successfully!', updatedInterview);
           this.interviewStateService.notifyInterviewUpdated(updatedInterview);
+          console.log("🔁 Backend response:", updatedInterview);
 
           // 5. (IMPORTANT) Notifier les autres composants du changement (voir Étape 3)
         },
+        
         error: (err) => {
           console.error('Failed to update interview', err);
         }

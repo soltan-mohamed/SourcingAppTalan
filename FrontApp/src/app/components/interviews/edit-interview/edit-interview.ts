@@ -57,7 +57,7 @@ interview: any={};
       // Champs modifiables
       date: [dateValue, Validators.required],
       time: [timeValue, Validators.required],
-      'evaluator*': [interviewData?.evaluateur?.id || null, Validators.required],
+      evaluatorId: [interviewData?.evaluateur?.id || null, Validators.required],
 
       // Champs affichés mais non modifiables
      candidateName: [{ value: interviewData?.candidateName || '', disabled: true }],
@@ -96,13 +96,6 @@ interview: any={};
   });
 }
 
-  
-
-  onSubmit() {
-    if (this.interviewForm.valid) {
-      this.dialogRef.close(this.interviewForm.value);
-    }
-  }
 
      save(): void {
     if (this.interviewForm.valid) {
@@ -112,7 +105,7 @@ interview: any={};
       const resultToReturn = {
          date: combinedDateTime, 
         // Créer une propriété propre 'evaluatorId' que le composant parent pourra utiliser
-        evaluatorId: formValues['evaluator*'],
+        evaluatorId: formValues.evaluatorId,
         // Inclure les autres champs si nécessaire
         position:this.data.interview.position,
         type:this.data.interview.type,
@@ -123,6 +116,8 @@ interview: any={};
       };
        console.log(`[DEBUG 4] PAYLOAD SENT TO BACKEND:`, JSON.stringify(resultToReturn));
       this.dialogRef.close(resultToReturn); // Renvoyer l'objet de données nettoyé
+      console.log("🎯 Payload sent to backend", resultToReturn);
+
     } else {
       // Optionnel : dire à l'utilisateur pourquoi ça ne marche pas
       console.error("Le formulaire est invalide.", this.interviewForm.errors);
