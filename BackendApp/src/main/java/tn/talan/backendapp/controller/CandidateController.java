@@ -80,6 +80,14 @@ public class CandidateController {
         return service.getAll();
     }
 
+    @GetMapping("/in-progress&contacted")
+    public List<Candidate> getAllInProgressAndContacted() {
+        String email = authService.getCurrentUsername();
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+        return service.getAllInProgressAndContacted(currentUser);
+    }
+
     @GetMapping("/{id}")
     public Candidate getById(@PathVariable Long id) {
         return service.getById(id);
