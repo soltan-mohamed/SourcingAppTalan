@@ -63,7 +63,7 @@
                     </div>
 
                     <!-- Candidates history -->
-                    <div *ngIf="isAuthenticated" class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
+                    <div class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
                         [ngClass]="{
                             'active-menu-item': activeItem === 'candidates',
                             'text-white hover:bg-white/10': activeItem !== 'candidates'
@@ -81,6 +81,8 @@
                         <div class="ml-2"><span>Candidates</span></div>
                     </div>
 
+
+
                     <!-- Sourcing -- Smart Matching -->
                     <div *ngIf="isAuthenticated" class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1"
                         [ngClass]="{
@@ -97,7 +99,7 @@
                                 inventory_2
                             </span>
                         </div>
-                        <div class="ml-2"><span>Sourcing</span></div>
+                        <div class="ml-2"><span>Vivier</span></div>
                     </div>
 
                     <div *ngIf="isAuthenticated" class="flex justify-start gap-2 items-center w-full hover:cursor-pointer rounded-md px-4 py-2 my-1 mt-auto"
