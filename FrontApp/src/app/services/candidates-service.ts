@@ -227,6 +227,44 @@ export class CandidatesService {
     );
   }
 
+  // Search functionality specifically for vivier candidates
+  searchVivierCandidates(searchParams: {
+    searchText?: string;
+    minExperience?: number;
+    maxExperience?: number;
+    searchCriteria?: string[];
+  }): Observable<Candidate[]> {
+    let params = new HttpParams();
+    
+    if (searchParams.searchText) {
+      params = params.set('searchText', searchParams.searchText);
+    }
+    // Handle 0 values for experience (important for 0-1 years range)
+    if (searchParams.minExperience !== undefined && searchParams.minExperience !== null) {
+      params = params.set('minExperience', searchParams.minExperience.toString());
+    }
+    if (searchParams.maxExperience !== undefined && searchParams.maxExperience !== null) {
+      params = params.set('maxExperience', searchParams.maxExperience.toString());
+    }
+    // Add search criteria
+    if (searchParams.searchCriteria && searchParams.searchCriteria.length > 0) {
+      params = params.set('searchCriteria', searchParams.searchCriteria.join(','));
+    }
+
+    console.log('Vivier search HTTP Params being sent:', params.toString()); // For debugging
+
+    return this.http.get<Candidate[]>(`${backendUrl}/candidats/search/vivier`, { params }).pipe(
+      tap(data => {
+        // Update the vivier candidates subject with search results
+        this.vivierCandidatesSubject.next(data);
+      }),
+      catchError(error => {
+        console.error('Error searching vivier candidates:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   // Get all available statuses
   getAllStatuses(): Observable<string[]> {
     return this.http.get<string[]>(`${backendUrl}/candidats/statuses`).pipe(

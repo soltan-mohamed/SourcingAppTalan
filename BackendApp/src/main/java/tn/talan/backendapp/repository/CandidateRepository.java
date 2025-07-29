@@ -81,4 +81,25 @@ public interface CandidateRepository extends JpaRepository<Candidate,Long> {
             @Param("minExperienceDate") LocalDate minExperienceDate,
             @Param("maxExperienceDate") LocalDate maxExperienceDate
     );
+
+    @Query("SELECT DISTINCT c FROM Candidate c LEFT JOIN FETCH c.recrutements r " +
+            "WHERE c.statut = 'VIVIER' " +
+            "AND (:searchText IS NULL OR :searchCriteria IS NULL OR " +
+            "(LOCATE('name', :searchCriteria) > 0 AND LOWER(CONCAT(c.prenom, ' ', c.nom)) LIKE LOWER(CONCAT('%', :searchText, '%'))) OR " +
+            "(LOCATE('email', :searchCriteria) > 0 AND LOWER(c.email) LIKE LOWER(CONCAT('%', :searchText, '%'))) OR " +
+            "(LOCATE('phone', :searchCriteria) > 0 AND LOWER(c.telephone) LIKE LOWER(CONCAT('%', :searchText, '%'))) OR " +
+            "(LOCATE('position', :searchCriteria) > 0 AND LOWER(r.position) LIKE LOWER(CONCAT('%', :searchText, '%'))) OR " +
+            "(LOCATE('skills', :searchCriteria) > 0 AND EXISTS (SELECT 1 FROM c.skills s WHERE LOWER(s) LIKE LOWER(CONCAT('%', :searchText, '%'))))) " +
+            "AND (:minExperience IS NULL OR :maxExperience IS NULL OR " +
+            "(:minExperience = 0 AND :maxExperience = 1 AND (c.hiringDate IS NULL OR c.hiringDate > :maxExperienceDate)) OR " +
+            "(:minExperience > 0 AND c.hiringDate IS NOT NULL AND c.hiringDate <= :minExperienceDate AND " +
+            "(:maxExperience IS NULL OR c.hiringDate >= :maxExperienceDate)))")
+    List<Candidate> searchVivierCandidates(
+            @Param("searchText") String searchText,
+            @Param("searchCriteria") String searchCriteria,
+            @Param("minExperience") Integer minExperience,
+            @Param("maxExperience") Integer maxExperience,
+            @Param("minExperienceDate") LocalDate minExperienceDate,
+            @Param("maxExperienceDate") LocalDate maxExperienceDate
+    );
 }

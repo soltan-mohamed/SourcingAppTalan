@@ -233,4 +233,19 @@ public class CandidateController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(statuses);
     }
+
+    @GetMapping("/search/vivier")
+    public ResponseEntity<List<Candidate>> searchVivierCandidates(
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) String searchCriteria,
+            @RequestParam(required = false) Integer minExperience,
+            @RequestParam(required = false) Integer maxExperience) {
+
+        try {
+            List<Candidate> candidates = service.searchVivierCandidates(searchText, searchCriteria, minExperience, maxExperience);
+            return ResponseEntity.ok(candidates);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }
