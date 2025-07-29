@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 
 public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
-    List<Evaluation> findByEvaluateur(User user);
-
+    List<Evaluation> findByEvaluateur(User evaluateur);
+    List<Evaluation> findByRecrutement_Candidate_Responsable(User responsable);
 
 }

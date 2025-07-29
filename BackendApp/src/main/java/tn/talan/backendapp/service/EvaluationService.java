@@ -10,6 +10,7 @@ import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.Evaluation;
 import tn.talan.backendapp.entity.Recrutement;
 import tn.talan.backendapp.entity.User;
+import tn.talan.backendapp.enums.Role;
 import tn.talan.backendapp.enums.TypeEvaluation;
 import tn.talan.backendapp.repository.EvaluationRepository;
 import tn.talan.backendapp.repository.RecrutementRepository;
@@ -19,9 +20,7 @@ import tn.talan.backendapp.dtos.createEvaluationDTO;
 import tn.talan.backendapp.enums.Statut;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,10 +46,14 @@ public class EvaluationService {
 
     public List<EvaluationDTO> getMyInterviews(String email) {
         User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        List<Evaluation> evaluations = repository.findByEvaluateur(user);
-
+                .orElseThrow(() -> new RuntimeException("User not found for email: " + email));
+        Set<Evaluation> evaluations = new HashSet<>();
+        if (user.getRoles().contains(Role.RECRUTEUR)) {
+            evaluations.addAll(repository.findByRecrutement_Candidate_Responsable(user));
+        }
+        if (user.getRoles().contains(Role.EVALUATEUR)) {
+            evaluations.addAll(repository.findByEvaluateur(user));
+        }
         // Convertir la liste d'entités en liste de DTOs
         return evaluations.stream()
                 .map(this::convertToDto) // Utiliser une méthode de conversion
