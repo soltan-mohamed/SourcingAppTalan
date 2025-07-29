@@ -54,6 +54,16 @@ export class CandidatesService {
     );
   }
 
+  getAllContactedAndInProgressCandidates(): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(`${backendUrl}/candidats/in-progress&contacted`).pipe(
+      // map(data => data),
+      catchError(error => {
+        console.error('Error fetching in-progress and contacted candidates:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   // Method to ensure both regular and vivier candidates are loaded
   loadAllCandidatesData(): Observable<{regular: Candidate[], vivier: Candidate[]}> {
     return this.http.get<Candidate[]>(`${backendUrl}/candidats`).pipe(

@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import tn.talan.backendapp.dtos.CandidateUpdateDTO;
 import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.entity.User;
 import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.exceptions.ResourceNotFoundException;
 import tn.talan.backendapp.repository.CandidateRepository;
@@ -51,6 +52,13 @@ public class CandidateService {
 
     public List<Candidate> getAllVivierCandidates() {
         return repository.findByStatut(Statut.VIVIER);
+    }
+
+    public List<Candidate> getAllInProgressAndContacted(User currentUser) {
+        List<Statut> statuts = Arrays.asList(Statut.CONTACTED, Statut.IN_PROGRESS);
+//        return repository.findByStatutIn(statuts);
+        return repository.findByEvaluateur(currentUser);
+
     }
 
     public List<Candidate> getAllNonVivierCandidates() {

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.entity.User;
 import tn.talan.backendapp.enums.Statut;
 
 import java.time.LocalDate;
@@ -17,8 +18,17 @@ public interface CandidateRepository extends JpaRepository<Candidate,Long> {
     @Query("SELECT DISTINCT c FROM Candidate c LEFT JOIN FETCH c.recrutements")
     List<Candidate> fetchAllWithRecrutements();
 
-    List<Candidate> findByStatutNotIn(List<Statut> statuts);
+    List<Candidate> findByStatutIn(List<Statut> statuts);
     List<Candidate> findByStatutIsNot(Statut statut);
+
+    List<Candidate> findByStatutNotIn(List<Statut> statuts);
+
+
+    @Query("SELECT DISTINCT c FROM Candidate c " +
+            "LEFT JOIN  Recrutement r ON c = r.candidate  " +
+            "LEFT JOIN  Evaluation e ON e.recrutement = r " +
+            "WHERE (e.evaluateur = :user OR c.responsable = :user) AND r.statut = 'IN_PROGRESS' AND ( c.statut = 'CONTACTED' OR c.statut = 'IN_PROGRESS' )")
+    List<Candidate> findByEvaluateur(User user);
 
     List<Candidate> findByStatut(Statut statut);
 
