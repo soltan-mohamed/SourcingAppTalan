@@ -12,14 +12,14 @@
  <input formControlName="time" name="time" type="time" required />
 
 <!-- This component will likely look broken or unstyled -->
-<mat-select formControlName="evaluator*" required appearance="fill">
+<mat-select formControlName="evaluatorId" required appearance="fill">
   <mat-option *ngFor="let evaluator of evaluators" [value]="evaluator.id">
           {{ evaluator.fullName }}
         </mat-option>
 </mat-select>
 
  <div class="dialog-actions">
-    <button mat-button type="submit">Save</button>
-    <button mat-button (click)="close()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="save()">Save</button>
+    <button mat-button (click)="onCancel()">Cancel</button>
   </div>
 </form>

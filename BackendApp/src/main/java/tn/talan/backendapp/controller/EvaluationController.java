@@ -51,11 +51,11 @@ public class EvaluationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Evaluation> updateEvaluation(
+    public ResponseEntity<EvaluationDTO> updateEvaluation(
             @PathVariable Long id,
             @RequestBody EvaluationUpdateDTO dto
     ) {
-        Evaluation updated = service.update(id, dto);
+        EvaluationDTO updated = service.update(id, dto);
         return ResponseEntity.ok(updated);
     }
 
