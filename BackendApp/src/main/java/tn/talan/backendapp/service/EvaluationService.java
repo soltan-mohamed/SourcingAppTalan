@@ -1,6 +1,7 @@
 package tn.talan.backendapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.talan.backendapp.dtos.EvaluationDTO;
@@ -89,12 +90,8 @@ public class EvaluationService {
         return repository.save(evaluation);
     }
 
-    public Evaluation update(Long id, EvaluationUpdateDTO dto) {
-        Evaluation e = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evaluation not found"));
-
-        e.setDescription(dto.getDescription());
-        e.setType(dto.getType());
-        e.setStatut(dto.getStatut());
+    public EvaluationDTO update(Long id, EvaluationUpdateDTO dto) {
+        Evaluation e = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evaluation not found with id:" + id));
 
         if (dto.getDescription() != null) {
             e.setDescription(dto.getDescription());
@@ -116,7 +113,8 @@ public class EvaluationService {
                     .orElseThrow(() -> new EntityNotFoundException("Utilisateur évaluateur non trouvé avec l'id : " + dto.getEvaluateurId()));
             e.setEvaluateur(evaluateur);
         }
-        return repository.save(e);
+        Evaluation updatedEvaluation = repository.save(e);
+        return convertToDto(updatedEvaluation);
     }
 
     public void delete(Long id) {
