@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { backendUrl } from '@shared/backendUrl';
@@ -183,6 +183,58 @@ export class CandidatesService {
 
   refreshCandidates(): Observable<Candidate[]> {
     return this.getAllCandidates();
+  }
+
+  // Search functionality
+  searchCandidates(searchParams: {
+    searchText?: string;
+    statut?: string;
+    minExperience?: number;
+    maxExperience?: number;
+    searchCriteria?: string[];
+  }): Observable<Candidate[]> {
+    let params = new HttpParams();
+    
+    if (searchParams.searchText) {
+      params = params.set('searchText', searchParams.searchText);
+    }
+    if (searchParams.statut) {
+      params = params.set('statut', searchParams.statut);
+    }
+    // Handle 0 values for experience (important for 0-1 years range)
+    if (searchParams.minExperience !== undefined && searchParams.minExperience !== null) {
+      params = params.set('minExperience', searchParams.minExperience.toString());
+    }
+    if (searchParams.maxExperience !== undefined && searchParams.maxExperience !== null) {
+      params = params.set('maxExperience', searchParams.maxExperience.toString());
+    }
+    // Add search criteria
+    if (searchParams.searchCriteria && searchParams.searchCriteria.length > 0) {
+      params = params.set('searchCriteria', searchParams.searchCriteria.join(','));
+    }
+
+    console.log('HTTP Params being sent:', params.toString()); // For debugging
+
+    return this.http.get<Candidate[]>(`${backendUrl}/candidats/search/not-vivier`, { params }).pipe(
+      tap(data => {
+        const regularCandidates = data.filter(c => c.statut !== 'VIVIER');
+        this.candidatesSubject.next(regularCandidates);
+      }),
+      catchError(error => {
+        console.error('Error searching candidates:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // Get all available statuses
+  getAllStatuses(): Observable<string[]> {
+    return this.http.get<string[]>(`${backendUrl}/candidats/statuses`).pipe(
+      catchError(error => {
+        console.error('Error fetching statuses:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   uploadCv(candidateId: number, file: File): Observable<HttpEvent<any>> {

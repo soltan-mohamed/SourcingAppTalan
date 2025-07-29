@@ -11,6 +11,7 @@ import tn.talan.backendapp.dtos.CreateCandidatDTO;
 import tn.talan.backendapp.dtos.createRecrutementDTO;
 import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.User;
+import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.repository.RecrutementRepository;
 import tn.talan.backendapp.repository.UserRepository;
 import tn.talan.backendapp.service.*;
@@ -19,9 +20,11 @@ import tn.talan.backendapp.entity.Recrutement;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/candidats")
@@ -175,5 +178,59 @@ public class CandidateController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Candidate>> searchCandidates(
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) String searchCriteria,
+            @RequestParam(required = false) String statut,
+            @RequestParam(required = false) Integer minExperience,
+            @RequestParam(required = false) Integer maxExperience) {
+
+        try {
+            Statut statutEnum = null;
+            if (statut != null && !statut.trim().isEmpty()) {
+                statutEnum = Statut.valueOf(statut.toUpperCase());
+            }
+
+            List<Candidate> candidates = service.searchCandidates(searchText, searchCriteria, statutEnum, minExperience, maxExperience);
+            return ResponseEntity.ok(candidates);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/search/not-vivier")
+    public ResponseEntity<List<Candidate>> searchNonVivierCandidates(
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) String searchCriteria,
+            @RequestParam(required = false) String statut,
+            @RequestParam(required = false) Integer minExperience,
+            @RequestParam(required = false) Integer maxExperience) {
+
+        try {
+            Statut statutEnum = null;
+            if (statut != null && !statut.trim().isEmpty()) {
+                statutEnum = Statut.valueOf(statut.toUpperCase());
+            }
+
+            List<Candidate> candidates = service.searchNonVivierCandidates(searchText, searchCriteria, statutEnum, minExperience, maxExperience);
+            return ResponseEntity.ok(candidates);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/statuses")
+    public ResponseEntity<List<String>> getAllStatuses() {
+        List<String> statuses = Arrays.stream(Statut.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(statuses);
     }
 }
