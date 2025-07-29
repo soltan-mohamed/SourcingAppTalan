@@ -92,7 +92,7 @@
 
                   <!-- Search Criteria Menu -->
                   <mat-menu #criteriaMenu="matMenu" class="search-criteria-menu">
-                    <div class="p-5 w-80 max-h-96 overflow-y-auto" (click)="$event.stopPropagation()">
+                    <div class="p-5 max-h-96 overflow-y-auto" style="width: 320px;" (click)="$event.stopPropagation()">
                       <!-- Header Section -->
                       <div class="flex items-center justify-between mb-4 pb-4 border-b border-slate-200">
                         <div class="flex items-center space-x-3">
@@ -125,7 +125,7 @@
                       <!-- Criteria Options -->
                       <div class="space-y-1 mb-4">
                         <label *ngFor="let criteria of searchCriteria" 
-                               class="flex items-center space-x-3 cursor-pointer hover:bg-slate-50 p-3 rounded-xl transition-all duration-200 group border border-transparent hover:border-slate-200">
+                               class="criteria-option-label inline-flex items-center space-x-3 cursor-pointer hover:bg-slate-50 p-3 rounded-xl transition-all duration-200 group border border-transparent hover:border-slate-200">
                           <input 
                             type="checkbox"
                             [checked]="isCriteriaSelected(criteria.key)"
@@ -141,7 +141,7 @@
                       
                       <!-- Footer Info -->
                       <div class="pt-4 border-t border-slate-200">
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100">
+                        <div class="criteria-footer-info bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100">
                           <div class="flex items-center space-x-2">
                             <mat-icon class="text-blue-600 text-sm">info</mat-icon>
                             <p class="text-xs text-blue-700 font-medium">

@@ -84,6 +84,23 @@
     background: white !important;
   }
 
+  /* Override global p-5 padding utility for menu content */
+  .p-5 {
+    padding: 0rem !important;
+  }
+
+  /* Ensure footer info has same dimensions as criteria options */
+  .criteria-footer-info {
+    padding: 0.75rem !important; /* Same as p-3 */
+    border-radius: 0.75rem !important; /* Same as rounded-xl */
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-height: 3rem !important; /* Match criteria label height */
+    display: flex !important;
+    align-items: center !important;
+  }
+
   /* Custom scrollbar for menu */
   .mat-mdc-menu-content::-webkit-scrollbar {
     width: 6px;
@@ -207,6 +224,10 @@
   transition: all 0.2s ease;
 }
 
+/* Criteria options label override */
+.criteria-option-label {
+  display: inline-flex !important;
+}
 .search-input-enhanced:focus-within .mat-mdc-form-field-flex {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   border-color: #3b82f6;
