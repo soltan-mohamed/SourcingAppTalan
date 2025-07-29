@@ -65,8 +65,8 @@ export class Home implements OnInit {
   }
 
   setActiveItemBasedOnRoute(url: string): void {
-    if (url.includes('/home/list')) {
-      this.activeItem = 'home';
+    if (url.includes('/home/dashboard')) {
+      this.activeItem = '';
     } else if (url.includes('/home/my-interviews')) {
       this.activeItem = 'interviews';
     } else if (url.includes('/home/list-candidates')) {
@@ -78,7 +78,7 @@ export class Home implements OnInit {
     } else if (url.includes('/home/my-publications')) {
       this.activeItem = 'my-publications';
     } else {
-      this.activeItem = 'home';
+      this.activeItem = '';
     }
     
     // Save to localStorage
