@@ -1,5 +1,6 @@
 package tn.talan.backendapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -56,8 +57,16 @@ public class Candidate {
     @Column(name = "skill")
     private List<String> skills = new ArrayList<>();
 
-    @Column(name = "cv", columnDefinition = "MEDIUMTEXT")
-    private String cv;
+    @Lob
+    @JsonIgnore //avoid large payloads
+    @Column(name = "cv", columnDefinition = "LONGBLOB")
+    private byte[] cvData;
+
+    @Column(name = "cv_filename")
+    private String cvFilename;
+
+    @Column(name = "cv_file_size")
+    private Long cvFileSize;
 
     @ManyToOne
     @JoinColumn(name = "responsable_id")

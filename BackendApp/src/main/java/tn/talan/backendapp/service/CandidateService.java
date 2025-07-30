@@ -2,6 +2,7 @@ package tn.talan.backendapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import tn.talan.backendapp.dtos.CandidateUpdateDTO;
 import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.User;
@@ -9,41 +10,72 @@ import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.exceptions.ResourceNotFoundException;
 import tn.talan.backendapp.repository.CandidateRepository;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional // Add this
+@Slf4j
 public class CandidateService {
     private final CandidateRepository repository;
+
+    // Maximum file size: 10MB
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
 
     public CandidateService(CandidateRepository repository) {
         this.repository = repository;
     }
 
     @Transactional
-    public Map<String, Object> uploadCv(Long id, String cvPath) {
-        Candidate candidate = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Candidate not found with id: " + id));
-        candidate.setCv(cvPath);
-        Candidate saved = repository.save(candidate);
+    public Candidate uploadCv(Long candidateId, MultipartFile file) throws IOException {
+        validateFile(file);
 
-        // Return only what you need in the response
-        return Map.of(
-                "id", saved.getId(),
-                "nom", saved.getNom(),
-                "prenom", saved.getPrenom(),
-                "cv", saved.getCv(),
-                "message", "CV uploaded successfully"
-        );
+        Candidate candidate = repository.findById(candidateId)
+                .orElseThrow(() -> new RuntimeException("Candidate not found with id: " + candidateId));
+
+        candidate.setCvData(file.getBytes());
+        candidate.setCvFilename(file.getOriginalFilename());
+        candidate.setCvFileSize(file.getSize());
+//        candidate.setCvContentType(file.getContentType());
+
+        log.info("CV uploaded for candidate {}: {} ({} bytes)",
+                candidateId, file.getOriginalFilename(), file.getSize());
+
+        return repository.save(candidate);
     }
 
+    private void validateFile(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new RuntimeException("File is empty");
+        }
+
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new RuntimeException("File size exceeds maximum limit of 10MB");
+        }
+
+//        String contentType = file.getContentType();
+//        boolean isValidType = false;
+//        for (String allowedType : ALLOWED_CONTENT_TYPES) {
+//            if (allowedType.equals(contentType)) {
+//                isValidType = true;
+//                break;
+//            }
+//        }
+//
+//        if (!isValidType) {
+//            throw new RuntimeException("Invalid file type. Only PDF files are allowed");
+//        }
+    }
     public List<Candidate> getAll() {
         return repository.fetchAllWithRecrutements();
+    }
+
+
+    public Candidate findByIdWithCv(Long id) {
+        return repository.findByIdWithCv(id).orElse(null);
     }
 
     public Candidate getById(Long id) {
@@ -94,7 +126,6 @@ public class CandidateService {
             c.setEmail(updated.getEmail());
             c.setTelephone(updated.getTelephone());
             c.setSkills(updated.getSkills());
-            c.setCv(updated.getCv());
             c.setStatut(updated.getStatut());
             c.setHiringDate(updated.getHiringDate());
             return repository.save(c);
@@ -118,9 +149,6 @@ public class CandidateService {
         }
         if (dto.getTelephone() != null) {
             candidate.setTelephone(dto.getTelephone());
-        }
-        if (dto.getCv() != null) {
-            candidate.setCv(dto.getCv());
         }
         if (dto.getSkills() != null) {
             candidate.setSkills(dto.getSkills());

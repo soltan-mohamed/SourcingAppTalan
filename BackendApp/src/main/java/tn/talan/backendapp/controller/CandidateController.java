@@ -2,6 +2,7 @@ package tn.talan.backendapp.controller;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,17 +18,19 @@ import tn.talan.backendapp.repository.UserRepository;
 import tn.talan.backendapp.service.*;
 import org.springframework.web.bind.annotation.*;
 import tn.talan.backendapp.entity.Recrutement;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
 @RequestMapping("/api/candidats")
+@Slf4j
 public class CandidateController {
 
     private final CandidateService service;
@@ -46,6 +49,56 @@ public class CandidateController {
         this.aiMatchingService = aiMatchingService;
     }
 
+    @GetMapping("/{id}/cv")
+    public ResponseEntity<byte[]> getCandidateCv(@PathVariable Long id) {
+        Candidate candidate = service.findByIdWithCv(id);
+        if (candidate == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        byte[] cvBytes = candidate.getCvData();
+        String filename = candidate.getCvFilename();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(cvBytes);
+    }
+
+
+
+    @PostMapping(path="/{id}/cv")
+    public ResponseEntity<Map<String, Object>> uploadCv(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+
+        log.info(">>> Received uploadCv request for candidate: {}", id);
+
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Candidate candidate = service.uploadCv(id, file);
+
+            response.put("success", true);
+            response.put("message", "CV uploaded successfully");
+            response.put("filename", candidate.getCvFilename());
+            response.put("fileSize", candidate.getCvFileSize());
+
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            log.error("Error uploading CV for candidate {}: {}", id, e.getMessage());
+            response.put("success", false);
+            response.put("message", "Failed to upload CV: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } catch (RuntimeException e) {
+            log.error("Validation error uploading CV for candidate {}: {}", id, e.getMessage());
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
     @PostMapping("/match")
     public ResponseEntity<?> findMatches(@RequestBody Map<String, String> request) {
         try {
@@ -57,21 +110,6 @@ public class CandidateController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    @PostMapping("/{id}/upload-cv")
-    public ResponseEntity<?> uploadCv(
-            @PathVariable Long id,
-            @RequestParam("cv") MultipartFile file) {
-        try {
-            String fileName = fileStorageService.storeFile(file);
-            String filePath = "/uploads/" + fileName;
-            Map<String, Object> response = service.uploadCv(id, filePath);
-            return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to store file", "details", e.getMessage()));
         }
     }
 
