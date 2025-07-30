@@ -11,7 +11,6 @@ export interface Candidate {
   telephone: string;
   skills: string[];
   statut: CandidateStatus;
-  cv?: string;
   responsable : User;
   dateCreation : string;
   hiringDate?: string;
