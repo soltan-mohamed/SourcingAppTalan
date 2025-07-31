@@ -10,8 +10,18 @@ export const authInterceptor: HttpInterceptorFn = (
 ): Observable<HttpEvent<unknown>> => {
   const router = inject(Router);
   
-  // Get token from localStorage
   const token = localStorage.getItem('token');
+
+  if (!token) return next(request);
+
+  // to avoid the request is not a multipart file
+  if (request.body instanceof FormData || request.headers.has('Content-Type')) {
+    return next(
+      request.clone({
+        setHeaders: { Authorization: `Bearer ${token}` }
+      })
+    );
+  }
 
   // If token exists, add it to the Authorization header
   if (token) {

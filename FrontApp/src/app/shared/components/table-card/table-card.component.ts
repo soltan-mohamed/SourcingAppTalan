@@ -13,6 +13,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EditCandidat } from 'app/components/edit-candidat/edit-candidat';
 import { CreateRecrutement } from 'app/components/create-recrutement/create-recrutement';
 import { CandidateHistory } from 'app/components/candidate-history/candidate-history';
+import { CandidatesService } from 'app/services/candidates-service';
 
 @Component({
   selector: 'app-table-card',
@@ -43,6 +44,7 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
 
   constructor(
     private dialog: MatDialog,
+    private cs : CandidatesService
   ) {}
 
   ngOnInit() {
@@ -190,20 +192,25 @@ openHistory(row: T): void {
     });
   }
 
-  openCvFile(cvPath: string): void {
-    if (cvPath) {
-      // Since we're now storing only filenames, show info about the file
-      const userChoice = confirm(
-        `CV File: ${cvPath}\n\n` 
-      );
-      
-      if (userChoice) {
-        // Try to open assuming file exists in uploads folder
-        const fullUrl = `http://localhost:9090/talan/uploads/${cvPath}`;
-        window.open(fullUrl, '_blank');
-      }
-    } else {
-      alert('No CV file available for this candidate.');
+  openCvFile(candidateId: number) {
+  // Assuming you have a CandidateService with a method to fetch CV as Blob
+  this.cs.getCandidateCv(candidateId).subscribe({
+    next: (blob: Blob) => {
+      // Create a blob URL
+      const url = window.URL.createObjectURL(blob);
+
+      // Open in a new tab
+      window.open(url);
+
+      // Optional: revoke URL after some time to release memory
+      setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+    },
+    error: (err) => {
+      console.error('Error loading CV file', err);
     }
-  }
+  });
+}
+
+
+
 }

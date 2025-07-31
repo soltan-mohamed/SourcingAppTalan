@@ -14,7 +14,6 @@ public class CandidateUpdateDTO {
     private String prenom;
     private String email;
     private String telephone;
-    private String cv;
     private List<String> skills;
     private Statut statut;
     private LocalDate hiringDate;

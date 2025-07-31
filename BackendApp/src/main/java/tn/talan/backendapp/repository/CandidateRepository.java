@@ -12,11 +12,15 @@ import tn.talan.backendapp.enums.Statut;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CandidateRepository extends JpaRepository<Candidate,Long> {
     @Query("SELECT DISTINCT c FROM Candidate c LEFT JOIN FETCH c.recrutements")
     List<Candidate> fetchAllWithRecrutements();
+
+    @Query("SELECT c FROM Candidate c WHERE c.id = :id")
+    Optional<Candidate> findByIdWithCv(@Param("id") Long id);
 
     List<Candidate> findByStatutIn(List<Statut> statuts);
     List<Candidate> findByStatutIsNot(Statut statut);
