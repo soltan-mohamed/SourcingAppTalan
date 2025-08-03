@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CandidateHistory } from '../candidate-history/candidate-history';
 import { CandidatesService } from 'app/services/candidates-service';
@@ -83,6 +83,9 @@ export class VivierCandidatesComponent implements OnInit, OnDestroy {
   selectedCriteria: string[] = ['name', 'email', 'phone', 'position', 'skills'];
   experienceRanges: ExperienceRange[] = EXPERIENCE_RANGES;
   
+  // Component state
+  isComponentInitialized = false;
+  
   // State management
   isRefreshing = false;
   isMatching = false;
@@ -119,7 +122,8 @@ getMatchPercentageStyle(value: number) {
     private dialog: MatDialog,
     private candidateService: CandidatesService,
     private http: HttpClient,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
   ) {
     this.searchForm = this.fb.group({
       searchText: [''],
@@ -128,6 +132,8 @@ getMatchPercentageStyle(value: number) {
   }
 
   ngOnInit(): void {
+    console.log('VivierCandidatesComponent initialized - loading candidates...');
+    this.isComponentInitialized = false;
     this.loadVivierCandidates();
     this.setupSearchSubscription();
   }
@@ -150,17 +156,30 @@ getMatchPercentageStyle(value: number) {
   }
 
   loadVivierCandidates(): void {
+    console.log('Loading vivier candidates...');
     this.isRefreshing = true;
     this.candidateService.getVivierCandidates().subscribe({
       next: (data: Candidate[]) => {
+        console.log('Vivier candidates loaded:', data.length, 'candidates');
         this.candidates = this.transformVivierCandidates(data);
         this.allCandidates = [...this.candidates];
         this.filteredCandidates = [...this.candidates];
         this.isRefreshing = false;
+        this.isComponentInitialized = true;
+        
+        // Force change detection to update the UI
+        this.cdr.detectChanges();
+        
+        // Add a small delay and trigger another change detection
+        setTimeout(() => {
+          this.cdr.markForCheck();
+        }, 100);
       },
       error: (err) => {
         console.error('Error fetching vivier candidates:', err);
         this.isRefreshing = false;
+        this.isComponentInitialized = true;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -176,16 +195,20 @@ getMatchPercentageStyle(value: number) {
           const transformedData = this.transformVivierCandidates(data);
           this.filteredCandidates = transformedData;
           this.isSearching = false;
+          this.cdr.detectChanges(); // Force UI update
         },
         error: (error) => {
           console.error('Vivier search error:', error);
           this.filteredCandidates = [...this.allCandidates];
           this.isSearching = false;
+          this.cdr.detectChanges(); // Force UI update
         }
       });
     } else {
+      // No active filters - show all candidates
       this.filteredCandidates = [...this.allCandidates];
       this.isSearching = false;
+      this.cdr.detectChanges(); // Force UI update
     }
   }
 
@@ -220,16 +243,45 @@ getMatchPercentageStyle(value: number) {
 
   hasActiveFilters(): boolean {
     const formValue = this.searchForm.value;
-    return !!(formValue.searchText || formValue.experienceRange);
+    const hasSearchText = formValue.searchText && formValue.searchText.trim().length > 0;
+    const hasExperienceFilter = formValue.experienceRange && formValue.experienceRange.trim().length > 0;
+    return hasSearchText || hasExperienceFilter;
   }
 
   clearSearch(): void {
     this.searchForm.reset();
+    this.searchQuery = ''; // Also clear AI search query
+    this.clearMatchPercentages(); // Reset match percentages
     this.filteredCandidates = [...this.allCandidates];
+    this.cdr.detectChanges(); // Force UI update
   }
 
   clearFormField(fieldName: string): void {
     this.searchForm.get(fieldName)?.setValue('');
+    // Trigger search to update results immediately
+    this.performSearch();
+  }
+
+  clearAISearch(): void {
+    this.searchQuery = '';
+    this.clearMatchPercentages();
+    this.filteredCandidates = [...this.allCandidates];
+    this.cdr.detectChanges();
+  }
+
+  onAISearchInput(event: any): void {
+    // Update searchQuery when user types
+    this.searchQuery = event.target.value;
+    console.log('AI search query updated:', this.searchQuery);
+  }
+
+  private clearMatchPercentages(): void {
+    // Reset match percentages to 0 for all candidates
+    this.candidates = this.candidates.map(candidate => ({
+      ...candidate,
+      matchPercentage: 0
+    }));
+    this.allCandidates = [...this.candidates];
   }
 
   // Search criteria management
@@ -328,45 +380,91 @@ getMatchPercentageStyle(value: number) {
   }
 
 findMatches(): void {
-  if (!this.searchQuery.trim()) {
-    this.filteredCandidates = [...this.candidates];
+  console.log('findMatches() called with searchQuery:', this.searchQuery);
+  
+  if (!this.searchQuery || !this.searchQuery.trim()) {
+    console.log('No search query provided - resetting to all candidates');
+    this.clearMatchPercentages();
+    this.filteredCandidates = [...this.allCandidates];
+    this.cdr.detectChanges();
     return;
   }
 
+  console.log('Starting AI matching for query:', this.searchQuery);
   this.isMatching = true;
+  this.cdr.detectChanges();
   
   const candidatesForMatching = this.candidates.map(c => ({
     id: c.id,
     prenom: c.prenom,
     nom: c.nom,
-    skills: c.skills
+    skills: c.skills,
+    experiencePeriod: c.experiencePeriod || 0
   }));
 
-  this.http.post(this.matchingApiUrl, {
+  console.log('Sending candidates for matching:', candidatesForMatching.length);
+  console.log('API URL:', this.matchingApiUrl);
+
+  const requestBody = {
     requirements: this.searchQuery,
-    candidates: candidatesForMatching
-  }).subscribe({
+    candidates: candidatesForMatching,
+    include_details: true
+  };
+
+  console.log('Request body:', requestBody);
+
+  this.http.post(this.matchingApiUrl, requestBody).subscribe({
     next: (response: any) => {
+      console.log('AI matching response received:', response);
       const matches = response.matches || [];
+      
+      if (matches.length === 0) {
+        console.warn('No matches returned from AI service');
+      }
       
       // Update both candidates and filteredCandidates arrays
       this.candidates = this.candidates.map(candidate => {
         const match = matches.find((m: any) => m.id === candidate.id);
+        const matchPercentage = match ? match.match_percentage : 0;
+        console.log(`Candidate ${candidate.fullName}: ${matchPercentage}% match`);
         return {
           ...candidate,
-          matchPercentage: match ? match.match_percentage : 0
+          matchPercentage: matchPercentage
         };
       });
+      
+      // Update allCandidates as well to maintain consistency
+      this.allCandidates = [...this.candidates];
       
       // Now update filteredCandidates with the sorted results
       this.filteredCandidates = [...this.candidates]
         .sort((a, b) => (b.matchPercentage || 0) - (a.matchPercentage || 0));
       
       this.isMatching = false;
+      this.cdr.detectChanges();
+      
+      console.log('AI matching completed. Results updated.');
     },
     error: (err) => {
-      console.error('Matching error:', err);
+      console.error('AI matching error:', err);
+      console.error('Error details:', {
+        status: err.status,
+        statusText: err.statusText,
+        message: err.message,
+        url: err.url
+      });
+      
       this.isMatching = false;
+      this.cdr.detectChanges();
+      
+      // Show error message or fallback behavior
+      if (err.status === 0) {
+        console.error('AI service is not reachable. Please make sure the AI service is running on port 5000.');
+        alert('AI service is not available. Please make sure the AI service is running.');
+      } else {
+        console.error('AI service error:', err.error);
+        alert(`AI service error: ${err.error?.error || 'Unknown error'}`);
+      }
     }
   });
 }

@@ -1,59 +1,217 @@
-<div class="interview-container">
-  <div class="header">
-    <h2 class="title">
-    Interviews List
-    </h2>
-    <div class="search-bar">
-      <input [(ngModel)]="searchDate" placeholder="Search by date (e.g., 2025-07-01)" />
+<div class="interviews-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="header-icon">
+          <span class="material-symbols-outlined">schedule</span>
+        </div>
+        <div class="header-text">
+          <h1 class="page-title">Interviews Management</h1>
+          <p class="page-subtitle">Track all interview sessions</p>
+        </div>
+      </div>
+
     </div>
   </div>
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-    <ng-container matColumnDef="candidate">
-      <th mat-header-cell *matHeaderCellDef> Candidate </th>
-      <td mat-cell *matCellDef="let element"> {{element.candidateName}} </td>
-    </ng-container>
+  <!-- Main Content -->
+  <div class="interviews-content">
+    <div class="search-section">
+      <div class="search-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search by candidate</mat-label>
+          <input matInput [(ngModel)]="searchCandidate" 
+                 placeholder="Enter candidate name, first name, or last name"
+                 (input)="searchInterviews()">
+          <mat-icon matSuffix>person_search</mat-icon>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search by date</mat-label>
+          <input matInput [(ngModel)]="searchDate" 
+                 placeholder="YYYY-MM-DD or DD/MM/YYYY"
+                 (input)="searchInterviews()">
+          <mat-icon matSuffix>date_range</mat-icon>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Interview type</mat-label>
+          <mat-select [(value)]="selectedType" (selectionChange)="searchInterviews()">
+            <mat-option value="">All Types</mat-option>
+            <mat-option value="TECHNIQUE">Technique</mat-option>
+            <mat-option value="RH">RH</mat-option>
+            <mat-option value="FINAL">Managerial</mat-option>
+          </mat-select>
+          <mat-icon matSuffix>category</mat-icon>
+        </mat-form-field>
 
-    <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef> Date </th>
-      <td mat-cell *matCellDef="let element"> {{element.date | date:'yyyy-MM-dd'}} </td>
-    </ng-container>
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Days Left Status</mat-label>
+          <mat-select [(value)]="selectedDaysLeftStatus" (selectionChange)="searchInterviews()">
+            <mat-option value="">All Status</mat-option>
+            <mat-option value="green">
+              <span style="color: green;">● More than 10 days</span>
+            </mat-option>
+            <mat-option value="orange">
+              <span style="color: orange;">● 5-10 days</span>
+            </mat-option>
+            <mat-option value="red">
+              <span style="color: red;">● Less than 5 days</span>
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>palette</mat-icon>
+        </mat-form-field>
 
-    <ng-container matColumnDef="time">
-      <th mat-header-cell *matHeaderCellDef> Time </th>
-      <td mat-cell *matCellDef="let element"> {{element.date | date:'HH:mm'}} </td>
-    </ng-container>
+    </div>
 
-    <ng-container matColumnDef="type">
-      <th mat-header-cell *matHeaderCellDef> Type </th>
-      <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-    </ng-container>
+    <div class="interviews-card">
+      <div class="card-header">
+        <mat-icon>list</mat-icon>
+        <span>Interviews List</span>
+        <div class="card-actions">
+          <button mat-icon-button matTooltip="Refresh">
+            <mat-icon>refresh</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Export">
+            <mat-icon>download</mat-icon>
+          </button>
+        </div>
+      </div>
+      
+      <table mat-table [dataSource]="dataSource" class="interviews-table">
 
-    <ng-container matColumnDef="position">
-    <th mat-header-cell *matHeaderCellDef> Position </th>
-    <td mat-cell *matCellDef="let element"> {{ element.position }} </td>
-    </ng-container>
+        <ng-container matColumnDef="candidate">
+          <th mat-header-cell *matHeaderCellDef> 
+            <mat-icon>person</mat-icon>
+            Candidate 
+          </th>
+          <td mat-cell *matCellDef="let element" class="candidate-cell">
+            <div class="candidate-info">
+              <mat-icon class="candidate-icon">account_circle</mat-icon>
+              <span class="candidate-name">
+                {{element.recrutement?.candidate?.fullName || 
+                  element.candidateName || 
+                  element.candidate?.fullName || 
+                  element.candidate?.nom + ' ' + element.candidate?.prenom || 
+                  'N/A'}}
+              </span>
+            </div>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="evaluator">
-      <th mat-header-cell *matHeaderCellDef class="text-center"> Evaluator </th>
-      <td mat-cell *matCellDef="let element" class="text-center"> {{element.evaluatorName}} </td>
-    </ng-container>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef> 
+            <mat-icon>calendar_today</mat-icon>
+            Date 
+          </th>
+          <td mat-cell *matCellDef="let element" class="date-cell">
+            <div class="date-info">
+              <mat-icon class="date-icon">event</mat-icon>
+              <span>{{element.date | date:'yyyy-MM-dd'}}</span>
+            </div>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="days left">
-    <th mat-header-cell *matHeaderCellDef class="text-center"> Days Left </th>
-    <td mat-cell *matCellDef="let element" class="text-center"> {{ calculateDaysLeft(element.date) }} </td>
-  </ng-container>
+        <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef> 
+            <mat-icon>access_time</mat-icon>
+            Time 
+          </th>
+          <td mat-cell *matCellDef="let element" class="time-cell">
+            <div class="time-info">
+              <mat-icon class="time-icon">schedule</mat-icon>
+              <span>{{element.date | date:'HH:mm'}}</span>
+            </div>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button color="primary" matTooltip="Edit interview" (click)="editInterview(element)">
-          <mat-icon>edit</mat-icon>
-        </button>
-      </td>
-    </ng-container>
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef> 
+            <mat-icon>category</mat-icon>
+            Type 
+          </th>
+          <td mat-cell *matCellDef="let element" class="type-cell">
+            <mat-chip-set>
+              <mat-chip [color]="getTypeColor(element.type)" selected>
+                {{element.type}}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
+        <ng-container matColumnDef="position">
+          <th mat-header-cell *matHeaderCellDef> 
+            <mat-icon>work</mat-icon>
+            Position 
+          </th>
+          <td mat-cell *matCellDef="let element" class="position-cell">
+            <div class="position-info">
+              <mat-icon class="position-icon">business_center</mat-icon>
+              <span>{{ element.recrutement?.poste || 
+                       element.position || 
+                       element.poste || 
+                       'N/A' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="evaluator">
+          <th mat-header-cell *matHeaderCellDef> 
+            <mat-icon>supervisor_account</mat-icon>
+            Evaluator 
+          </th>
+          <td mat-cell *matCellDef="let element" class="evaluator-cell">
+            <div class="evaluator-info">
+              <mat-icon class="evaluator-icon">person_pin</mat-icon>
+              <span>{{element.evaluateur?.fullName || 
+                      element.evaluatorName || 
+                      element.evaluator?.fullName ||
+                      element.evaluator?.nom + ' ' + element.evaluator?.prenom ||
+                      'N/A'}}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="days left">
+          <th mat-header-cell *matHeaderCellDef> 
+            <mat-icon>timer</mat-icon>
+            Days Left 
+          </th>
+          <td mat-cell *matCellDef="let element" class="days-cell">
+            <div class="days-info" [class]="getDaysLeftClass(element.date)">
+              <mat-icon class="days-icon">hourglass_empty</mat-icon>
+              <span>{{ calculateDaysLeft(element.date) }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">
+            <mat-icon>settings</mat-icon>
+            Actions
+          </th>
+          <td mat-cell *matCellDef="let element" class="actions-cell">
+            <div class="action-buttons">
+              <button mat-icon-button color="primary" matTooltip="Edit interview" 
+                      (click)="editInterview(element)" class="edit-btn">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" matTooltip="Delete interview" 
+                      (click)="deleteInterview(element)" class="delete-btn">
+                <mat-icon>delete</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" matTooltip="View details" 
+                      (click)="viewDetails(element)" class="view-btn">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+            class="table-row" [class.selected]="selection.isSelected(row)"></tr>
+      </table>
+    </div>
+  </div>
 </div>

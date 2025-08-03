@@ -31,7 +31,6 @@ import { SearchParams, EXPERIENCE_RANGES, ExperienceRange, SEARCH_CRITERIA, Sear
     MatCardModule,
     NgScrollbar,
     TableCardComponent,
-    MatIcon,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
@@ -194,20 +193,49 @@ export class Candidates implements OnInit, OnDestroy {
   }
 
   isHirable(candidate : Candidate) : boolean {
+    // Only CONTACTED and VIVIER candidates can have new recruitments
+    const candidateStatus = candidate?.statut as string;
     
-    if (candidate?.statut === 'CONTACTED') return true;
+    // First check: Only allow recruitment for CONTACTED or VIVIER status
+    if (candidateStatus !== 'CONTACTED' && candidateStatus !== 'VIVIER') {
+      return false;
+    }
+
+    // For CONTACTED and VIVIER candidates, check if they have existing recruitments
+    if (!candidate.recrutements || candidate.recrutements.length === 0) {
+      // No recruitments exist, they can be hired
+      return true;
+    }
 
     const allRecrutements = candidate.recrutements
         .flatMap(r => r || [])
         .filter(r => r.date)
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
     const lastRecrutement = allRecrutements[0];
 
+    // If no recruitment found, they can be hired
+    if (!lastRecrutement) {
+      return true;
+    }
+
+    // If last recruitment was not successful (NOT_RECRUITED), they can be hired again
     if (lastRecrutement?.statut === 'NOT_RECRUITED') {
       return true;
     }
 
-    return false;
+    // If last recruitment is still ongoing (no final status), don't allow new recruitment
+    if (!lastRecrutement.statut || lastRecrutement.statut === 'IN_PROGRESS') {
+      return false;
+    }
+
+    // If they were recruited successfully, don't allow new recruitment
+    if (lastRecrutement.statut === 'RECRUITED') {
+      return false;
+    }
+
+    // Default case: allow hiring since they have CONTACTED or VIVIER status
+    return true;
   }
 
   // New search methods
@@ -436,6 +464,5 @@ export class Candidates implements OnInit, OnDestroy {
   clearFormField(fieldName: string): void {
     this.searchForm.get(fieldName)?.setValue('');
   }
-
 
 }

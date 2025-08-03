@@ -62,7 +62,7 @@ export class AuthService {
     } else if (roles.includes(Role.EVALUATEUR)) {
       this.router.navigate(['/evaluateur/dashboard']);
     } else if (roles.includes(Role.RECRUTEUR)) {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/home/dashboard']);
     } else {
       //console.error('No valid role found, redirecting to signin');
       this.router.navigate(['/authentication/signin']);
