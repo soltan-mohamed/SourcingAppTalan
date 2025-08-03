@@ -93,7 +93,7 @@ export class Candidates implements OnInit, OnDestroy {
               }
               
               hirable = this.isHirable(candidate);
-              let type = '-';
+              let type = 'Not yet'; // Default type
               let position = 'Not available';
               if (candidate.recrutements?.length > 0) {
                 const allRecrutements = candidate.recrutements
@@ -125,7 +125,7 @@ export class Candidates implements OnInit, OnDestroy {
                       type = 'MNGRL';
                       break;
                     default:
-                      type = '-';
+                      type = 'Not yet';
                   }
                 }
               }

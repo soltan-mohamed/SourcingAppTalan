@@ -349,9 +349,21 @@ getMatchPercentageStyle(value: number) {
       fullName: `${candidate.prenom} ${candidate.nom.toUpperCase()}`,
       skills: candidate.skills || [],
       skillsDisplay: this.formatSkills(candidate.skills),
+      position: this.getLatestRecruitmentPosition(candidate),
       type: this.getLastEvaluationType(candidate),
       matchPercentage: 0
     }));
+  }
+
+  private getLatestRecruitmentPosition(candidate: Candidate): string {
+    if (!candidate.recrutements?.length) return 'Not Available';
+    
+    // Get the most recent recruitment based on date
+    const latestRecruitment = candidate.recrutements
+      .filter(r => r.date)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+    return latestRecruitment?.position || 'Not Available';
   }
 
   private getLastEvaluationType(candidate: Candidate): string {
