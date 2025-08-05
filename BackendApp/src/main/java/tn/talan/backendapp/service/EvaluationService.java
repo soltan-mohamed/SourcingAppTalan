@@ -72,7 +72,11 @@ public class EvaluationService {
         Candidate c = evaluation.getRecrutement().getCandidate();
         dto.setCandidateName(c.getPrenom() + " " + c.getNom()); // EXEMPLE : dépend de votre entité Recrutement
         dto.setPosition(evaluation.getRecrutement().getPosition());   // EXEMPLE : dépend de votre entité Recrutement
-
+        if (evaluation.getLieuEvaluation() != null) {
+            dto.setLieuEvaluation(evaluation.getLieuEvaluation().name());
+        } else {
+            dto.setLieuEvaluation(null);
+        }
         return dto;
     }
 

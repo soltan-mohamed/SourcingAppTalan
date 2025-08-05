@@ -14,12 +14,98 @@
     <div class="dashboard-left">
       <div class="stats-placeholder">
         <div class="stats-card">
-          <div class="stats-icon">
-            <span class="material-symbols-outlined">analytics</span>
+          <div class="flex flex-col lg:flex-row w-full gap-6" margin-right="200px" >
+      <!-- partie abir - My Today's Interviews -->
+      <div class="lg:w-1/3 " >
+        <div class="bg-white ml-4 rounded-lg shadow-sm border border-gray-200">
+          <!-- Header -->
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-medium text-gray-800">My Interviews</h2>
+            <span class="text-sm text-gray-500">Today</span>
           </div>
+          
+          <!-- Content -->
+          <div class="p-6">
+            <!-- Loading State -->
+            <div *ngIf="isLoading " class="flex justify-center py-8">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+            
+            <!-- Error State -->
+            <div *ngIf="error && !isLoading " class="text-center py-8">
+              <div class="text-red-600 mb-2">
+                <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <p class="text-gray-600">{{ error }}</p>
+            </div>
+            
+            <!-- No Interviews -->
+            <div *ngIf="!isLoading  && !error && todayInterviews.length === 0" class="text-center py-8">
+              <div class="text-gray-400 mb-2">
+                <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0v1a3 3 0 106 0V7m-6 0h6M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <p class="text-gray-600">No interviews scheduled for today</p>
+            </div>
+            
+            <!-- Interviews List -->
+            <div *ngIf="!isLoading  && !error && todayInterviews.length > 0" class="space-y-4">
+              <div *ngFor="let interview of todayInterviews" 
+                  (click)="openCandidateHistory(interview)"
+                   class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                
+                <!-- Candidate Name -->
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="font-medium text-gray-900">
+                    {{ interview.fullName || 'Unknown Candidate' }}
+                  </h3>
+                  <div class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                    {{ interview.type }}
+                  </div>
+                </div>
+                
+                <!-- Time -->
+                <div class="text-sm text-gray-600 mb-1">
+                  <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  {{ getTimeRange(interview.date) }}
+                </div>
+                
+                <!-- Position -->
+                <div class="text-sm text-gray-600 mb-2">
+                  <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6m0 0v6m0-6a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2z"></path>
+                  </svg>
+                  {{ interview.position || 'Position not specified' }}
+                </div>
+                
+                <!-- Location/Type -->
+                <div class="text-sm text-gray-500">
+                  <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  {{ interview.lieuEvaluation || 'Location TBD' }}
+                </div>
+                <!-- START: New section for the Evaluator -->
+    <div class="text-sm text-gray-500">
+      <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+      </svg>
+      Evaluator: {{ interview.evaluatorName || 'Not Assigned' }}
+    </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
           <div class="stats-content">
-            <h3>Quick Stats</h3>
-            <p>Analytics and reports coming soon</p>
+           
           </div>
         </div>
       </div>
