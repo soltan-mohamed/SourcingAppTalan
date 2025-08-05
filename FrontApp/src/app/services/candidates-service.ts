@@ -56,6 +56,14 @@ export class CandidatesService {
 
   ////////
 
+  fetchCandidateById(id: number): Observable<Candidate> {
+    return this.http.get<Candidate>(`${backendUrl}/candidats/${id}`).pipe(
+      catchError(error => {
+        console.error(`Error fetching candidate with id ${id}:`, error);
+        return throwError(() => error);
+      })
+    );
+  }
   getCandidateById(id: number): Candidate | undefined {
     const regularCandidate = this.candidatesSubject.value.find(c => c.id === id);
     if (regularCandidate) return regularCandidate;

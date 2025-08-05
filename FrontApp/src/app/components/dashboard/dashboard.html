@@ -59,7 +59,7 @@
             <div *ngFor="let interview of todayInterviews" 
                 (click)="openCandidateHistory(interview)"
                 class="interview-card"
-                [ngClass]="'interview-card-' + (interview.type?.toLowerCase() || 'default')">
+                [ngClass]="'interview-card-' + (interview.type.toLowerCase() || 'default')">
               
               <!-- Candidate Name and Type -->
               <div class="interview-header">
@@ -67,7 +67,7 @@
                   {{ interview.fullName || 'Unknown Candidate' }}
                 </h3>
                 <span class="interview-type-badge" 
-                      [ngClass]="'badge-' + (interview.type?.toLowerCase() || 'default')">
+                      [ngClass]="'badge-' + (interview.type.toLowerCase() || 'default')">
                   {{ interview.type }}
                 </span>
               </div>
