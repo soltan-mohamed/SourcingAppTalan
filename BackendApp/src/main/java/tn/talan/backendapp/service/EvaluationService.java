@@ -68,14 +68,22 @@ public class EvaluationService {
         dto.setStatut(evaluation.getStatut());
 
         // Accéder aux objets liés pour obtenir les informations
-        dto.setEvaluatorName(evaluation.getEvaluateur().getFullName());
-        Candidate c = evaluation.getRecrutement().getCandidate();
-        dto.setCandidateName(c.getPrenom() + " " + c.getNom()); // EXEMPLE : dépend de votre entité Recrutement
-        dto.setPosition(evaluation.getRecrutement().getPosition());   // EXEMPLE : dépend de votre entité Recrutement
+        if (evaluation.getEvaluateur() != null) {
+            dto.setEvaluatorName(evaluation.getEvaluateur().getFullName());
+        }
+        if (evaluation.getRecrutement() != null) {
+            dto.setPosition(evaluation.getRecrutement().getPosition());
+
+            Candidate c = evaluation.getRecrutement().getCandidate();
+            if (c != null) {
+                dto.setCandidateName(c.getPrenom() + " " + c.getNom());
+
+                // THIS IS THE MISSING LINE THAT FIXES THE PROBLEM
+                dto.setIdCandidate(c.getId());
+            }
+        }
         if (evaluation.getLieuEvaluation() != null) {
             dto.setLieuEvaluation(evaluation.getLieuEvaluation().name());
-        } else {
-            dto.setLieuEvaluation(null);
         }
         return dto;
     }
