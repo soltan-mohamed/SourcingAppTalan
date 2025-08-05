@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { LayoutService } from 'app/services/layout.service';
 
 @Component({
   selector: 'app-home',
@@ -28,11 +29,12 @@ export class Home implements OnInit {
   role: string = "";
   fullName: string = "";
   sideBarOpened: boolean = true;
+  sideBarCollapsed: boolean = false;
   activeItem: string = '';
   currentUser: any;
   isAuthenticated: boolean = true;
 
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router, private authService: AuthService, private layoutService: LayoutService) {
     // Subscribe to authentication status changes
     this.authService.currentUser.subscribe(user => {
       this.isAuthenticated = !!user;
@@ -62,11 +64,20 @@ export class Home implements OnInit {
     } else {
       this.setActiveItemBasedOnRoute(this.router.url);
     }
+
+    // Restore sidebar collapsed state from localStorage
+    const savedCollapsedState = localStorage.getItem('sidebarCollapsed');
+    if (savedCollapsedState) {
+      this.sideBarCollapsed = savedCollapsedState === 'true';
+    }
+    
+    // Initialize layout service with current state
+    this.layoutService.setSidebarCollapsed(this.sideBarCollapsed);
   }
 
   setActiveItemBasedOnRoute(url: string): void {
     if (url.includes('/home/dashboard')) {
-      this.activeItem = '';
+      this.activeItem = 'home';
     } else if (url.includes('/home/my-interviews')) {
       this.activeItem = 'interviews';
     } else if (url.includes('/home/list-candidates')) {
@@ -78,7 +89,7 @@ export class Home implements OnInit {
     } else if (url.includes('/home/my-publications')) {
       this.activeItem = 'my-publications';
     } else {
-      this.activeItem = '';
+      this.activeItem = 'home'; // Default to home for any other home routes
     }
     
     // Save to localStorage
@@ -96,6 +107,14 @@ export class Home implements OnInit {
       localStorage.removeItem('activeMenuItem');
       this.authService.logout();
     }
+  }
+
+  toggleSidebar(): void {
+    this.sideBarCollapsed = !this.sideBarCollapsed;
+    // Update the layout service
+    this.layoutService.setSidebarCollapsed(this.sideBarCollapsed);
+    // Save the collapsed state to localStorage
+    localStorage.setItem('sidebarCollapsed', this.sideBarCollapsed.toString());
   }
 
   navigateToLogin() {

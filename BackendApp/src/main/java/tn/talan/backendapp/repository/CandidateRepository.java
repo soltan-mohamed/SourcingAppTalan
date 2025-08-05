@@ -31,7 +31,7 @@ public interface CandidateRepository extends JpaRepository<Candidate,Long> {
     @Query("SELECT DISTINCT c FROM Candidate c " +
             "LEFT JOIN  Recrutement r ON c = r.candidate  " +
             "LEFT JOIN  Evaluation e ON e.recrutement = r " +
-            "WHERE (e.evaluateur = :user OR c.responsable = :user) AND r.statut = 'IN_PROGRESS' AND ( c.statut = 'CONTACTED' OR c.statut = 'IN_PROGRESS' )")
+            "WHERE (e.evaluateur = :user OR c.responsable = :user)  AND ( c.statut = 'CONTACTED' OR c.statut = 'IN_PROGRESS' )")
     List<Candidate> findByEvaluateur(User user);
 
     List<Candidate> findByStatut(Statut statut);

@@ -40,7 +40,7 @@ export class Dashboard {
 
         this.candidates = data.map(candidate => {
 
-          let evaluationType: string = "-";
+          let evaluationType: string = "Not yet";
           let date: string = candidate.statut === 'CONTACTED' ? candidate.dateCreation : "";
 
           const sortedRecrutements = (candidate.recrutements || [])

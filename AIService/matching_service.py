@@ -126,7 +126,7 @@ def expand_query(query):
     
     return list(expanded)
 
-def calculate_advanced_match_score(requirements, candidate_skills, position_level="mid"):
+def calculate_advanced_match_score(requirements, candidate_skills, years_of_experience=0):
     """Calculate enhanced match percentage with weighted scoring and fuzzy matching"""
     required_skills = expand_query(requirements)
     candidate_skills_normalized = [normalize_skill(s) for s in candidate_skills if s]
@@ -196,15 +196,25 @@ def calculate_advanced_match_score(requirements, candidate_skills, position_leve
     # Calculate final score
     base_score = (matched_weight / total_weight * 100) if total_weight > 0 else 0
     
-    # Apply position level adjustments
-    level_multipliers = {
-        'junior': 0.9,  # More lenient for junior positions
-        'mid': 1.0,     # Standard scoring
-        'senior': 1.1,  # Stricter for senior positions
-        'lead': 1.2     # Strictest for lead positions
+    # Apply experience-based adjustments
+    experience_multipliers = {
+        0: 0.85,   # 0 years - Fresh graduates, more lenient
+        1: 0.9,    # 1 year - Entry level, slightly lenient
+        2: 0.95,   # 2 years - Junior level
+        3: 1.0,    # 3+ years - Standard scoring (mid-level)
+        5: 1.05,   # 5+ years - Slightly higher expectations
+        7: 1.1,    # 7+ years - Senior level, higher standards
+        10: 1.15   # 10+ years - Very experienced, strictest standards
     }
     
-    final_score = base_score * level_multipliers.get(position_level, 1.0)
+    # Find the appropriate multiplier based on years of experience
+    experience_multiplier = 1.0
+    for years_threshold in sorted(experience_multipliers.keys(), reverse=True):
+        if years_of_experience >= years_threshold:
+            experience_multiplier = experience_multipliers[years_threshold]
+            break
+    
+    final_score = base_score * experience_multiplier
     final_score = min(final_score, 100)  # Cap at 100%
     
     return {
@@ -217,7 +227,8 @@ def calculate_advanced_match_score(requirements, candidate_skills, position_leve
             'matched_skills': matched_skills,
             'skill_breakdown': skill_breakdown,
             'base_score': round(base_score, 2),
-            'level_adjustment': level_multipliers.get(position_level, 1.0)
+            'years_of_experience': years_of_experience,
+            'experience_adjustment': experience_multiplier
         }
     }
 
@@ -230,7 +241,6 @@ def match_candidates():
         
         requirements = data.get('requirements', '')
         candidates = data.get('candidates', [])
-        position_level = data.get('position_level', 'mid')  # junior, mid, senior, lead
         include_details = data.get('include_details', False)
         
         if not requirements or not candidates:
@@ -245,14 +255,25 @@ def match_candidates():
             if not isinstance(skills, list):
                 skills = []
             
-            # Use advanced matching
-            match_result = calculate_advanced_match_score(requirements, skills, position_level)
+            # Extract years of experience from candidate data
+            years_of_experience = candidate.get('experiencePeriod', 0)
+            if isinstance(years_of_experience, str):
+                # Extract number from string like "5 years" or "2-3 years"
+                import re
+                match = re.search(r'(\d+)', str(years_of_experience))
+                years_of_experience = int(match.group(1)) if match else 0
+            elif not isinstance(years_of_experience, (int, float)):
+                years_of_experience = 0
+            
+            # Use advanced matching with years of experience
+            match_result = calculate_advanced_match_score(requirements, skills, years_of_experience)
             
             candidate_result = {
                 "id": candidate.get('id'),
                 "name": f"{candidate.get('prenom', '')} {candidate.get('nom', '')}".strip(),
                 "match_percentage": match_result['score'],
                 "skills": skills,
+                "years_of_experience": years_of_experience,
                 "matched_skills": [ms['candidate'] for ms in match_result['details']['matched_skills']],
                 "exact_matches": match_result['details']['exact_matches'],
                 "partial_matches": match_result['details']['partial_matches'],
@@ -281,12 +302,11 @@ def match_candidates():
         return jsonify({
             "matches": results,
             "expanded_query": expand_query(requirements),
-            "position_level": position_level,
             "statistics": stats,
             "matching_criteria": {
                 "exact_match_threshold": "≥90% similarity",
                 "partial_match_threshold": "≥70% similarity", 
-                "position_level_adjustment": f"{(({'junior': 0.9, 'mid': 1.0, 'senior': 1.1, 'lead': 1.2}.get(position_level, 1.0) - 1.0) * 100):+.0f}%"
+                "experience_based_scoring": "Adjusted based on years of experience"
             }
         })
         

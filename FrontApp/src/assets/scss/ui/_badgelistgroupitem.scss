@@ -238,3 +238,39 @@ span.badge {
   font-weight: 500;
   line-height: 1.2;
 }
+
+.badge-solid-accepted {
+  color: #198754;
+  background-color: rgba(25, 135, 84, 0.15);
+  border: none;
+  padding: 5px 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.badge-solid-contacted {
+  color: #6f42c1;
+  background-color: rgba(111, 66, 193, 0.15);
+  border: none;
+  padding: 5px 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.badge-solid-in-progress {
+  color: #0dcaf0;
+  background-color: rgba(13, 202, 240, 0.15);
+  border: none;
+  padding: 5px 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.badge-solid-yellow {
+  color: #ffc107;
+  background-color: rgba(255, 193, 7, 0.15);
+  border: none;
+  padding: 5px 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}

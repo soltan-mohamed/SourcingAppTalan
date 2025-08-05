@@ -1,25 +1,121 @@
-<!-- THIS CODE WILL NOT WORK AS YOU EXPECT -->
+<div class="interview-container">
+    <!-- Header Section -->
+    <div class="header-section">
+        <h2>Edit Interview</h2>
+    </div>
 
-<h2 mat-dialog-title>Edit Interview</h2>
-<form [formGroup]="interviewForm" class="dialog-form" (ngSubmit)="save()">
+    <div class="form-content">
+        <form [formGroup]="interviewForm" (ngSubmit)="save()">
 
-<!-- This will be a plain, ugly browser input with NO Material styling -->
-<input formControlName="candidateName" placeholder="Candidate" />
+            <!-- Candidate Name -->
+            <div class="field-group">
+                <label class="field-label">Candidate Name</label>
+                <input 
+                    formControlName="candidateName" 
+                    type="text"
+                    class="form-input"
+                    [class.error]="interviewForm.get('candidateName')?.invalid && interviewForm.get('candidateName')?.touched"
+                    placeholder="Enter candidate name"
+                />
+                <p *ngIf="interviewForm.get('candidateName')?.invalid && interviewForm.get('candidateName')?.touched" 
+                    class="error-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Please provide candidate name
+                </p>
+            </div>
 
-<!-- This will also be a plain browser input -->
-<input formControlName="date" type="date" />
+            <!-- Date and Time -->
+            <div class="datetime-container">
+                <div class="datetime-fields">
+                    <!-- Date Field -->
+                    <div class="date-field">
+                        <label class="field-label">Interview Date</label>
+                        <input 
+                            formControlName="date" 
+                            type="date"
+                            required
+                            class="form-input"
+                            [class.error]="interviewForm.get('date')?.invalid && interviewForm.get('date')?.touched"
+                        />
+                        <p *ngIf="interviewForm.get('date')?.invalid && interviewForm.get('date')?.touched" 
+                            class="error-text">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            Please select a valid date
+                        </p>
+                    </div>
 
- <input formControlName="time" name="time" type="time" required />
+                    <!-- Time Field -->
+                    <div class="time-field">
+                        <label class="field-label">Interview Time</label>
+                        <input 
+                            formControlName="time" 
+                            type="time"
+                            required
+                            class="form-input"
+                            [class.error]="interviewForm.get('time')?.invalid && interviewForm.get('time')?.touched"
+                        />
+                        <p *ngIf="interviewForm.get('time')?.invalid && interviewForm.get('time')?.touched" 
+                            class="error-text">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            Please select a valid time
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-<!-- This component will likely look broken or unstyled -->
-<mat-select formControlName="evaluatorId" required appearance="fill">
-  <mat-option *ngFor="let evaluator of evaluators" [value]="evaluator.id">
-          {{ evaluator.fullName }}
-        </mat-option>
-</mat-select>
+            <!-- Evaluator -->
+            <div class="field-group">
+                <label class="field-label">Evaluator</label>
+                <select 
+                    formControlName="evaluatorId"
+                    required
+                    class="form-select"
+                    [class.error]="interviewForm.get('evaluatorId')?.invalid && interviewForm.get('evaluatorId')?.touched"
+                >
+                    <option value="" disabled selected>Select Evaluator</option>
+                    <option *ngFor="let evaluator of evaluators" [value]="evaluator.id">
+                        {{ evaluator.fullName }}
+                    </option>
+                </select>
+                <!-- Custom dropdown arrow -->
+                <div class="select-arrow">
+                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
 
- <div class="dialog-actions">
-    <button mat-raised-button color="primary" (click)="save()">Save</button>
-    <button mat-button (click)="onCancel()">Cancel</button>
-  </div>
-</form>
+                <p *ngIf="interviewForm.get('evaluatorId')?.invalid && interviewForm.get('evaluatorId')?.touched" 
+                    class="error-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Please select an evaluator
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-section">
+                <button 
+                    type="submit"
+                    class="btn-primary"
+                    [disabled]="interviewForm.invalid"
+                >
+                    Save Changes
+                </button>
+                <button 
+                    type="button"
+                    (click)="onCancel()"
+                    class="btn-secondary"
+                >
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

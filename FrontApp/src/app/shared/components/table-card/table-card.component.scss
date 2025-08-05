@@ -18,5 +18,187 @@
 mat-header-cell{
   //background-color: #235dba !important;
     background-color: hsl(88, 53%, 45%) !important;
+}
 
+.table-row-hover {
+  transition: background-color 0.2s ease-in-out;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+  }
+}
+
+// Status badge styling with distinct colors
+:host ::ng-deep .badge {
+  display: inline-block;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 12px;
+  line-height: 1.2;
+  border: none;
+  
+  // Override any white text color from parent
+  &.badge-solid-accepted {
+    color: #198754 !important;
+    background-color: rgba(25, 135, 84, 0.15) !important;
+  }
+  
+  &.badge-solid-rejected,
+  &.badge-solid-red {
+    color: #dc3545 !important;
+    background-color: rgba(220, 53, 69, 0.15) !important;
+  }
+  
+  &.badge-solid-scheduled,
+  &.badge-solid-orange {
+    color: #fd7e14 !important;
+    background-color: rgba(253, 126, 20, 0.15) !important;
+  }
+  
+  &.badge-solid-vivier,
+  &.badge-solid-blue {
+    color: #0d6efd !important;
+    background-color: rgba(13, 110, 253, 0.15) !important;
+  }
+  
+  &.badge-solid-contacted {
+    color: #6f42c1 !important;
+    background-color: rgba(111, 66, 193, 0.15) !important;
+  }
+  
+  &.badge-solid-in-progress {
+    color: #0dcaf0 !important;
+    background-color: rgba(13, 202, 240, 0.15) !important;
+  }
+  
+  &.badge-solid-cancelled,
+  &.badge-solid-yellow {
+    color: #ffc107 !important;
+    background-color: rgba(255, 193, 7, 0.15) !important;
+  }
+}
+
+// Ensure status cell content is properly styled
+:host ::ng-deep .mat-cell {
+  // Override white text for status badges specifically
+  .badge {
+    color: inherit !important;
+  }
+}
+
+// Action buttons styling
+:host ::ng-deep .mat-mdc-icon-button {
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  
+  &[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+// Status badge styling consistency
+:host ::ng-deep .badge {
+  display: inline-block;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  line-height: 1.2;
+  
+  // Ensure proper text contrast
+  &.badge-solid-accepted,
+  &.badge-solid-contacted,
+  &.badge-solid-in-progress,
+  &.badge-solid-yellow,
+  &.badge-solid-red,
+  &.badge-solid-orange,
+  &.badge-solid-blue {
+    font-weight: 600;
+  }
+}
+
+// Action buttons consistency
+:host ::ng-deep .mat-mdc-icon-button {
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  
+  &[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+// Table cell alignment and spacing
+:host ::ng-deep .mat-mdc-cell {
+  padding: 12px 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  
+  &:first-child {
+    padding-left: 16px;
+  }
+  
+  &:last-child {
+    padding-right: 16px;
+  }
+}
+
+:host ::ng-deep .mat-mdc-header-cell {
+  padding: 12px 8px;
+  font-weight: 600;
+  
+  &:first-child {
+    padding-left: 16px;
+  }
+  
+  &:last-child {
+    padding-right: 16px;
+  }
+}
+
+// Experience icon specific styling
+.experience-icon {
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  color: #2563eb; // blue-600 equivalent
+  flex-shrink: 0;
+  
+  path {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.5;
+  }
+}
+
+// Support classes for experience column
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.text-blue-700 {
+  color: #1d4ed8;
+}
+
+.font-medium {
+  font-weight: 500;
 }

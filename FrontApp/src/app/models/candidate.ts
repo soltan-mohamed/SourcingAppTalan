@@ -17,4 +17,5 @@ export interface Candidate {
   experiencePeriod?: string;
   recrutements : Recrutement[];
   editable?: boolean;
+  cvPath?: string; // Optional CV file path
 }
