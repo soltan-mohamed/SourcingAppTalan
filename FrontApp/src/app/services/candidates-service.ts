@@ -29,6 +29,33 @@ export class CandidatesService {
     return this.vivierCandidatesSubject.value;
   }
 
+  ////////////////////////////////
+
+  uploadCv(candidateId: number, file: File): Observable<HttpEvent<any>> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post(`${backendUrl}/candidats/${candidateId}/cv`, formData, {
+      //headers: this.getAuthHeadersForFileUpload(),
+      reportProgress: true,
+      observe: 'events'
+    });
+
+  }
+
+  downloadCv(candidateId: number): Observable<Blob> {
+    return this.http.get(`${backendUrl}/candidats/${candidateId}/cv`, {
+      responseType: 'blob'
+    });
+  }
+
+  getCandidateCv(candidateId: number): Observable<Blob> {
+    return this.http.get(`${backendUrl}/candidats/${candidateId}/cv`, { responseType: 'blob' });
+  }
+
+
+  ////////
+
   getCandidateById(id: number): Candidate | undefined {
     const regularCandidate = this.candidatesSubject.value.find(c => c.id === id);
     if (regularCandidate) return regularCandidate;
@@ -49,6 +76,16 @@ export class CandidatesService {
       map(data => data.filter(c => c.statut !== 'VIVIER')),
       catchError(error => {
         console.error('Error fetching candidates:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getAllContactedAndInProgressCandidates(): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(`${backendUrl}/candidats/in-progress&contacted`).pipe(
+      // map(data => data),
+      catchError(error => {
+        console.error('Error fetching in-progress and contacted candidates:', error);
         return throwError(() => error);
       })
     );
@@ -275,26 +312,15 @@ export class CandidatesService {
     );
   }
 
-  uploadCv(candidateId: number, file: File): Observable<HttpEvent<any>> {
-    const formData = new FormData();
-    formData.append('cv', file);
 
-    return this.http.post(`${backendUrl}/candidats/${candidateId}/upload-cv`, formData, {
-      headers: this.getAuthHeadersForFileUpload(),
-      reportProgress: true,
-      observe: 'events'
-    });
+private getAuthHeadersForFileUpload(): HttpHeaders {
+  const token = this.authService.token;
+  if (!token) {
+    throw new Error('No authentication token available');
   }
+  return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+}
 
-  private getAuthHeadersForFileUpload(): HttpHeaders {
-    const token = this.authService.token;
-    if (!token) {
-      throw new Error('No authentication token available');
-    }
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
 
   getVivierCandidates(): Observable<Candidate[]> {
     // If vivier candidates are not loaded, load all candidates first
