@@ -15,10 +15,15 @@ public class EvaluationDTO {
     private User evaluateur;
     private String evaluatorName;
     private String candidateName;
+    private Long candidateId;
     private String position ;
+    private String LieuEvaluation;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public Long getIdCandidate() { return candidateId; }
+    public void setIdCandidate(Long candidateId) { this.candidateId = candidateId; }
 
     public TypeEvaluation getType() { return type; }
     public void setType(TypeEvaluation type) { this.type = type; }
@@ -43,5 +48,10 @@ public class EvaluationDTO {
 
     public String getPosition() { return position; }
     public void setPosition(String position) { this.position = position; }
+
+    public String getLieuEvaluation() { return LieuEvaluation; }
+    public void setLieuEvaluation(String LieuEvaluation) { this.LieuEvaluation = LieuEvaluation; }
+
+
 }
 
