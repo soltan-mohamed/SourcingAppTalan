@@ -97,87 +97,66 @@ export class Dashboard {
         this.isLoading = true;
 
   }
-  loadTodayInterviews(): void {
+   loadTodayInterviews(): void {
     this.isLoading = true;
     this.error = null;
     
     this.interviewService.getMyInterviews().subscribe({
       next: (evaluations: any[]) => {
-        // Filter interviews for today only
-         console.log('Raw data from InterviewService:', evaluations); 
-         
-         // Debug: Show the structure of the first evaluation if available
-         if (evaluations.length > 0) {
-           console.log('First evaluation complete structure:', JSON.stringify(evaluations[0], null, 2));
-           console.log('Available keys in first evaluation:', Object.keys(evaluations[0]));
-         }
-        
-            // 1. Define today's date range
+         console.log('--- RAW INTERVIEW DATA FROM API ---', JSON.stringify(evaluations, null, 2));
           const todayStart = new Date();
           todayStart.setHours(0, 0, 0, 0);
           const todayEnd = new Date();
           todayEnd.setHours(23, 59, 59, 999);
-         // 2. Filter the evaluations into a NEW array
-      const filteredEvaluations = evaluations.filter((evaluation: any) => {
-        if (!evaluation.date) return false;
-        const interviewDate = new Date(evaluation.date);
-        const isToday = interviewDate >= todayStart && interviewDate <= todayEnd;
-        const isScheduled = evaluation.statut === 'SCHEDULED';
-        return isToday && isScheduled;
-      });
       
-      console.log('Number of interviews after filtering:', filteredEvaluations.length);
-         // 3. Map the NEW filtered array to the view model
-         filteredEvaluations.forEach(ev => {
-  if (!ev.recrutement || !ev.recrutement.candidat) {
-    console.warn(`⚠️ Missing candidat in evaluation ID ${ev.id}`);
-  }
-});
-      const mappedInterviews = filteredEvaluations
+          const filteredEvaluations = evaluations.filter((evaluation: any) => {
+            if (!evaluation.date) return false;
+            const interviewDate = new Date(evaluation.date);
+            return interviewDate >= todayStart && interviewDate <= todayEnd && evaluation.statut === 'SCHEDULED';
+          });
       
-      .map(evaluation => {
-        // Debug the evaluation structure to find location field
-        console.log('Processing evaluation:', {
-          id: evaluation.id,
-          lieuEvaluation: evaluation.lieuEvaluation,
-          lieu: evaluation.lieu,
-          location: evaluation.location,
-          fullEvaluation: evaluation
-        });
+          const mappedInterviews = filteredEvaluations.map(evaluation => {
+            
+            // --- THIS IS THE CRUCIAL DEBUGGING STEP ---
+            // This will print the full, interactive structure of the evaluation object.
+            console.log("--- PLEASE EXPAND AND INSPECT THIS RAW EVALUATION OBJECT ---");
+            console.log(evaluation);
+            // --- END DEBUGGING STEP ---
+
+            let location = evaluation.lieuEvaluation;
         
-        // Try different possible field names for location
-        // If lieuEvaluation is "Location TBD", try other fields
-        let location = evaluation.lieuEvaluation;
-        
-        if (!location || location === 'Location TBD' || location.trim() === '') {
-          location = evaluation.lieu || 
-                    evaluation.location || 
-                    evaluation.recrutement?.location ||
-                    'Remote/Virtual'; // Default to Remote instead of TBD
-        }
-        
-        return {
-          id: evaluation.id,
-          type: evaluation.type,
-          date: evaluation.date,
-          position: evaluation.position || evaluation.recrutement?.poste || 'Position TBD',
-          lieuEvaluation: location,
-          fullName: evaluation.candidateName || 
-                   evaluation.recrutement?.candidate?.fullName || 
-                   evaluation.recrutement?.candidat?.fullName ||
-                   'Unknown Candidate',
-          evaluatorName: evaluation.evaluatorName || 
-                        evaluation.evaluateur?.fullName || 
-                        'Unknown Evaluator',
-          candidateId: evaluation.candidateId || evaluation.recrutement?.candidate?.id
-        };
-      });
-      console.log('Mapped interviews:', mappedInterviews);
-      
-      
-          // 4. Do ONE final assignment to the property bound to the view.
-      this.todayInterviews = mappedInterviews;
-        this.isLoading  = false;
+            if (!location || location === 'Location TBD' || location.trim() === '') {
+              location = evaluation.lieu || 
+                        evaluation.location || 
+                        evaluation.recrutement?.location ||
+                        'Remote/Virtual'; 
+            }
+            
+            // We will now use the correct path discovered from the log above.
+            // Based on typical structures, it's very likely to be this:
+          
+
+            // This log helps confirm if our final guess is right.                      
+            return {
+              id: evaluation.id,
+              type: evaluation.type,
+              date: evaluation.date,
+              position: evaluation.position || evaluation.recrutement?.poste || 'Position TBD',
+              lieuEvaluation: location,
+              fullName: evaluation.candidateName || 
+                       evaluation.recrutement?.candidat?.fullName ||
+                       'Unknown Candidate',
+              evaluatorName: evaluation.evaluatorName || 
+                            evaluation.evaluateur?.fullName || 
+                            'Unknown Evaluator',
+              candidateId: evaluation.idCandidate // Assign the ID we found.
+            };
+          });
+          
+          console.log('Mapped interviews (after processing):', mappedInterviews);
+          
+          this.todayInterviews = mappedInterviews;
+          this.isLoading  = false;
       },
       error: (err) => {
         console.error('Error loading interviews:', err);
@@ -186,37 +165,37 @@ export class Dashboard {
       }
     });
   }
-  openCandidateHistory(interview: InterviewView): void {
-    try {
-      // 1. Call the method directly and store the returned Candidate object.
-      const candidate=this.candidateService.getCandidateById(interview.candidateId);
-      
-       if (candidate) {
-        // --- Inside this 'if' block, TypeScript now knows `candidate` is a valid `Candidate` ---
+ openCandidateHistory(interview: InterviewView): void {
+    if (!interview.candidateId) {
+      console.error('Cannot open history: Candidate ID is missing from the interview object.');
+      // Optionally, show a user-friendly error message here.
+      return;
+    }
+
+    // Use the new service method to fetch the full candidate details.
+    this.candidateService.fetchCandidateById(interview.candidateId).subscribe({
+      next: (candidate: Candidate) => {
+        // Once the data is successfully fetched, open the dialog.
         
         const dialogData = {
           ...candidate,
-          highlightEvaluationId: interview.id
+          // Pass the ID of the interview to be highlighted in the history view.
+          highlightEvaluationId: interview.id 
         };
-        
+
         this.dialog.open(CandidateHistory, {
           panelClass: 'add-interview-dialog-panel',
-          width: 'auto',
-          maxWidth: '80vw',
+          width: '90vw',
+          maxWidth: '120vw',
           maxHeight: '90vh',
           data: dialogData,
         });
-
-      } else {
-        // 3. Handle the case where no candidate was found.
-        console.error(`Candidate with id ${interview.candidateId} not found.`);
-        // You could also show a user-friendly error message here using a snackbar or another dialog.
+      },
+      error: (err) => {
+        console.error(`Failed to load details for candidate with id ${interview.candidateId}`, err);
+        // Optionally, inform the user that the candidate details could not be loaded.
       }
-
-    } catch (err: any) {
-      // 4. If the method throws an error, catch it here.
-      console.error(`Failed to load candidate with id ${interview.candidateId}`, err);
-    }
+    });
   }
    getTimeRange(dateString: string): string {
     const startTime = new Date(dateString);
