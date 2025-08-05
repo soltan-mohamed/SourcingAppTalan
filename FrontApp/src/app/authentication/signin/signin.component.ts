@@ -116,7 +116,7 @@ onSubmit() {
     if (roles.includes(Role.MANAGER)) {
       this.router.navigate(['/manager/dashboard']);
     } else if (roles.includes(Role.EVALUATEUR)) {
-      this.router.navigate(['/evaluateur/dashboard']);
+      this.router.navigate(['/home']);
     } else if (roles.includes(Role.RECRUTEUR)) {
       this.router.navigate(['/home']);
     } else {

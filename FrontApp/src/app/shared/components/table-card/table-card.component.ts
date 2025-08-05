@@ -5,6 +5,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { FeatherIconsComponent } from '../feather-icons/feather-icons.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -20,6 +21,7 @@ import { CandidatesService } from 'app/services/candidates-service';
   imports: [
     MatTableModule,
     MatSortModule,
+    MatPaginatorModule,
     MatCheckboxModule,
     MatIconModule,
     CommonModule,
@@ -41,6 +43,7 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   displayedColumns: string[] = [];
 
   @ViewChild(MatSort, { static: false }) sort!: MatSort;
+  @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
 
   constructor(
     private dialog: MatDialog,
@@ -74,6 +77,13 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
       } else {
         //console.error('Failed to assign sort - missing dependencies');
       }
+
+      if (this.dataSourceTable && this.paginator) {
+        this.dataSourceTable.paginator = this.paginator;
+        //console.log('Paginator assigned successfully');
+      } else {
+        //console.error('Failed to assign paginator - missing dependencies');
+      }
     }, 0);
   }
 
@@ -81,6 +91,16 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     this.dataSourceTable = new MatTableDataSource(this.dataSource);
     console.log("DATESOURCETABLE ", this.dataSourceTable);
     this.setDisplayedColumns();
+    
+    // Connect sort and paginator if available
+    setTimeout(() => {
+      if (this.sort) {
+        this.dataSourceTable.sort = this.sort;
+      }
+      if (this.paginator) {
+        this.dataSourceTable.paginator = this.paginator;
+      }
+    }, 0);
     //console.log('Table initialized with displayedColumns:', this.displayedColumns);
   }
 
@@ -91,11 +111,16 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
       this.dataSourceTable = new MatTableDataSource(this.dataSource);
     }
     
-    // Re-assign sort after data update
+    // Re-assign sort and paginator after data update
     setTimeout(() => {
       if (this.sort) {
         this.dataSourceTable.sort = this.sort;
         //console.log('Sort re-assigned after data update');
+      }
+      
+      if (this.paginator) {
+        this.dataSourceTable.paginator = this.paginator;
+        //console.log('Paginator re-assigned after data update');
       }
     }, 0);
   }
