@@ -105,6 +105,12 @@ export class Dashboard {
       next: (evaluations: any[]) => {
         // Filter interviews for today only
          console.log('Raw data from InterviewService:', evaluations); 
+         
+         // Debug: Show the structure of the first evaluation if available
+         if (evaluations.length > 0) {
+           console.log('First evaluation complete structure:', JSON.stringify(evaluations[0], null, 2));
+           console.log('Available keys in first evaluation:', Object.keys(evaluations[0]));
+         }
         
             // 1. Define today's date range
           const todayStart = new Date();
@@ -129,16 +135,43 @@ export class Dashboard {
 });
       const mappedInterviews = filteredEvaluations
       
-      .map(evaluation => ({
-        id: evaluation.id,
-        type: evaluation.type,
-        date: evaluation.date,
-        position: evaluation.position || 'Position TBD',
-        lieuEvaluation: evaluation.lieuEvaluation || 'Location TBD',
-        fullName: evaluation.candidateName || 'Unknown Candidate',
-        evaluatorName: evaluation.evaluatorName || 'Unknown Evaluator',
-        candidateId: evaluation.candidateId
-      }));
+      .map(evaluation => {
+        // Debug the evaluation structure to find location field
+        console.log('Processing evaluation:', {
+          id: evaluation.id,
+          lieuEvaluation: evaluation.lieuEvaluation,
+          lieu: evaluation.lieu,
+          location: evaluation.location,
+          fullEvaluation: evaluation
+        });
+        
+        // Try different possible field names for location
+        // If lieuEvaluation is "Location TBD", try other fields
+        let location = evaluation.lieuEvaluation;
+        
+        if (!location || location === 'Location TBD' || location.trim() === '') {
+          location = evaluation.lieu || 
+                    evaluation.location || 
+                    evaluation.recrutement?.location ||
+                    'Remote/Virtual'; // Default to Remote instead of TBD
+        }
+        
+        return {
+          id: evaluation.id,
+          type: evaluation.type,
+          date: evaluation.date,
+          position: evaluation.position || evaluation.recrutement?.poste || 'Position TBD',
+          lieuEvaluation: location,
+          fullName: evaluation.candidateName || 
+                   evaluation.recrutement?.candidate?.fullName || 
+                   evaluation.recrutement?.candidat?.fullName ||
+                   'Unknown Candidate',
+          evaluatorName: evaluation.evaluatorName || 
+                        evaluation.evaluateur?.fullName || 
+                        'Unknown Evaluator',
+          candidateId: evaluation.candidateId || evaluation.recrutement?.candidate?.id
+        };
+      });
       console.log('Mapped interviews:', mappedInterviews);
       
       
