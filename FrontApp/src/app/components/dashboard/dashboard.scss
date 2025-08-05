@@ -1,0 +1,68 @@
+/* dashboard.component.css */
+
+/* Custom scrollbar for interview list if needed */
+.interview-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.interview-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.interview-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.interview-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.interview-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Animation for loading spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Hover effects */
+.interview-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Status badge colors */
+.status-badge-technical {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge-behavioral {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-badge-final {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .interview-card {
+    padding: 12px;
+  }
+  
+  .interview-time {
+    font-size: 12px;
+  }
+}

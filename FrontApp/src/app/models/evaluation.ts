@@ -20,5 +20,6 @@ export interface Evaluation {
     };
   };
     editing : boolean,
-    editingText : boolean
+    editingText : boolean;
+     isHighlighted?: boolean;
 }

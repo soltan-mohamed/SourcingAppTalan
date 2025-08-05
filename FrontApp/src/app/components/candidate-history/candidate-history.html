@@ -1,4 +1,4 @@
-<div class="bg-white rounded-xl shadow-lg max-h-[90vh] flex flex-col overflow-hidden min-w-full">
+candidate-history.html: <div class="bg-white rounded-xl shadow-lg max-h-[90vh] flex flex-col overflow-hidden min-w-full">
     
     <!-- Header -->
     <div class="flex justify-between bg-gradient-to-r from-lime-700 to-blue-700 px-7 py-6">
@@ -192,7 +192,9 @@
 
                     <!-- (Evaluation Cards) -->
                     <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class="mb-3">
-                        <div class="min-w-[95%] bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow evaluation-card">
+                        <div #evaluationCard [id]="'eval-' + node.data.id" 
+                             [ngClass]="{ 'bg-blue-50 border-2 border-blue-400': node.data.isHighlighted }"
+                             class="min-w-[95%] bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow evaluation-card">
                             <!-- Card Header -->
                             <div class="flex items-start justify-between mb-3">
                                 <div class="flex items-center w-[30%]">

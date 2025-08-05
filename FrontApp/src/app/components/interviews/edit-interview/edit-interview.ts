@@ -101,9 +101,11 @@ interview: any={};
     if (this.interviewForm.valid) {
       // ✅ CORRECTION N°2 : Transformer les données avant de les renvoyer
       const formValues = this.interviewForm.getRawValue();
-       const combinedDateTime = `${formValues.date}T${formValues.time}`;
+const localDate = new Date(`${formValues.date}T${formValues.time}`);
+const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+const isoDate = utcDate.toISOString();
       const resultToReturn = {
-         date: combinedDateTime, 
+         date: isoDate, 
         // Créer une propriété propre 'evaluatorId' que le composant parent pourra utiliser
         evaluatorId: formValues.evaluatorId,
         // Inclure les autres champs si nécessaire

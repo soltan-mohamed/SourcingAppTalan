@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject,OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject,OnDestroy, ViewChildren, QueryList, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTreeModule, MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
@@ -42,7 +42,7 @@ interface FlatNode {
   templateUrl: './candidate-history.html',
   styleUrl: './candidate-history.scss'
 })
-export class CandidateHistory implements OnInit ,OnDestroy{
+export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
   private updateSubscription!: Subscription;
   recruitementData: Recrutement[] = [];
   loading = false;
@@ -51,6 +51,9 @@ export class CandidateHistory implements OnInit ,OnDestroy{
   evaluationStatus = EvaluationStatusList;
   treeControls: FlatTreeControl<FlatNode>[] = [];
   dataSources: MatTreeFlatDataSource<Recrutement | Evaluation, FlatNode>[] = [];
+  private highlightedEvaluationId?: number;
+
+  @ViewChildren('evaluationCard', { read: ElementRef }) evaluationCards!: QueryList<ElementRef>;
   
   // Tree control setup
   private _transformer = (node: Recrutement | Evaluation, level: number): FlatNode => {
@@ -97,12 +100,14 @@ export class CandidateHistory implements OnInit ,OnDestroy{
   constructor(
     private dialogRef: MatDialogRef<CandidateHistory>,
     private dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public data: Candidate,
+    @Inject(MAT_DIALOG_DATA) public data: Candidate & { highlightEvaluationId?: number },
     private candidatesService: CandidatesService,
     private interviewService: InterviewService,
      private interviewStateService: InterviewStateService
     
-  ) {}
+  ) {
+    this.highlightedEvaluationId = this.data.highlightEvaluationId;
+  }
   
   toggleDropdown(event: Event, evalData : Evaluation) {
     event.stopPropagation();
@@ -208,6 +213,27 @@ export class CandidateHistory implements OnInit ,OnDestroy{
     );
   }
 
+  ngAfterViewInit(): void {
+    if (this.highlightedEvaluationId) {
+      this.evaluationCards.changes.subscribe(() => {
+        this.scrollToEvaluation(this.highlightedEvaluationId!);
+      });
+      setTimeout(() => this.scrollToEvaluation(this.highlightedEvaluationId!), 500);
+    }
+  }
+
+  private scrollToEvaluation(id: number) {
+    const cardElement = this.evaluationCards.find(
+      (card) => card.nativeElement.id === `eval-${id}`
+    );
+    if (cardElement) {
+      cardElement.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }
+
   ngOnDestroy(): void {
     // Très important pour éviter les fuites de mémoire !
     if (this.updateSubscription) {
@@ -236,7 +262,6 @@ export class CandidateHistory implements OnInit ,OnDestroy{
 
   private loadCandidateData(): void {
     this.loading = true;
-
     setTimeout(() => {
       this.recruitementData = this.data.recrutements || [];
       
@@ -244,14 +269,17 @@ export class CandidateHistory implements OnInit ,OnDestroy{
       this.dataSources = [];
       
       this.recruitementData.forEach((recruitment, index) => {
-
+        let shouldExpand = false;
         recruitment.evaluations?.forEach(e => {
           if(!e.description) {
             e.description = this.defaultEvalDesc;
           }
           e.editingText = false;
+          if (this.highlightedEvaluationId && e.id === this.highlightedEvaluationId) {
+            e.isHighlighted = true;
+            shouldExpand = true;
+          }
         });
-
         const treeControl = new FlatTreeControl<FlatNode>(
           node => node.level,
           node => node.expandable
@@ -262,6 +290,11 @@ export class CandidateHistory implements OnInit ,OnDestroy{
         
         this.treeControls.push(treeControl);
         this.dataSources.push(dataSource);
+        if (shouldExpand) {
+          const rootNode = dataSource.data[0];
+          const flatNode = this.treeFlattener.flattenNodes([rootNode])[0];
+          treeControl.expand(flatNode);
+        }
       });      
       this.loading = false;
     }, 400);
