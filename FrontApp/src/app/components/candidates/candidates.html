@@ -248,21 +248,7 @@
           </h3>
           
           <!-- Status distribution for current results -->
-          <div *ngIf="candidates.length > 0" class="status-distribution">
-            <div *ngFor="let status of getUniqueStatuses()" class="status-item">
-              <span class="status-indicator"
-                    [ngClass]="{
-                      'status-accepted': status === 'ACCEPTED',
-                      'status-rejected': status === 'REJECTED',
-                      'status-scheduled': status === 'SCHEDULED',
-                      'status-vivier': status === 'VIVIER',
-                      'status-cancelled': status === 'CANCELLED',
-                      'status-contacted': status === 'CONTACTED',
-                      'status-in-progress': status === 'IN_PROGRESS'
-                    }"></span>
-              <span class="status-count">{{ getStatusCount(status) }}</span>
-            </div>
-          </div>
+
         </div>
         
         <div class="results-actions">
