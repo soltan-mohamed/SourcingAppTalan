@@ -5,6 +5,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { FeatherIconsComponent } from '../feather-icons/feather-icons.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -13,12 +14,14 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EditCandidat } from 'app/components/edit-candidat/edit-candidat';
 import { CreateRecrutement } from 'app/components/create-recrutement/create-recrutement';
 import { CandidateHistory } from 'app/components/candidate-history/candidate-history';
+import { CandidatesService } from 'app/services/candidates-service';
 
 @Component({
   selector: 'app-table-card',
   imports: [
     MatTableModule,
     MatSortModule,
+    MatPaginatorModule,
     MatCheckboxModule,
     MatIconModule,
     CommonModule,
@@ -40,9 +43,11 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   displayedColumns: string[] = [];
 
   @ViewChild(MatSort, { static: false }) sort!: MatSort;
+  @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
 
   constructor(
     private dialog: MatDialog,
+    private cs : CandidatesService
   ) {}
 
   ngOnInit() {
@@ -72,6 +77,13 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
       } else {
         //console.error('Failed to assign sort - missing dependencies');
       }
+
+      if (this.dataSourceTable && this.paginator) {
+        this.dataSourceTable.paginator = this.paginator;
+        //console.log('Paginator assigned successfully');
+      } else {
+        //console.error('Failed to assign paginator - missing dependencies');
+      }
     }, 0);
   }
 
@@ -79,6 +91,16 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     this.dataSourceTable = new MatTableDataSource(this.dataSource);
     console.log("DATESOURCETABLE ", this.dataSourceTable);
     this.setDisplayedColumns();
+    
+    // Connect sort and paginator if available
+    setTimeout(() => {
+      if (this.sort) {
+        this.dataSourceTable.sort = this.sort;
+      }
+      if (this.paginator) {
+        this.dataSourceTable.paginator = this.paginator;
+      }
+    }, 0);
     //console.log('Table initialized with displayedColumns:', this.displayedColumns);
   }
 
@@ -89,11 +111,16 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
       this.dataSourceTable = new MatTableDataSource(this.dataSource);
     }
     
-    // Re-assign sort after data update
+    // Re-assign sort and paginator after data update
     setTimeout(() => {
       if (this.sort) {
         this.dataSourceTable.sort = this.sort;
         //console.log('Sort re-assigned after data update');
+      }
+      
+      if (this.paginator) {
+        this.dataSourceTable.paginator = this.paginator;
+        //console.log('Paginator re-assigned after data update');
       }
     }, 0);
   }
@@ -190,20 +217,25 @@ openHistory(row: T): void {
     });
   }
 
-  openCvFile(cvPath: string): void {
-    if (cvPath) {
-      // Since we're now storing only filenames, show info about the file
-      const userChoice = confirm(
-        `CV File: ${cvPath}\n\n` 
-      );
-      
-      if (userChoice) {
-        // Try to open assuming file exists in uploads folder
-        const fullUrl = `http://localhost:9090/talan/uploads/${cvPath}`;
-        window.open(fullUrl, '_blank');
-      }
-    } else {
-      alert('No CV file available for this candidate.');
+  openCvFile(candidateId: number) {
+  // Assuming you have a CandidateService with a method to fetch CV as Blob
+  this.cs.getCandidateCv(candidateId).subscribe({
+    next: (blob: Blob) => {
+      // Create a blob URL
+      const url = window.URL.createObjectURL(blob);
+
+      // Open in a new tab
+      window.open(url);
+
+      // Optional: revoke URL after some time to release memory
+      setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+    },
+    error: (err) => {
+      console.error('Error loading CV file', err);
     }
-  }
+  });
+}
+
+
+
 }

@@ -1,4 +1,79 @@
 <div class="auth-container">
+  <!-- Animated SVG Background -->
+  <div class="animated-background">
+    <svg class="background-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+      <!-- Gradient Definitions -->
+      <defs>
+        <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#1a237e;stop-opacity:0.8">
+            <animate attributeName="stop-opacity" values="0.8;0.6;0.8" dur="4s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="50%" style="stop-color:#3949ab;stop-opacity:0.6">
+            <animate attributeName="stop-opacity" values="0.6;0.4;0.6" dur="3s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="100%" style="stop-color:#5c6bc0;stop-opacity:0.4">
+            <animate attributeName="stop-opacity" values="0.4;0.6;0.4" dur="5s" repeatCount="indefinite"/>
+          </stop>
+        </linearGradient>
+        
+        <linearGradient id="gradient2" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3"/>
+          <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.5"/>
+        </linearGradient>
+        
+        <radialGradient id="radial1" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.1"/>
+          <stop offset="100%" style="stop-color:#1a237e;stop-opacity:0.2"/>
+        </radialGradient>
+      </defs>
+      
+      <!-- Animated Background Shapes -->
+      <circle cx="200" cy="200" r="150" fill="url(#gradient1)">
+        <animateTransform attributeName="transform" attributeType="XML" type="translate" 
+                          values="0,0; 50,30; 0,0" dur="8s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="150;180;150" dur="6s" repeatCount="indefinite"/>
+      </circle>
+      
+      <ellipse cx="1600" cy="300" rx="200" ry="100" fill="url(#gradient2)">
+        <animateTransform attributeName="transform" attributeType="XML" type="translate" 
+                          values="0,0; -30,20; 0,0" dur="10s" repeatCount="indefinite"/>
+      </ellipse>
+      
+      <path d="M300,800 Q600,600 900,800 T1500,800" stroke="url(#gradient1)" stroke-width="3" fill="none" opacity="0.6">
+        <animate attributeName="d" values="M300,800 Q600,600 900,800 T1500,800;M300,820 Q600,580 900,820 T1500,820;M300,800 Q600,600 900,800 T1500,800" 
+                 dur="7s" repeatCount="indefinite"/>
+      </path>
+      
+      <polygon points="1400,100 1500,200 1300,300 1200,200" fill="url(#radial1)">
+        <animateTransform attributeName="transform" attributeType="XML" type="rotate" 
+                          values="0 1350 200; 360 1350 200" dur="12s" repeatCount="indefinite"/>
+      </polygon>
+      
+      <!-- Floating Particles -->
+      <circle cx="100" cy="500" r="8" fill="#ffffff" opacity="0.4">
+        <animateTransform attributeName="transform" attributeType="XML" type="translate" 
+                          values="0,0; 0,-100; 0,0" dur="5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      
+      <circle cx="1800" cy="700" r="12" fill="#3949ab" opacity="0.3">
+        <animateTransform attributeName="transform" attributeType="XML" type="translate" 
+                          values="0,0; -50,-80; 0,0" dur="8s" repeatCount="indefinite"/>
+      </circle>
+      
+      <circle cx="500" cy="100" r="6" fill="#5c6bc0" opacity="0.5">
+        <animateTransform attributeName="transform" attributeType="XML" type="translate" 
+                          values="0,0; 30,50; 0,0" dur="6s" repeatCount="indefinite"/>
+      </circle>
+      
+      <!-- Geometric Lines -->
+      <line x1="0" y1="540" x2="1920" y2="540" stroke="url(#gradient1)" stroke-width="2" opacity="0.3">
+        <animate attributeName="y1" values="540;520;540" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="540;520;540" dur="4s" repeatCount="indefinite"/>
+      </line>
+    </svg>
+  </div>
+
   <div class="row auth-main">
     <div class="col-sm-6 px-0 d-none d-sm-block">
       <div class="left-img" style="background-image: url(assets/images/talan-logo2.png);">

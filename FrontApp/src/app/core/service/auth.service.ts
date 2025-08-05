@@ -60,9 +60,9 @@ export class AuthService {
     if (roles.includes(Role.MANAGER)) {
       this.router.navigate(['/manager/dashboard']);
     } else if (roles.includes(Role.EVALUATEUR)) {
-      this.router.navigate(['/evaluateur/dashboard']);
+      this.router.navigate(['/home/dashboard']);
     } else if (roles.includes(Role.RECRUTEUR)) {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/home/dashboard']);
     } else {
       //console.error('No valid role found, redirecting to signin');
       this.router.navigate(['/authentication/signin']);

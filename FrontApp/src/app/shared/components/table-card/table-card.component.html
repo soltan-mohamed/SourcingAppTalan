@@ -51,7 +51,7 @@
         </mat-header-cell>
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [matTooltip]="row[column.def]">
             <span class="mobile-label"></span>
-            <button mat-icon-button color="accent" class="text-blue-500 tbl-action-btn" (click)="$event.stopPropagation(); openCvFile(row[column.def])">
+            <button mat-icon-button color="accent" class="text-blue-500 tbl-action-btn" (click)="$event.stopPropagation(); openCvFile(row.id)">
                 <app-feather-icons [icon]="'file-text'" class="text-blue-900" [class]="'tbl-fav-edit'"></app-feather-icons>
             </button>
         </mat-cell>
@@ -142,7 +142,7 @@
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
             <span class="mobile-label"></span>
             <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="experience-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span class="truncate-text text-blue-700 font-medium">
@@ -184,13 +184,21 @@
             <button [disabled]="row.editable === false" mat-icon-button color="" (click)="$event.stopPropagation()" (click)="editCall(row)">
                 <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
             </button>
-            <button *ngIf="row.hirable === false" mat-icon-button color="" (click)="$event.stopPropagation()" (click)="newHiringProcess(row)">
+            <button *ngIf="row.hirable === true" mat-icon-button color="" (click)="$event.stopPropagation()" (click)="newHiringProcess(row)">
                 <app-feather-icons [icon]="'user-plus'" [class]="'tbl-fav-edit'"></app-feather-icons>
             </button>
         </mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row class="hover:bg-gray-200!" [@rowsAnimation]="" *matRowDef="let row; columns: displayedColumns;" (click)="openHistory(row)"
+    <mat-row class="table-row-hover" [@rowsAnimation]="" *matRowDef="let row; columns: displayedColumns;" (click)="openHistory(row)"
         [style.cursor]="'pointer'" matRipple>
     </mat-row>
 </table>
+
+<mat-paginator 
+    [pageSizeOptions]="[5, 10, 20, 50]" 
+    [pageSize]="10" 
+    [length]="dataSourceTable?.data?.length || 0"
+    showFirstLastButtons
+    aria-label="Select page of candidates">
+</mat-paginator>

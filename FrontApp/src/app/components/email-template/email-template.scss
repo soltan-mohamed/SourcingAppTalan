@@ -1,124 +1,352 @@
 
-    .email-container {
-        margin: 0 auto;
-        background: #ffff;
-        // border: 2px solid #e1e8ed;
-        // border-radius: 12px;
-        // padding: 5px;
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+// Email Template - Simple & Attractive Styling
+// Matching your app's design system
+// Designed to work within Material Dialog (30vw width constraint)
 
-    .email-header {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        color: white;
-        padding: 33px;
-        // margin: -30px -30px 30px -30px;
-        // border-radius: 12px 12px 0 0;
-        text-align: center;
-    }
+// Main Container - Adapted for Material Dialog
+.email-template-container {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 10px !important;
+  background: #f8f9fa !important;
+  min-height: auto !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
 
-    .email-header h2 {
-        margin: 0;
-        font-size: 1.5em;
-        font-weight: 300;
-    }
+// Header - Compact for dialog
+.email-template-container .email-header {
+  background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%) !important;
+  color: white !important;
+  padding: 10px !important;
+  border-radius: 6px !important;
+  margin-bottom: 8px !important;
+  box-shadow: 0 2px 8px rgba(26, 35, 126, 0.15) !important;
+  text-align: center !important;
 
-    .email-content {
-        font-size: 16px;
-    }
+  h2 {
+    margin: 0 !important;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.02em !important;
+    color: white !important;
+  }
+}
 
-    .email-content p {
-        margin-bottom: 16px;
-    }
+// Content Wrapper
+.email-template-container .email-content-wrapper {
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06) !important;
+  overflow: hidden !important;
+}
 
-    .email-content ul {
-        margin: 16px 0;
-        padding-left: 24px;
-    }
+// Language Selection - Ultra compact for dialog
+.email-template-container .language-section {
+  padding: 6px 10px !important;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+  border-bottom: 1px solid #e9ecef !important;
 
-    .email-content li {
-     margin-bottom: 8px;
-    }
+  .language-buttons {
+    display: flex !important;
+    gap: 4px !important;
+    justify-content: center !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
 
-    .subject-line {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        border-left: 4px solid #4facfe;
+    .language-btn {
+      flex: 1 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 4px !important;
+      padding: 4px 6px !important;
+      background: #ffffff !important;
+      border: 1px solid #e9ecef !important;
+      border-radius: 4px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      font-weight: 500 !important;
+      font-size: 11px !important;
+      color: #495057 !important;
+
+      svg {
+        border-radius: 1px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+        width: 14px !important;
+        height: 9px !important;
+      }
+
+      &:hover {
+        border-color: #3949ab !important;
+        background: #f8f9ff !important;
+        transform: translateY(-1px) !important;
+      }
+
+      &.active {
+        background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%) !important;
+        color: white !important;
+        border-color: #1a237e !important;
+        box-shadow: 0 2px 8px rgba(26, 35, 126, 0.2) !important;
+      }
+    }
+  }
+}
+
+// Email Preview Card - Optimized for dialog width
+.email-template-container .email-preview-card {
+  padding: 12px !important;
+
+  // Email Metadata
+  .email-meta {
+    margin-bottom: 8px !important;
+
+    .subject-line,
+    .destination-line {
+      background: #f8f9fa !important;
+      padding: 6px 8px !important;
+      border-radius: 4px !important;
+      margin-bottom: 4px !important;
+      border-left: 3px solid #1a237e !important;
+
+      strong {
+        color: #1a237e !important;
+        font-weight: 600 !important;
+        margin-right: 4px !important;
+        font-size: 11px !important;
+      }
+
+      span {
+        color: #495057 !important;
+        font-weight: 500 !important;
+        font-size: 11px !important;
+      }
     }
 
     .destination-line {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        border-left: 4px solid #31d83f;
+      border-left-color: #28a745 !important;
+
+      strong {
+        color: #28a745 !important;
+      }
+    }
+  }
+
+  // Email Content - Super compact for dialog
+  .email-content {
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 5px !important;
+    padding: 12px !important;
+    line-height: 1.4 !important;
+    color: #333333 !important;
+    margin-bottom: 8px !important;
+
+    // Content Sections
+    .greeting,
+    .introduction,
+    .opportunity,
+    .scheduling,
+    .contact-info,
+    .closing {
+      margin-bottom: 6px !important;
+
+      p {
+        margin: 0 0 3px 0 !important;
+        font-size: 12px !important;
+
+        &:last-child {
+          margin-bottom: 0 !important;
+        }
+      }
     }
 
-    .subject-line strong {
-        color: #4facfe;
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+    // Benefits Section - Ultra compact for dialog
+    .benefits {
+      margin: 4px 0 !important;
+      padding: 4px !important;
+      background: linear-gradient(135deg, rgba(26, 35, 126, 0.05) 0%, rgba(57, 73, 171, 0.03) 100%) !important;
+      border-radius: 4px !important;
+      border-left: 3px solid #1a237e !important;
+
+      .benefits-header {
+        margin-bottom: 2px !important;
+
+        strong {
+          color: #1a237e !important;
+          font-size: 11px !important;
+          font-weight: 600 !important;
+        }
+      }
+
+      ul {
+        margin: 0 !important;
+        padding-left: 12px !important;
+
+        li {
+          margin-bottom: 1px !important;
+          font-size: 11px !important;
+          color: #495057 !important;
+          line-height: 1.3 !important;
+
+          &:last-child {
+            margin-bottom: 0 !important;
+          }
+
+          &::marker {
+            color: #1a237e !important;
+          }
+        }
+      }
     }
 
-    .destination-line strong {
-        color: #31d83f;
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .highlight {
-        color: #4facfe;
-        font-weight: 600;
-    }
-
+    // Signature - Ultra compact for dialog
     .signature {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 2px solid #f0f0f0;
+      margin-top: 10px !important;
+      padding-top: 10px !important;
+      border-top: 1px solid #e9ecef !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 15px !important;
+
+      .signature-logo {
+        flex-shrink: 0 !important;
+
+        .logo-img {
+          width: 48px !important;
+          height: 48px !important;
+          object-fit: contain !important;
+          border-radius: 6px !important;
+          filter: drop-shadow(0 3px 6px rgba(26, 35, 126, 0.25)) !important;
+        }
+      }
+
+      .signature-content {
+        flex-grow: 1 !important;
+
+        p {
+          margin: 0 !important;
+          font-size: 13px !important;
+          line-height: 1.5 !important;
+          color: #495057 !important;
+
+          strong {
+            color: #1a237e !important;
+            font-weight: 600 !important;
+          }
+        }
+      }
     }
 
-    .copy-actions {
-        margin-top: 25px;
-        text-align: center;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
+    // Highlighted Text - Compact
+    .highlight {
+      color: #1976d2 !important;
+      font-weight: 600 !important;
+      background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(57, 73, 171, 0.05) 100%) !important;
+      padding: 2px 3px !important;
+      border-radius: 3px !important;
     }
+  }
+
+  // Copy Button - Compact for dialog
+  .copy-actions {
+    text-align: center !important;
+    padding: 4px 0 !important;
 
     .copy-btn {
-        background: linear-gradient(135deg, #31c031 0%, #3755ff 100%);
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        border-radius: 25px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-    }
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+      color: white !important;
+      border: none !important;
+      padding: 4px 14px !important;
+      border-radius: 4px !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2) !important;
 
-    .copy-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
-    }
+      &:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4) !important;
+        background: linear-gradient(135deg, #218838 0%, #1ea87a 100%) !important;
+      }
 
-    @media (max-width: 768px) {
-        .email-container {
-            margin: 10px;
-            padding: 20px;
+      &:active {
+        transform: translateY(0) !important;
+      }
+    }
+  }
+}
+
+// Material Dialog Specific Overrides
+::ng-deep .mat-dialog-container.add-interview-dialog-panel {
+  padding: 0 !important;
+  overflow: hidden !important;
+  
+  .email-template-container {
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+    border-radius: 0 !important;
+  }
+}
+
+// Material Dialog Responsive - Ultra compact for 30vw
+@media (max-width: 768px) {
+  ::ng-deep .mat-dialog-container.add-interview-dialog-panel {
+    .email-template-container {
+      max-height: 60vh !important;
+      
+      .email-header h2 {
+        font-size: 0.9rem !important;
+        padding: 6px !important;
+      }
+      
+      .email-preview-card {
+        padding: 6px !important;
+        
+        .email-content {
+          padding: 6px !important;
+          
+          .benefits {
+            padding: 3px !important;
+            margin: 3px 0 !important;
+          }
         }
-
-        .email-header {
-            margin: -20px -20px 20px -20px;
-            padding: 15px;
-        }
+      }
     }
+  }
+}
+
+
+@media (max-width: 480px) {
+  .email-template-container {
+    padding: 10px;
+  }
+
+  .email-header {
+    padding: 20px 15px;
+  }
+
+  .language-section {
+    padding: 15px;
+  }
+
+  .email-preview-card {
+    padding: 15px;
+
+    .email-content {
+      padding: 20px 15px;
+
+      .benefits {
+        padding: 15px;
+      }
+    }
+  }
+}
+
+// Smooth animations
+* {
+  transition: all 0.2s ease;
+}

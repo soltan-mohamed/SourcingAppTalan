@@ -4,8 +4,81 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background: linear-gradient(135deg, #1a237e 0%, #3949ab 25%, #5c6bc0 60%, #9c27b0 100%);
   padding: 20px;
+  position: relative;
+  overflow: hidden;
+  animation: backgroundFlow 12s ease-in-out infinite;
+}
+
+/* Animated SVG Background */
+.animated-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(26, 35, 126, 0.4) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(57, 73, 171, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 70%, rgba(92, 107, 192, 0.2) 0%, transparent 35%),
+    radial-gradient(circle at 90% 80%, rgba(156, 39, 176, 0.3) 0%, transparent 45%),
+    linear-gradient(45deg, rgba(26, 35, 126, 0.1) 0%, rgba(57, 73, 171, 0.1) 50%, rgba(92, 107, 192, 0.1) 100%);
+  animation: backgroundPulse 8s ease-in-out infinite;
+  
+  .background-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+    filter: hue-rotate(20deg) saturate(1.2);
+  }
+  
+  /* Floating geometric shapes */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle at 15% 15%, rgba(26, 35, 126, 0.8) 2px, transparent 3px),
+      radial-gradient(circle at 85% 25%, rgba(57, 73, 171, 0.6) 3px, transparent 4px),
+      radial-gradient(circle at 25% 85%, rgba(92, 107, 192, 0.7) 2px, transparent 3px),
+      radial-gradient(circle at 75% 75%, rgba(156, 39, 176, 0.5) 4px, transparent 5px),
+      radial-gradient(circle at 50% 10%, rgba(26, 35, 126, 0.4) 1px, transparent 2px),
+      radial-gradient(circle at 10% 50%, rgba(57, 73, 171, 0.6) 2px, transparent 3px),
+      radial-gradient(circle at 90% 50%, rgba(92, 107, 192, 0.5) 3px, transparent 4px),
+      radial-gradient(circle at 60% 30%, rgba(156, 39, 176, 0.4) 1px, transparent 2px);
+    animation: floatingShapes 15s linear infinite;
+  }
+  
+  /* Dynamic wave pattern */
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      from 0deg, 
+      transparent, 
+      rgba(26, 35, 126, 0.15), 
+      transparent, 
+      rgba(57, 73, 171, 0.1), 
+      transparent, 
+      rgba(92, 107, 192, 0.12), 
+      transparent,
+      rgba(156, 39, 176, 0.08),
+      transparent
+    );
+    animation: backgroundRotate 25s linear infinite;
+    opacity: 0.7;
+  }
 }
 
 /* Wrapper for image + form */
@@ -13,27 +86,292 @@
   display: flex;
   width: 100%;
   max-width: 1000px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
   overflow: hidden;
+  position: relative;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Image section (left side) */
 .col-sm-6.px-0.d-none.d-sm-block {
   flex: 1;
-  min-height: 600px;
-  background-color: #f8f9fa; /* Fallback if image doesn't load */
+  min-height: 650px;
+  background: linear-gradient(135deg, #0d1421 0%, #1a237e 20%, #3949ab 50%, #5c6bc0 80%, #9c27b0 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+  
+  /* Enhanced glass morphism overlay with logo colors */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 30% 20%, rgba(26, 35, 126, 0.25) 0%, transparent 50%),
+      radial-gradient(circle at 70% 80%, rgba(92, 107, 192, 0.3) 0%, transparent 60%),
+      radial-gradient(circle at 50% 50%, rgba(57, 73, 171, 0.2) 0%, transparent 70%),
+      linear-gradient(45deg, rgba(156, 39, 176, 0.08) 0%, rgba(26, 35, 126, 0.12) 100%);
+    backdrop-filter: blur(20px);
+    z-index: 1;
+    animation: logoBackgroundShimmer 10s ease-in-out infinite;
+  }
+  
+  /* Enhanced rotating background elements with logo colors */
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      from 0deg, 
+      transparent, 
+      rgba(26, 35, 126, 0.15), 
+      transparent, 
+      rgba(57, 73, 171, 0.12), 
+      transparent, 
+      rgba(92, 107, 192, 0.18), 
+      transparent,
+      rgba(156, 39, 176, 0.1),
+      transparent
+    );
+    animation: logoBackgroundRotate 30s linear infinite;
+    opacity: 0.6;
+    z-index: 1;
+  }
   
   .left-img {
     width: 100%;
     height: 100%;
-    background-size: contain; /* Changed from cover to contain for logo */
+    background-size: 75%;
     background-position: center;
     background-repeat: no-repeat;
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+    
+    /* Enhanced logo glow effects with matching colors */
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 280px;
+      height: 280px;
+      background: 
+        radial-gradient(circle, rgba(26, 35, 126, 0.3) 0%, rgba(57, 73, 171, 0.25) 30%, rgba(92, 107, 192, 0.2) 60%, transparent 80%),
+        radial-gradient(circle, rgba(156, 39, 176, 0.15) 0%, rgba(57, 73, 171, 0.1) 50%, transparent 70%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: logoMainGlow 8s ease-in-out infinite;
+      z-index: 2;
+    }
+    
+    /* Enhanced floating particles around logo with brand colors */
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 350px;
+      height: 350px;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(26, 35, 126, 0.6) 2px, transparent 4px),
+        radial-gradient(circle at 80% 20%, rgba(57, 73, 171, 0.5) 1.5px, transparent 3px),
+        radial-gradient(circle at 60% 80%, rgba(92, 107, 192, 0.7) 2.5px, transparent 4px),
+        radial-gradient(circle at 30% 70%, rgba(156, 39, 176, 0.4) 1px, transparent 2.5px),
+        radial-gradient(circle at 90% 60%, rgba(26, 35, 126, 0.5) 2px, transparent 3.5px),
+        radial-gradient(circle at 15% 85%, rgba(57, 73, 171, 0.6) 1.5px, transparent 3px),
+        radial-gradient(circle at 85% 15%, rgba(92, 107, 192, 0.4) 2px, transparent 3px),
+        radial-gradient(circle at 50% 20%, rgba(156, 39, 176, 0.5) 1px, transparent 2px);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: logoParticles 12s ease-in-out infinite;
+      z-index: 1;
+    }
+  }
+}
+
+/* Enhanced Animations with Logo Colors */
+@keyframes backgroundFlow {
+  0%, 100% {
+    background: linear-gradient(135deg, #1a237e 0%, #3949ab 25%, #5c6bc0 60%, #9c27b0 100%);
+  }
+  25% {
+    background: linear-gradient(135deg, #0d1421 0%, #1a237e 30%, #3949ab 65%, #5c6bc0 100%);
+  }
+  50% {
+    background: linear-gradient(135deg, #1a237e 10%, #3949ab 35%, #5c6bc0 70%, #9c27b0 95%);
+  }
+  75% {
+    background: linear-gradient(135deg, #3949ab 0%, #5c6bc0 30%, #9c27b0 70%, #1a237e 100%);
+  }
+}
+
+@keyframes backgroundPulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  33% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+  66% {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes floatingShapes {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(-20px) rotate(90deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px) rotate(180deg);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translateY(-30px) rotate(270deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0px) rotate(360deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes logoBackgroundShimmer {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateX(-10px) scale(1);
+  }
+  25% {
+    opacity: 0.8;
+    transform: translateX(5px) scale(1.02);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translateX(10px) scale(0.98);
+  }
+  75% {
+    opacity: 0.7;
+    transform: translateX(-5px) scale(1.01);
+  }
+}
+
+@keyframes logoBackgroundRotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+  }
+  50% {
+    transform: rotate(180deg) scale(0.9);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0.8;
+  }
+}
+
+@keyframes logoMainGlow {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.6;
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes logoParticles {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    opacity: 0.7;
+  }
+  20% {
+    transform: translate(-50%, -50%) rotate(72deg) scale(1.1);
+    opacity: 0.9;
+  }
+  40% {
+    transform: translate(-50%, -50%) rotate(144deg) scale(0.9);
+    opacity: 0.5;
+  }
+  60% {
+    transform: translate(-50%, -50%) rotate(216deg) scale(1.05);
+    opacity: 0.8;
+  }
+  80% {
+    transform: translate(-50%, -50%) rotate(288deg) scale(1.15);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg) scale(1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes backgroundShimmer {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translateX(-5px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(5px);
+  }
+}
+
+@keyframes backgroundRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 
@@ -44,20 +382,40 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255, 255, 255, 0.02);
+  position: relative;
+  
+  /* Subtle gradient overlay */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    pointer-events: none;
+  }
   
   .form-section {
     width: 100%;
     max-width: 400px;
+    position: relative;
+    z-index: 1;
   }
 }
 
 /* Header styles */
 .welcome-msg {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1a237e, #3949ab);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-align: center;
   margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .auth-signup-text {
@@ -116,10 +474,10 @@
 
 /* Form title */
 .login-title {
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 600;
   color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   text-align: center;
   position: relative;
   
@@ -128,13 +486,25 @@
     position: absolute;
     left: 50%;
     bottom: -10px;
-    width: 50px;
-    height: 2px;
-    background: #3f51b5;
     transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(135deg, #1a237e, #3949ab);
+    border-radius: 2px;
+    animation: titleUnderline 2s ease-in-out infinite alternate;
   }
 }
 
+@keyframes titleUnderline {
+  0% {
+    width: 60px;
+    opacity: 0.7;
+  }
+  100% {
+    width: 80px;
+    opacity: 1;
+  }
+}
 
 /* Form fields */
 mat-form-field {
@@ -309,5 +679,10 @@ mat-form-field {
     button {
       width: 100%;
     }
+  }
+
+  /* Mobile optimizations for animated background */
+  .animated-background .background-svg {
+    transform: scale(1.2);
   }
 }

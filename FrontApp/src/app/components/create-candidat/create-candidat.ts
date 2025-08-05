@@ -9,6 +9,7 @@ import { MatSnackBar,MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatButtonModule} from '@angular/material/button';
+import { HttpEventType } from '@angular/common/http';
 
 import { CandidatesService } from 'app/services/candidates-service';
 import { UsersService } from 'app/services/users-service';
@@ -195,8 +196,6 @@ export class CreateCandidat implements OnInit {
         hiringDate: this.CandidateForm.get('hiringDate')?.value || null, // Ensure null if empty
         statut : "CONTACTED",
         skills: this.keywords,
-        cv: "testingcv"
-        //this.selectedFile
       };
 
       // console.log("Recruitement :  ", this.recrutementForm);
@@ -222,7 +221,11 @@ export class CreateCandidat implements OnInit {
       this.candidatesService.CreateNewCandidate(newCandidateForm)
         .subscribe({
           next: (response: any) => {
+
+            this.uploadFile(response.candidate.id);
+
             this.isSubmitting = false;
+            
             this.snackBar.open(
               'Success creating new candidate',
               'Close',
@@ -373,6 +376,24 @@ export class CreateCandidat implements OnInit {
   // Method to check if a step is completed
   isStepCompleted(stepIndex: number): boolean {
     return this.currentStepIndex > stepIndex;
+  }
+
+  uploadFile(candidateId : number) {
+    if (!this.selectedFile) return;
+
+    this.candidatesService.uploadCv(candidateId, this.selectedFile).subscribe({
+      next: (event) => {
+        if (event.type === HttpEventType.Response) {
+          console.log("✅ CV uploaded successfully:", event.body);
+        } else if (event.type === HttpEventType.UploadProgress) {
+          const percentDone = Math.round(100 * event.loaded / (event.total ?? 1));
+          console.log(`Upload is ${percentDone}% done`);
+        }
+      },
+      error: (error) => {
+        console.error('Error uploading CV:', error);
+      }
+    });
   }
 
 }

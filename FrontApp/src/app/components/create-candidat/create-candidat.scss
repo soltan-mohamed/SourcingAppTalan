@@ -1,36 +1,972 @@
-/* TailwindCSS-based styling for create-candidat component */
+/* Modern Material Design styling to match home component */
+.form-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
-/* Hide the default Material stepper header since we use custom TailwindCSS progress indicator */
+/* Header styling to match home component gradient */
+.header-section {
+  background: linear-gradient(135deg, #3f51b5, #1157c7);
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .header-title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    
+    .header-icon {
+      margin-right: 0.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+  
+  .close-button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+    
+    mat-icon {
+      color: white;
+    }
+  }
+}
+
+/* Step Progress Indicator */
+.step-progress-container {
+  padding: 1rem 2rem 0.5rem;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  
+  .progress-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    
+    .progress-steps {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      max-width: 32rem;
+      width: 100%;
+      justify-content: center;
+      
+      .step-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: scale(1.02);
+        }
+        
+        .step-circle {
+          width: 2rem;
+          height: 2rem;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.875rem;
+          font-weight: 500;
+          transition: all 0.3s ease;
+          
+          &.active {
+            background-color: #3f51b5;
+            color: white;
+            box-shadow: 0 0 0 4px rgba(63, 81, 181, 0.1);
+          }
+          
+          &.completed {
+            background-color: #4caf50;
+            color: white;
+            
+            &:hover {
+              background-color: #45a049;
+            }
+          }
+          
+          &.inactive {
+            background-color: #e9ecef;
+            color: #6c757d;
+            
+            &:hover {
+              background-color: #dee2e6;
+            }
+          }
+        }
+        
+        .step-label {
+          font-size: 0.875rem;
+          font-weight: 500;
+          transition: color 0.3s ease;
+          
+          &.active {
+            color: #3f51b5;
+          }
+          
+          &.completed {
+            color: #4caf50;
+          }
+          
+          &.inactive {
+            color: #6c757d;
+          }
+        }
+      }
+      
+      .step-connector {
+        flex: 1;
+        height: 2px;
+        min-width: 7.5rem;
+        margin: 0 1rem;
+        transition: background-color 0.3s ease;
+        
+        &.completed {
+          background-color: #4caf50;
+        }
+        
+        &.active {
+          background-color: rgba(63, 81, 181, 0.2);
+        }
+        
+        &.inactive {
+          background-color: #e9ecef;
+        }
+      }
+    }
+  }
+}
+
+/* Content area */
+.content-section {
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Progress bar */
+.progress-container {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #3f51b5, #1157c7);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+}
+
+/* Form fields */
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+  
+  .form-label {
+    position: absolute;
+    top: -10px;
+    left: 12px;
+    background: white;
+    padding: 0 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #666;
+    z-index: 1;
+  }
+  
+  .form-input,
+  .form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: white;
+    
+    &:focus {
+      outline: none;
+      border-color: #3f51b5;
+      box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+    }
+    
+    &.error {
+      border-color: #f44336;
+      
+      &:focus {
+        border-color: #f44336;
+        box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+      }
+    }
+  }
+  
+  .error-message {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #f44336;
+    display: flex;
+    align-items: center;
+    
+    .error-icon {
+      width: 1rem;
+      height: 1rem;
+      margin-right: 0.25rem;
+    }
+  }
+}
+
+/* Experience Preview Section */
+.experience-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+  border: 1px solid #e3f2fd;
+  border-radius: 8px;
+  
+  .preview-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    .preview-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      .preview-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        color: #3f51b5;
+        flex-shrink: 0;
+      }
+      
+      .preview-label {
+        font-size: 0.875rem;
+        color: #495057;
+        font-weight: 500;
+      }
+      
+      .preview-value {
+        font-size: 0.875rem;
+        color: #3f51b5;
+        font-weight: 600;
+        background: rgba(63, 81, 181, 0.1);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+      }
+    }
+    
+    .preview-note {
+      font-size: 0.75rem;
+      color: #6c757d;
+      font-style: italic;
+      padding-left: 1.75rem;
+      position: relative;
+      
+      &::before {
+        content: "ℹ";
+        position: absolute;
+        left: 0;
+        color: #17a2b8;
+        font-weight: bold;
+        font-style: normal;
+      }
+    }
+  }
+}
+
+/* Two column layout */
+.form-row {
+  display: flex;
+  gap: 1rem;
+  
+  .form-group {
+    flex: 1;
+  }
+}
+
+/* Skills section */
+.skills-section {
+  .skills-input-container {
+    display: flex;
+    align-items: center;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+    
+    &:focus-within {
+      border-color: #3f51b5;
+    }
+    
+    .skills-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: none;
+      outline: none;
+      font-size: 0.875rem;
+    }
+    
+    .add-button {
+      padding: 0.75rem;
+      background: transparent;
+      border: none;
+      color: #6c757d;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      
+      &:hover {
+        color: #3f51b5;
+      }
+      
+      .add-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+  }
+  
+  .chips-container {
+    margin-top: 0.75rem;
+    
+    ::ng-deep {
+      .mat-mdc-chip-grid {
+        gap: 0.5rem;
+      }
+      
+      .mat-mdc-chip {
+        background-color: #e3f2fd;
+        color: #1565c0;
+        border-radius: 16px;
+        
+        .mat-icon {
+          color: #c62828;
+        }
+      }
+    }
+  }
+}
+
+/* File upload */
+.file-upload-section {
+  .section-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+  }
+  
+  .upload-container {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    
+    &:hover {
+      border-color: #3f51b5;
+      background-color: #f8f9ff;
+    }
+    
+    &.dragging {
+      border-color: #3f51b5;
+      background-color: #f0f4ff;
+    }
+    
+    &.has-file {
+      border-color: #4caf50;
+      background-color: #f1f8e9;
+    }
+    
+    &.error {
+      border-color: #f44336;
+      background-color: #fef5f5;
+    }
+    
+    .upload-placeholder {
+      .upload-icon {
+        width: 4rem;
+        height: 4rem;
+        color: #9e9e9e;
+        margin: 0 auto 1rem;
+        transition: color 0.3s ease;
+      }
+      
+      .upload-title {
+        color: #495057;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+      
+      .upload-subtitle {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .upload-note {
+        font-size: 0.75rem;
+        color: #6c757d;
+      }
+    }
+    
+    .file-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      
+      .file-icon-container {
+        width: 4rem;
+        height: 4rem;
+        background-color: #ffcdd2;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.75rem;
+        
+        .file-icon {
+          width: 2rem;
+          height: 2rem;
+          color: #c62828;
+        }
+      }
+      
+      .file-info {
+        .file-name {
+          font-size: 1.125rem;
+          font-weight: 500;
+          color: #212529;
+          margin-bottom: 0.25rem;
+          max-width: 16rem;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        
+        .file-size {
+          font-size: 0.875rem;
+          color: #6c757d;
+          margin-bottom: 1rem;
+        }
+        
+        .remove-button {
+          background-color: #f44336;
+          color: white;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          
+          &:hover {
+            background-color: #d32f2f;
+          }
+        }
+      }
+    }
+    
+    .error-message {
+      color: #f44336;
+      font-size: 0.875rem;
+      margin-top: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      .error-icon {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.25rem;
+      }
+    }
+  }
+  
+  .file-input {
+    display: none;
+  }
+}
+
+/* Step navigation buttons */
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2rem;
+  border-top: 1px solid #e9ecef;
+  
+  .nav-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    
+    &.secondary {
+      background-color: white;
+      color: #495057;
+      border: 2px solid #dee2e6;
+      
+      &:hover {
+        background-color: #f8f9fa;
+      }
+    }
+    
+    &.primary {
+      background: linear-gradient(135deg, #3f51b5, #1157c7);
+      color: white;
+      
+      &:hover:not(:disabled) {
+        background: linear-gradient(135deg, #303f9f, #0d47a1);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3);
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+    
+    .loading-spinner {
+      width: 1rem;
+      height: 1rem;
+      margin-right: 0.5rem;
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+/* Hide default Material stepper header */
 ::ng-deep {
   .mat-stepper-horizontal .mat-horizontal-stepper-header-container {
     display: none !important;
   }
   
-  /* Remove default padding from step content to let TailwindCSS handle spacing */
   .mat-step-content {
     padding-top: 0;
   }
   
-  /* Style the stepper container to work better with TailwindCSS */
   .mat-stepper-horizontal {
     width: 100%;
   }
+  
+  .mat-stepper-content {
+    overflow: visible;
+  }
 }
 
-/* 
-Alternative TailwindCSS @apply approach (if PostCSS is properly configured):
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
-::ng-deep {
-  .mat-stepper-horizontal .mat-horizontal-stepper-header-container {
-    @apply hidden;
+/* Hidden file input */
+.hidden {
+  display: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .header-section {
+    padding: 1rem 1.5rem;
+    
+    .header-title {
+      font-size: 1.25rem;
+    }
   }
   
-  .mat-step-content {
-    @apply pt-0;
+  .content-section {
+    padding: 1rem 1.5rem;
   }
   
-  .mat-stepper-horizontal {
-    @apply w-full;
+  .step-progress-container {
+    padding: 1rem 1.5rem 0.5rem;
+    
+    .progress-steps {
+      flex-direction: column;
+      gap: 1rem;
+      
+      .step-connector {
+        min-width: 2px;
+        height: 1.5rem;
+        width: 2px;
+        margin: 0.5rem 0;
+      }
+    }
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .step-navigation {
+    flex-direction: column-reverse;
+    gap: 1rem;
+    
+    .nav-button {
+      width: 100%;
+      justify-content: center;
+    }
   }
 }
-*/
+
+// Additional styles for new components
+
+// Skills Section
+.skills-section {
+  margin-top: 1.5rem;
+
+  .skills-input-container {
+    display: flex;
+    align-items: center;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+
+    &:focus-within {
+      border-color: #3f51b5;
+      box-shadow: 0 0 0 1px rgba(63, 81, 181, 0.2);
+    }
+
+    .skills-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: none;
+      outline: none;
+      font-size: 0.875rem;
+      
+      &::placeholder {
+        color: #9ca3af;
+      }
+    }
+
+    .add-button {
+      padding: 0.75rem 1rem;
+      border: none;
+      background: transparent;
+      color: #6b7280;
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #3f51b5;
+      }
+
+      .add-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+  }
+
+  .chips-container {
+    margin-top: 0.5rem;
+
+    ::ng-deep mat-chip-grid {
+      margin: 0;
+    }
+
+    ::ng-deep mat-chip-row {
+      background-color: #f3f4f6;
+      color: #374151;
+      font-size: 0.875rem;
+      margin: 0.25rem 0.25rem 0.25rem 0;
+
+      &:hover {
+        background-color: #e5e7eb;
+      }
+
+      mat-icon {
+        color: #ef4444 !important;
+        font-size: 1rem !important;
+        width: 1rem !important;
+        height: 1rem !important;
+      }
+    }
+  }
+}
+
+// Responsible Section
+.responsible-section {
+  margin-top: 1.5rem;
+
+  .section-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin: 0;
+  }
+
+  .responsible-container {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .responsible-item {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 8px;
+    padding: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+
+    .avatar {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      background: linear-gradient(135deg, #3f51b5 0%, #1157c7 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .responsible-info {
+      margin-left: 0.75rem;
+      
+      .responsible-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #111827;
+        margin: 0;
+      }
+
+      .responsible-role {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// File Upload Section Updates
+.file-upload-section {
+  .upload-container {
+    .file-preview {
+      .file-icon-container {
+        background: linear-gradient(135deg, #3f51b5 0%, #1157c7 100%);
+        border-radius: 50%;
+        
+        .file-icon {
+          color: white;
+        }
+      }
+
+      .file-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .remove-button {
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+          color: white;
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          margin-top: 1rem;
+
+          &:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+          }
+
+          &:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Recruitment Form
+.recruitment-form {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .manager-select {
+    width: 100%;
+    margin-top: 0.5rem;
+
+    ::ng-deep .mat-mdc-form-field-flex {
+      align-items: center;
+    }
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      padding: 0;
+    }
+
+    ::ng-deep .mat-mdc-form-field-infix {
+      padding: 0.75rem 1rem;
+      min-height: auto;
+    }
+
+    ::ng-deep .mat-mdc-select-value {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    ::ng-deep .mat-mdc-form-field-outline {
+      color: #d1d5db;
+    }
+
+    ::ng-deep .mat-mdc-form-field-outline-thick {
+      color: #3f51b5;
+    }
+
+    ::ng-deep .mat-mdc-select-placeholder {
+      color: #9ca3af;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 1rem;
+
+    .nav-button {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      
+      &.secondary {
+        background-color: white;
+        color: #495057;
+        border: 2px solid #dee2e6;
+        
+        &:hover {
+          background-color: #f8f9fa;
+          border-color: #9ca3af;
+        }
+        
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.3);
+        }
+      }
+      
+      &.primary {
+        background: linear-gradient(135deg, #3f51b5, #1157c7);
+        color: white;
+        
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #303f9f, #0d47a1);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3);
+        }
+        
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.3);
+        }
+        
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+      }
+    }
+
+    .loading-content {
+      display: flex;
+      align-items: center;
+
+      .loading-spinner {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Override global dialog background */
+::ng-deep .mat-mdc-dialog-container {
+  background-color: transparent !important;
+}
+
+/* Override Material dialog surface background that uses CSS variables */
+::ng-deep .mat-mdc-dialog-surface {
+  background-color: transparent !important;
+}
