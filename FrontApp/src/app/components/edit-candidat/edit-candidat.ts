@@ -81,11 +81,31 @@ export class EditCandidat implements OnInit {
         //statut : this.data.statut,
       });
       
-      // Populate keywords/competences
       if (this.data.skills && Array.isArray(this.data.skills)) {
         this.keywords = [...this.data.skills];
       }
+
+      if(this.data.cvFilename){
+        this.getCVFile(this.data.id);
+      }
     }
+  }
+
+  getCVFile(candidateId: number) {
+    this.candidateService.getCandidateCv(candidateId).subscribe({
+      next: (blob: Blob) => {
+        if(this.data.cvFilename) {
+        
+          const filename = this.data?.cvFilename; 
+          const file = new File([blob], filename, { type: blob.type });
+
+          this.selectedFile = file;
+        }
+      },
+      error: (err) => {
+        console.error('Error loading CV file', err);
+      }
+    });
   }
 
   extractFirstWord(input: string): { firstWord: string, rest: string } {
@@ -182,6 +202,7 @@ export class EditCandidat implements OnInit {
   }
 
   removeFile(): void {
+    console.log("Removing file ! ");
     this.selectedFile = null;
     this.fileError = false;
     this.fileErrorMessage = '';
@@ -199,7 +220,19 @@ export class EditCandidat implements OnInit {
 
   onSubmit(): void {
     if (this.CandidateForm.valid) {
+
       this.isSubmitting = true;
+
+      if(this.selectedFile) {
+        this.candidateService.uploadCv(this.data.id, this.selectedFile).subscribe({
+          next: (event) => {
+            this.data.cvFilename = this.selectedFile?.name;
+          },
+          error: (err) => {
+            console.error('Error uploading CV:', err);
+          }
+        });
+      }
       
       // Get hiring date value and ensure it's null if empty
       const hiringDateValue = this.CandidateForm.get('hiringDate')?.value;
@@ -249,6 +282,8 @@ export class EditCandidat implements OnInit {
             );
           }
       });
+
+
       
       // setTimeout(() => {
       //   this.isSubmitting = false;
@@ -326,6 +361,21 @@ export class EditCandidat implements OnInit {
       .split(/\s+/)
       .map(word => word.charAt(0).toUpperCase())
       .join('');
+  }
+
+  openCvFile() {
+    this.candidateService.getCandidateCv(this.data.id).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+
+        window.open(url);
+
+        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+      },
+      error: (err) => {
+        console.error('Error loading CV file', err);
+      }
+    });
   }
 
 }
