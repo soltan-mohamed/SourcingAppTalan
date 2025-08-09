@@ -18,6 +18,7 @@ interface InterviewView {
   fullName: string;
   evaluatorName: string;
   candidateId: number;
+  isExpanded: boolean;
 }
 @Component({
   selector: 'app-dashboard',
@@ -149,7 +150,8 @@ export class Dashboard {
               evaluatorName: evaluation.evaluatorName || 
                             evaluation.evaluateur?.fullName || 
                             'Unknown Evaluator',
-              candidateId: evaluation.idCandidate // Assign the ID we found.
+              candidateId: evaluation.idCandidate, // Assign the ID we found.
+              isExpanded: false
             };
           });
           
@@ -165,22 +167,28 @@ export class Dashboard {
       }
     });
   }
- openCandidateHistory(interview: InterviewView): void {
+  toggleInterview(interview: InterviewView, event: MouseEvent): void {
+    event.stopPropagation(); // Prevents the openCandidateHistory from firing
+    interview.isExpanded = !interview.isExpanded;
+  }
+  openCandidateHistory(interview: InterviewView): void {
+    // Only open if the card is expanded, or remove this check if you want any click to open it
+    if (!interview.isExpanded) {
+        // Optionally, you could expand the card instead of doing nothing
+        // interview.isExpanded = true;
+        return;
+    }
+    
     if (!interview.candidateId) {
       console.error('Cannot open history: Candidate ID is missing from the interview object.');
-      // Optionally, show a user-friendly error message here.
       return;
     }
 
-    // Use the new service method to fetch the full candidate details.
     this.candidateService.fetchCandidateById(interview.candidateId).subscribe({
       next: (candidate: Candidate) => {
-        // Once the data is successfully fetched, open the dialog.
-        
         const dialogData = {
           ...candidate,
-          // Pass the ID of the interview to be highlighted in the history view.
-          highlightEvaluationId: interview.id 
+          highlightEvaluationId: interview.id
         };
 
         this.dialog.open(CandidateHistory, {
@@ -193,7 +201,6 @@ export class Dashboard {
       },
       error: (err) => {
         console.error(`Failed to load details for candidate with id ${interview.candidateId}`, err);
-        // Optionally, inform the user that the candidate details could not be loaded.
       }
     });
   }

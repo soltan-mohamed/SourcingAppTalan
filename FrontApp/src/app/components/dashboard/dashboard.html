@@ -59,6 +59,7 @@
             <div *ngFor="let interview of todayInterviews" 
                 (click)="openCandidateHistory(interview)"
                 class="interview-card"
+                [class.is-expanded]="interview.isExpanded"
                 [ngClass]="'interview-card-' + (interview.type.toLowerCase() || 'default')">
               
               <!-- Candidate Name and Type -->
@@ -70,38 +71,40 @@
                       [ngClass]="'badge-' + (interview.type.toLowerCase() || 'default')">
                   {{ interview.type }}
                 </span>
+                 <button class="expand-button" (click)="toggleInterview(interview, $event)">
+                  <span class="material-symbols-outlined">expand_more</span>
+                </button>
               </div>
               
-              <!-- Interview Details -->
-              <div class="interview-details">
-                <div class="interview-detail">
-                  <span class="material-symbols-outlined">schedule</span>
-                  <span class="detail-text">{{ getTimeRange(interview.date) }}</span>
-                </div>
-                
-                <div class="interview-detail">
-                  <span class="material-symbols-outlined">work</span>
-                  <span class="detail-text">{{ interview.position || 'Position not specified' }}</span>
-                </div>
-                
-                <div class="interview-detail">
-                  <span class="material-symbols-outlined">location_on</span>
-                  <span class="detail-text" 
-                        [ngClass]="{
-                          'location-pending': interview.lieuEvaluation === 'Remote/Virtual' || 
-                                            interview.lieuEvaluation === 'Location TBD',
-                          'location-confirmed': interview.lieuEvaluation !== 'Remote/Virtual' && 
-                                              interview.lieuEvaluation !== 'Location TBD'
-                        }">
-                    {{ interview.lieuEvaluation }}
-                    <span *ngIf="interview.lieuEvaluation === 'Remote/Virtual'" class="location-badge remote">📹</span>
-                    <span *ngIf="interview.lieuEvaluation === 'Location TBD'" class="location-badge pending">📍</span>
-                  </span>
-                </div>
-                
-                <div class="interview-detail">
-                  <span class="material-symbols-outlined">person</span>
-                  <span class="detail-text">{{ interview.evaluatorName || 'Not Assigned' }}</span>
+               <div class="interview-details-wrapper" (click)="openCandidateHistory(interview)">
+                <div *ngIf="interview.isExpanded" class="interview-details">
+                  <div class="interview-detail">
+                    <span class="material-symbols-outlined">schedule</span>
+                    <span class="detail-text">{{ getTimeRange(interview.date) }}</span>
+                  </div>
+
+                  <div class="interview-detail">
+                    <span class="material-symbols-outlined">work</span>
+                    <span class="detail-text">{{ interview.position || 'Position not specified' }}</span>
+                  </div>
+
+                  <div class="interview-detail">
+                    <span class="material-symbols-outlined">location_on</span>
+                    <span class="detail-text"
+                          [ngClass]="{
+                            'location-pending': interview.lieuEvaluation === 'Remote/Virtual' || interview.lieuEvaluation === 'Location TBD',
+                            'location-confirmed': interview.lieuEvaluation !== 'Remote/Virtual' && interview.lieuEvaluation !== 'Location TBD'
+                          }">
+                      {{ interview.lieuEvaluation }}
+                      <span *ngIf="interview.lieuEvaluation === 'Remote/Virtual'" class="location-badge remote">📹</span>
+                      <span *ngIf="interview.lieuEvaluation === 'Location TBD'" class="location-badge pending">📍</span>
+                    </span>
+                  </div>
+
+                  <div class="interview-detail">
+                    <span class="material-symbols-outlined">person</span>
+                    <span class="detail-text">{{ interview.evaluatorName || 'Not Assigned' }}</span>
+                  </div>
                 </div>
               </div>
             </div>
