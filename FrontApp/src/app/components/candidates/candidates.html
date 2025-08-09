@@ -274,6 +274,7 @@
           <app-table-card 
             [dataSource]="candidates" 
             [columnDefinitions]="candidateColumnDefinitions"
+            (candidateUpdated)="refreshCandidates()"
             [refreshCallback]="refreshCandidates.bind(this)"
             class="candidates-table">
           </app-table-card>

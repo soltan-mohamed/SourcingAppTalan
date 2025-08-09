@@ -9,7 +9,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { Candidate } from 'app/models/candidate';
 import { CandidatesService } from 'app/services/candidates-service';
-
+import { Recrutement } from 'app/models/recrutement';
 
 @Component({
   selector: 'app-edit-candidat',
@@ -37,6 +37,7 @@ export class EditCandidat implements OnInit {
   
   // Form submission state
   isSubmitting: boolean = false;
+  latestRecruitment: Recrutement | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -61,6 +62,7 @@ export class EditCandidat implements OnInit {
       prenom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2)]],
       telephone: ['', [Validators.required, Validators.pattern(/^[0-9-\s]{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
+      position: ['', Validators.required],
       hiringDate: [''],
       skills: [[]],
     });
@@ -71,12 +73,13 @@ export class EditCandidat implements OnInit {
       console.log('Received data:', this.data);
       
       //let fullName = this.extractFirstWord(this.data['name'] || '');
-
+      this.latestRecruitment = this.getLatestRecruitment();
       this.CandidateForm.patchValue({
         prenom: this.data.prenom,
         nom: this.data.nom,
         telephone: this.data.telephone || '',
         email: this.data.email || '',
+        position: this.latestRecruitment ? this.latestRecruitment.position : '',
         hiringDate: this.data.hiringDate || '',
         //statut : this.data.statut,
       });
@@ -86,6 +89,14 @@ export class EditCandidat implements OnInit {
         this.keywords = [...this.data.skills];
       }
     }
+  }
+   getLatestRecruitment(): Recrutement | null {
+      if (!this.data.recrutements || this.data.recrutements.length === 0) {
+          return null;
+      }
+      // Assuming recruitments are sorted by date descending from the backend.
+      // If not, you'd need to sort them here based on a date property.
+      return this.data.recrutements[0];
   }
 
   extractFirstWord(input: string): { firstWord: string, rest: string } {
@@ -104,13 +115,14 @@ export class EditCandidat implements OnInit {
 
 
   getFormProgress(): number {
-    const totalFields = 5;
+    const totalFields = 6;
     let completedFields = 0;
 
     if (this.CandidateForm.get('nom')?.valid) completedFields++;
     if (this.CandidateForm.get('prenom')?.valid) completedFields++;
     if (this.CandidateForm.get('telephone')?.valid) completedFields++;
     if (this.CandidateForm.get('email')?.valid) completedFields++;
+     if (this.CandidateForm.get('position')?.valid) completedFields++;
     if (this.selectedFile) completedFields++;
 
     return (completedFields / totalFields) * 100;
@@ -213,6 +225,10 @@ export class EditCandidat implements OnInit {
         hiringDate: hiringDate,
         skills: this.keywords,
         //file: this.selectedFile
+         recrutements: this.latestRecruitment ? [{
+          id: this.latestRecruitment.id,
+          position: this.CandidateForm.get('position')?.value
+        }] : []
       };
       
       console.log('Submitting candidate with hiring date:', hiringDate);
