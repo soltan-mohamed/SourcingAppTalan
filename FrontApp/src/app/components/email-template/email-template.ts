@@ -74,11 +74,23 @@ export class EmailTemplate {
       if (isNaN(date.getTime())) {
         return 'Invalid Date';
       }
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
+      if(this.lang == 'EN') {
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+      }
+      else if (this.lang == 'FR') {
+
+        return date.toLocaleDateString('fr-FR', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+
+      }
+      else return "";
     } 
     catch (error) {
         return 'Invalid Date';

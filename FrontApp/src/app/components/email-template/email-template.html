@@ -64,10 +64,10 @@
                 
                 <p *ngIf="lang === 'EN'">I hope this email finds you well. My name is <span class="highlight"> {{getUserName()}} </span>, and I'm a <span class="highlight"> recruiter </span> at <span class="highlight"> Talan Tunisie </span>.</p>
                 <p *ngIf="lang === 'FR'">
-                    J’espère que vous allez bien. Je m’appelle <span class="highlight"> {{getUserName()}} </span>, et je suis <span class="highlight"> membre de l'équipe de recrutement </span> chez <span class="highlight"> Talan Tunisie </span>.
+                    J’espère que vous allez bien. Je suis <span class="highlight"> {{getUserName()}} </span>, et je suis <span class="highlight"> membre de l'équipe de recrutement </span> chez <span class="highlight"> Talan Tunisie </span>.
                 </p>
                 
-                <div class="opportunity">
+                <!--div class="opportunity">
                     <p *ngIf="lang === 'EN'">
                         We have an exciting <span class="highlight">{{data.position}}</span> opportunity at <span class="highlight">Talan</span> 
                         that matches your skills and experience perfectly.
@@ -76,45 +76,29 @@
                         Nous avons une opportunité de <span class="highlight">{{data.position}}</span> chez <span class="highlight">Talan</span> 
                         qui correspond parfaitement à vos compétences.
                     </p>
-                </div>
+                </div-->
 
-                <div class="benefits" *ngIf="data.evaluation.type === 'RH'">
-                    <div class="benefits-header" *ngIf="lang === 'EN'">
-                        <strong>What we offer:</strong>
-                    </div>
-                    <div class="benefits-header" *ngIf="lang === 'FR'">
-                        <strong>Ce que nous offrons:</strong>
-                    </div>
-                    
-                    <ul *ngIf="lang === 'EN'">
-                        <li>Competitive salary</li>
-                        <li>Health benefits</li>
-                        <li>Flexible work</li>
-                        <li>Professional development</li>
-                    </ul>
-                    
-                    <ul *ngIf="lang === 'FR'">
-                        <li>Salaire compétitif</li>
-                        <li>Avantages santé</li>
-                        <li>Travail flexible</li>
-                        <li>Développement professionnel</li>
-                    </ul>
-                </div>
                 
-                <p *ngIf="lang === 'EN'">I would love to schedule a brief 15-20 minute call on <span class="highlight">{{formatContactDate(data.evaluation.date)}}</span> at <span class="highlight">{{formatContactTime(data.evaluation.date)}}</span> Tunis Time to discuss this opportunity in more detail and learn more about your career goals. Would you be available for a conversation this week or next?</p>
+               <p *ngIf="lang === 'EN'">
+                    As agreed, I propose to schedule an interview <span class="highlight">{{data.evaluation.type}}</span> on 
+                    <span class="highlight">{{formatContactDate(data.evaluation.date)}}</span> at 
+                    <span class="highlight">{{formatContactTime(data.evaluation.date)}}</span>, Tunis time. 
+                    Would you be available for a meeting on that date?
+                </p>
                 <p *ngIf="lang === 'FR'">
-                    Je vous propose de planifier un bref appel de 15 à 20 minutes le 
+                    Comme convenu, je vous propose un entretien <span class="highlight">{{data.evaluation.type}}</span> le 
                     <span class="highlight">{{formatContactDate(data.evaluation.date)}}</span> à 
                     <span class="highlight">{{formatContactTime(data.evaluation.date)}}</span>, heure de Tunis, 
-                    afin de discuter plus en détail de cette opportunité et d’en savoir plus sur vos objectifs de carrière. 
                     Seriez-vous disponible pour un échange à cette date?
                 </p>
 
 
-                <p *ngIf="lang === 'EN'">Please feel free to reach out to me directly at <span class="highlight"> recruiterContact || '[Recruiter Contact]' </span> or simply reply to this email.</p>
-                <p *ngIf="lang === 'FR'">
-                    N’hésitez pas à me contacter directement à l’adresse suivante : <span class="highlight"> recruiterContact || '[Coordonnées du recruteur]' </span> ou simplement à répondre à cet e-mail.
+                <!--p *ngIf="lang === 'EN'">
+                    Please feel free to reach out to me directly at <span class="highlight"> recruiterContact || '[Recruiter Contact]' </span> or simply reply to this email.
                 </p>
+                <p-- *ngIf="lang === 'FR'">
+                    N’hésitez pas à me contacter directement à l’adresse suivante : <span class="highlight"> recruiterContact || '[Coordonnées du recruteur]' </span> ou simplement à répondre à cet e-mail.
+                </p-->
 
                 <p *ngIf="lang === 'EN'">Thank you for your time, and I look forward to hearing from you soon!</p>
                 <p *ngIf="lang === 'FR'">Merci pour votre temps, et j’espère avoir de vos nouvelles très bientôt&nbsp;!</p>
