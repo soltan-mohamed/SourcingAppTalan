@@ -317,6 +317,7 @@ export class Candidates implements OnInit, OnDestroy {
   }
 
   refreshCandidates(): void {
+     console.log('Refreshing candidates list...');
     if (this.hasActiveFilters()) {
       this.performSearch();
     } else {

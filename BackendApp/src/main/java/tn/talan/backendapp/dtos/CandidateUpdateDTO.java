@@ -17,4 +17,5 @@ public class CandidateUpdateDTO {
     private List<String> skills;
     private Statut statut;
     private LocalDate hiringDate;
+    private List<RecrutementUpdateDTO> recrutements;
 }

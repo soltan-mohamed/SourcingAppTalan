@@ -4,13 +4,16 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import tn.talan.backendapp.dtos.CandidateUpdateDTO;
+import tn.talan.backendapp.dtos.RecrutementUpdateDTO;
 import tn.talan.backendapp.entity.Candidate;
+import tn.talan.backendapp.entity.Recrutement;
 import tn.talan.backendapp.entity.User;
 import tn.talan.backendapp.enums.Statut;
 import tn.talan.backendapp.exceptions.ResourceNotFoundException;
 import tn.talan.backendapp.repository.CandidateRepository;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import tn.talan.backendapp.repository.RecrutementRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,12 +24,14 @@ import java.util.*;
 @Slf4j
 public class CandidateService {
     private final CandidateRepository repository;
+    private final RecrutementRepository recrutementRepository;
 
     // Maximum file size: 10MB
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-    public CandidateService(CandidateRepository repository) {
+    public CandidateService(CandidateRepository repository, RecrutementRepository recrutementRepository) {
         this.repository = repository;
+        this.recrutementRepository = recrutementRepository;
     }
 
     @Transactional
@@ -158,6 +163,32 @@ public class CandidateService {
         }
 
         candidate.setHiringDate(dto.getHiringDate());
+
+        if (dto.getRecrutements() != null && !dto.getRecrutements().isEmpty()) {
+            log.info("Processing recruitment updates for candidate {}", id);
+            for (RecrutementUpdateDTO recrutementDto : dto.getRecrutements()) {
+                // On charge l'entité Recrutement par son ID
+                Recrutement recrutementToUpdate = recrutementRepository.findById(recrutementDto.getId())
+                        .orElseThrow(() -> new EntityNotFoundException("Recruitment not found with id: " + recrutementDto.getId()));
+
+                // On vérifie que ce recrutement appartient bien au bon candidat pour la sécurité
+                if (recrutementToUpdate.getCandidate().getId().equals(id)) {
+                    log.info("Updating position for recruitment {} from '{}' to '{}'",
+                            recrutementDto.getId(),
+                            recrutementToUpdate.getPosition(), // Ancienne valeur pour le log
+                            recrutementDto.getPosition());
+
+                    recrutementToUpdate.setPosition(recrutementDto.getPosition());
+                    // Pas besoin de save ici, car @Transactional gère la sauvegarde
+                } else {
+                    log.warn("Attempted to update recruitment {} which does not belong to candidate {}",
+                            recrutementDto.getId(), id);
+                }
+            }
+        }
+
+        // La transaction sera "commit" à la fin de la méthode,
+        // et toutes les modifications (sur Candidate et Recrutement) seront sauvegardées.
 
         return candidate;
     }

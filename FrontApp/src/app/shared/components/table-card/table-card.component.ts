@@ -1,6 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, OnChanges, AfterViewInit, ViewChild, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, OnInit, OnChanges, AfterViewInit, ViewChild, SimpleChanges, EventEmitter } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -15,9 +15,11 @@ import { EditCandidat } from 'app/components/edit-candidat/edit-candidat';
 import { CreateRecrutement } from 'app/components/create-recrutement/create-recrutement';
 import { CandidateHistory } from 'app/components/candidate-history/candidate-history';
 import { CandidatesService } from 'app/services/candidates-service';
+import { Candidate } from 'app/models/candidate';
 
 @Component({
   selector: 'app-table-card',
+   standalone: true, 
   imports: [
     MatTableModule,
     MatSortModule,
@@ -31,12 +33,15 @@ import { CandidatesService } from 'app/services/candidates-service';
    FeatherIconsComponent,
     MatDialogModule
   ],
+  
   templateUrl: './table-card.component.html',
   styleUrl: './table-card.component.scss'
 })
 export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   @Input() dataSource: T[] = [];
   @Input() columnDefinitions: any[] = [];
+
+  @Output() candidateUpdated = new EventEmitter<void>();
   
   selection = new SelectionModel<T>(true, []);
   dataSourceTable!: MatTableDataSource<T>;
@@ -86,7 +91,24 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
       }
     }, 0);
   }
+  
+  openEditDialog(candidate: Candidate): void {
+    const dialogRef = this.dialog.open(EditCandidat, {
+      width: '800px',
+      disableClose: false,
+      data: candidate // Pass the full candidate object
+    });
 
+    // IMPORTANT: Subscribe to the afterClosed event
+    dialogRef.afterClosed().subscribe(result => {
+      // 'result' will contain the updated candidate if the user saved
+      if (result) {
+        console.log('Dialog closed with result, emitting update event.');
+        // Emit the event to notify the parent component
+        this.candidateUpdated.emit();
+      }
+    });
+  }
   private initializeTable() {
     this.dataSourceTable = new MatTableDataSource(this.dataSource);
     console.log("DATESOURCETABLE ", this.dataSourceTable);
@@ -174,9 +196,7 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     // Handle the dialog result
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        //console.log('Dialog was closed with data:', result);
-      } else {
-        //console.log('Dialog was closed without saving');
+        this.candidateUpdated.emit(); // Also emit on new hiring process
       }
     });
   }
@@ -208,11 +228,13 @@ openHistory(row: T): void {
 
     // Handle the dialog result
     dialogRef.afterClosed().subscribe(result => {
+      // If the dialog was closed with a successful save, 'result' will be truthy.
       if (result) {
-        //console.log('Dialog was closed with data:', result);
-        // Handle the updated candidate data
+        console.log('Dialog was closed with a save action, emitting update event.');
+        // This line sends the signal to the parent component.
+        this.candidateUpdated.emit();
       } else {
-        //console.log('Dialog was closed without saving');
+        console.log('Dialog was closed without saving (canceled).');
       }
     });
   }
