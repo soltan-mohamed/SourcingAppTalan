@@ -6,6 +6,33 @@
   box-sizing: border-box;
 }
 
+/* Spinner Animation for Download Buttons */
+.spinner {
+  animation: spin 1s linear infinite;
+  fill: currentColor;
+  
+  .spinner-circle {
+    opacity: 0.25;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+  
+  .spinner-path {
+    opacity: 0.75;
+    fill: currentColor;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Page Header */
 .page-header {
   margin-bottom: 2rem;

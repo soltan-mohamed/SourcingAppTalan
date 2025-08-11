@@ -254,16 +254,27 @@
         <div class="results-actions">
           <button 
             mat-icon-button
-            (click)="refreshCandidates()"
             class="action-btn"
-            matTooltip="Refresh">
-            <span class="material-symbols-outlined">refresh</span>
+            (click)="downloadPDF()"
+            [disabled]="isDownloadingPDF || candidates.length === 0"
+            [matTooltip]="isDownloadingPDF ? 'Generating PDF...' : 'Export to PDF'">
+            <span class="material-symbols-outlined" *ngIf="!isDownloadingPDF">picture_as_pdf</span>
+            <svg *ngIf="isDownloadingPDF" class="spinner" viewBox="0 0 24 24" width="20" height="20">
+              <circle class="spinner-circle" cx="12" cy="12" r="10"></circle>
+              <path class="spinner-path" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
           </button>
           <button 
             mat-icon-button
             class="action-btn"
-            matTooltip="Export">
-            <span class="material-symbols-outlined">download</span>
+            (click)="downloadExcel()"
+            [disabled]="isDownloadingExcel || candidates.length === 0"
+            [matTooltip]="isDownloadingExcel ? 'Generating Excel...' : 'Export to Excel'">
+            <span class="material-symbols-outlined" *ngIf="!isDownloadingExcel">table_view</span>
+            <svg *ngIf="isDownloadingExcel" class="spinner" viewBox="0 0 24 24" width="20" height="20">
+              <circle class="spinner-circle" cx="12" cy="12" r="10"></circle>
+              <path class="spinner-path" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
           </button>
         </div>
       </div>

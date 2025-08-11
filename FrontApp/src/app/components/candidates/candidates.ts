@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
 
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -38,7 +39,8 @@ import { SearchParams, EXPERIENCE_RANGES, ExperienceRange, SEARCH_CRITERIA, Sear
     MatSelectModule,
     MatFormFieldModule,
     MatMenuModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatTooltipModule
   ],
   templateUrl: './candidates.html',
   styleUrl: './candidates.scss'
@@ -52,6 +54,8 @@ export class Candidates implements OnInit, OnDestroy {
   selectedCriteria: string[] = ['name', 'email', 'phone', 'position'];
   searchForm: FormGroup;
   isSearching = false;
+  isDownloadingPDF = false;
+  isDownloadingExcel = false;
   
   private candidatesSubscription: Subscription = new Subscription();
   private searchSubscription: Subscription = new Subscription();
@@ -344,9 +348,16 @@ export class Candidates implements OnInit, OnDestroy {
       'ACCEPTED': 'Accepted',
       'REJECTED': 'Rejected',
       'IN_PROGRESS': 'In Progress',
-      'VIVIER': 'Vivier'
+      'VIVIER': 'Vivier',
+      'pending': 'Pending',
+      'accepted': 'Accepted',
+      'rejected': 'Rejected',
+      'interview': 'Interview',
+      'shortlisted': 'Shortlisted',
+      'onhold': 'On Hold',
+      'withdrawn': 'Withdrawn'
     };
-    return statusMap[status] || status;
+    return statusMap[status?.toLowerCase()] || statusMap[status] || status || 'Unknown';
   }
 
   getStatusCount(status: string): number {
@@ -464,6 +475,275 @@ export class Candidates implements OnInit, OnDestroy {
 
   clearFormField(fieldName: string): void {
     this.searchForm.get(fieldName)?.setValue('');
+  }
+
+  // Download methods
+  downloadPDF(): void {
+    console.log('Downloading PDF...');
+    this.isDownloadingPDF = true;
+    
+    try {
+      // Dynamic import to reduce bundle size - load both libraries together
+      Promise.all([
+        import('jspdf'),
+        import('jspdf-autotable')
+      ]).then(([jsPDFModule, autoTableModule]) => {
+        console.log('Both PDF libraries loaded successfully');
+        
+        try {
+          // Use the default export and explicitly import autoTable
+          const jsPDF = jsPDFModule.default;
+          const autoTable = autoTableModule.default;
+          
+          const doc = new jsPDF();
+          
+          // Set up colors
+          const primaryColor = [63, 81, 181]; // Material Blue
+          const secondaryColor = [156, 172, 183]; // Light Gray
+          const accentColor = [139, 195, 74]; // Light Green
+          
+          // Add header background
+          doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+          doc.rect(0, 0, 210, 45, 'F');
+          
+          // Add company logo
+          // Create an image element to load the logo
+          const logoImg = new Image();
+          logoImg.onload = () => {
+            // Add the logo to the PDF
+            doc.addImage(logoImg, 'PNG', 14, 8, 30, 15);
+            
+            // Continue with the rest of the PDF generation
+            this.completePDFGeneration(doc, autoTable, primaryColor, secondaryColor, accentColor);
+          };
+          logoImg.onerror = () => {
+            // If logo fails to load, continue without it - add placeholder text
+            doc.setFillColor(255, 255, 255);
+            doc.rect(14, 8, 30, 15, 'F');
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('TALAN', 16, 18);
+            
+            console.warn('Logo failed to load, continuing with text placeholder');
+            this.completePDFGeneration(doc, autoTable, primaryColor, secondaryColor, accentColor);
+          };
+          logoImg.src = 'assets/images/talan-logo2.png';
+        } catch (tableError: any) {
+          console.error('Error creating PDF table:', tableError);
+          this.isDownloadingPDF = false;
+          alert(`Error creating PDF table: ${tableError?.message || 'Unknown error'}`);
+        }
+      }).catch((importError: any) => {
+        console.error('Error importing PDF libraries:', importError);
+        this.isDownloadingPDF = false;
+        alert(`Error loading PDF libraries: ${importError?.message || 'Please try again.'}`);
+      });
+    } catch (error: any) {
+      console.error('Error generating PDF:', error);
+      this.isDownloadingPDF = false;
+      alert(`Error generating PDF: ${error?.message || 'Please make sure the required libraries are installed.'}`);
+    }
+  }
+
+  downloadExcel(): void {
+    console.log('Downloading Excel...');
+    this.isDownloadingExcel = true;
+    
+    try {
+      // Dynamic import to reduce bundle size
+      import('xlsx').then((XLSX) => {
+        // Prepare data for Excel
+        const data = this.candidates.map((candidate: any) => ({
+          'Name': candidate.name || `${candidate.prenom} ${candidate.nom}`,
+          'Phone': candidate.telephone || '',
+          'Email': candidate.email || '',
+          'Position': candidate.position || 'Not available',
+          'Years of Experience': candidate.experiencePeriod || '',
+          'Status': candidate.statut || '',
+          'Type': candidate.type || 'Not yet',
+          'Date Created': candidate.dateCreation ? new Date(candidate.dateCreation).toLocaleDateString() : '',
+          'Recruiter': candidate.responsable ? 
+            candidate.responsable.fullName || 'Unknown' : 'Not assigned'
+        }));
+        
+        // Create workbook and worksheet
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        
+        // Set column widths
+        const columnWidths = [
+          { wch: 25 }, // Name
+          { wch: 15 }, // Phone
+          { wch: 30 }, // Email
+          { wch: 20 }, // Position
+          { wch: 20 }, // Experience
+          { wch: 15 }, // Status
+          { wch: 10 }, // Type
+          { wch: 15 }, // Date Created
+          { wch: 20 }  // Responsible
+        ];
+        
+        worksheet['!cols'] = columnWidths;
+        
+        // Add worksheet to workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Candidates');
+        
+        // Save the Excel file
+        const fileName = `candidates_list_${new Date().toISOString().split('T')[0]}.xlsx`;
+        XLSX.writeFile(workbook, fileName);
+        
+        console.log('Excel file downloaded successfully');
+        this.isDownloadingExcel = false;
+      }).catch((error) => {
+        console.error('Error importing XLSX:', error);
+        this.isDownloadingExcel = false;
+        alert('Error loading Excel library. Please try again.');
+      });
+    } catch (error) {
+      console.error('Error generating Excel file:', error);
+      this.isDownloadingExcel = false;
+      alert('Error generating Excel file. Please make sure the required libraries are installed.');
+    }
+  }
+
+  private completePDFGeneration(doc: any, autoTable: any, primaryColor: number[], secondaryColor: number[], accentColor: number[]): void {
+    // Add title
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CANDIDATES REPORT', 60, 20);
+    
+    // Add subtitle
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Comprehensive List of All Candidates', 60, 30);
+    
+    // Add generation info
+    doc.setFontSize(10);
+    const currentDate = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    doc.text(`Generated on: ${currentDate}`, 60, 38);
+    
+    // Add decorative line
+    doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
+    doc.setLineWidth(2);
+    doc.line(14, 50, 196, 50);
+    
+    // Add summary statistics
+    doc.setTextColor(60, 60, 60);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SUMMARY STATISTICS', 14, 65);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text(`Total Candidates: ${this.candidates.length}`, 14, 75);
+    
+    // Calculate status distribution
+    const statusStats = this.candidates.reduce((acc: any, candidate: any) => {
+      const status = candidate.statut || 'Unknown';
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+    
+    let yPos = 82;
+    Object.entries(statusStats).forEach(([status, count]: [string, any]) => {
+      doc.text(`${this.getStatusDisplayName(status)}: ${count}`, 14, yPos);
+      yPos += 7;
+    });
+    
+    // Prepare table data
+    const headers = [
+      'Name', 'Phone', 'Email', 'Position', 'Experience', 'Status', 'Type', 'Recruiter'
+    ];
+    
+    const data = this.candidates.map((candidate: any) => [
+      candidate.name || `${candidate.prenom} ${candidate.nom}`,
+      candidate.telephone || '',
+      candidate.email || '',
+      candidate.position || 'Not available',
+      candidate.experiencePeriod || '',
+      this.getStatusDisplayName(candidate.statut) || '',
+      candidate.type || 'Not yet',
+      candidate.responsable ? 
+        candidate.responsable.fullName || 'Unknown' : 'Not assigned'
+    ]);
+    
+    console.log('Table data prepared, adding table...');
+    
+    // Calculate table start position
+    const tableStartY = Math.max(yPos + 15, 110);
+    
+    // Use autoTable function directly
+    autoTable(doc, {
+      head: [headers],
+      body: data,
+      startY: tableStartY,
+      styles: {
+        fontSize: 8,
+        cellPadding: 3,
+        lineColor: [200, 200, 200],
+        lineWidth: 0.5,
+      },
+      headStyles: {
+        fillColor: primaryColor as [number, number, number],
+        textColor: [255, 255, 255],
+        fontSize: 9,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      bodyStyles: {
+        textColor: [60, 60, 60]
+      },
+      alternateRowStyles: {
+        fillColor: [248, 249, 250]
+      },
+      columnStyles: {
+        0: { cellWidth: 25, halign: 'left' }, // Name
+        1: { cellWidth: 20, halign: 'center' }, // Phone
+        2: { cellWidth: 30, halign: 'left' }, // Email
+        3: { cellWidth: 22, halign: 'left' }, // Position
+        4: { cellWidth: 25, halign: 'center' }, // Experience
+        5: { cellWidth: 19, halign: 'center' }, // Status
+        6: { cellWidth: 16, halign: 'center' }, // Type
+        7: { cellWidth: 20, halign: 'left' }  // Recruiter
+      },
+      margin: { left: 14, right: 14 },
+      pageBreak: 'auto',
+      tableWidth: 'auto',
+      didDrawPage: (data: any) => {
+        // Add footer to each page
+        const pageCount = doc.internal.getNumberOfPages();
+        const pageSize = doc.internal.pageSize;
+        const pageHeight = pageSize.height || pageSize.getHeight();
+        
+        // Footer line
+        doc.setDrawColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+        doc.setLineWidth(0.5);
+        doc.line(14, pageHeight - 20, 196, pageHeight - 20);
+        
+        // Footer text
+        doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Talan - HR Management System', 14, pageHeight - 12);
+        doc.text(`Page ${data.pageNumber} of ${pageCount}`, 196, pageHeight - 12, { align: 'right' });
+        doc.text(`Generated on ${currentDate}`, 105, pageHeight - 12, { align: 'center' });
+      }
+    });
+    
+    console.log('Table added successfully, saving PDF...');
+    
+    // Save the PDF
+    const fileName = `candidates_list_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
+    
+    console.log('PDF downloaded successfully');
+    this.isDownloadingPDF = false;
   }
 
 }

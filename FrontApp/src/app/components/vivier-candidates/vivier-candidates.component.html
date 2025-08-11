@@ -160,6 +160,9 @@
 
         <!-- Action Buttons -->
         <div class="action-section">
+          <!-- Separator -->
+          <div class="action-separator"></div>
+          
           <button 
             type="button"
             (click)="clearSearch()"
@@ -242,13 +245,31 @@
         
         <div class="results-actions">
           <button 
-            class="vivier-icon-button action-btn"
-            (click)="refreshCandidates()"
-            matTooltip="Refresh"
-            [disabled]="isRefreshing">
-            <span class="material-symbols-outlined" [class.animate-spin]="isRefreshing">refresh</span>
+            mat-icon-button
+            class="action-btn"
+            (click)="downloadPDF()"
+            [disabled]="isDownloadingPDF || filteredCandidates.length === 0"
+            [matTooltip]="isDownloadingPDF ? 'Generating PDF...' : 'Export to PDF'">
+            <span class="material-symbols-outlined" *ngIf="!isDownloadingPDF">picture_as_pdf</span>
+            <svg *ngIf="isDownloadingPDF" class="spinner" viewBox="0 0 24 24" width="20" height="20">
+              <circle class="spinner-circle" cx="12" cy="12" r="10"></circle>
+              <path class="spinner-path" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+          </button>
+          <button 
+            mat-icon-button
+            class="action-btn"
+            (click)="downloadExcel()"
+            [disabled]="isDownloadingExcel || filteredCandidates.length === 0"
+            [matTooltip]="isDownloadingExcel ? 'Generating Excel...' : 'Export to Excel'">
+            <span class="material-symbols-outlined" *ngIf="!isDownloadingExcel">table_view</span>
+            <svg *ngIf="isDownloadingExcel" class="spinner" viewBox="0 0 24 24" width="20" height="20">
+              <circle class="spinner-circle" cx="12" cy="12" r="10"></circle>
+              <path class="spinner-path" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
           </button>
         </div>
+
       </div>
 
       <!-- Table Container -->
