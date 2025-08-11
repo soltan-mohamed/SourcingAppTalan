@@ -21,7 +21,7 @@
     } @else {
     @if (column.type === 'phone') {
     <ng-container [matColumnDef]="column.def">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mat-header-cell *matHeaderCellDef>
             <span class="column-label truncate-text">{{ column.label }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [matTooltip]="row[column.def]">
@@ -31,7 +31,7 @@
     } @else {
     @if (column.type === 'email') {
     <ng-container [matColumnDef]="column.def">
-        <mat-header-cell *matHeaderCellDef mat-sort-header 
+        <mat-header-cell *matHeaderCellDef 
             [style.min-width.px]="210" [style.max-width.px]="600">
             <span class="column-label truncate-text">{{ column.label }}</span>
         </mat-header-cell>
@@ -46,7 +46,7 @@
     } @else {
     @if (column.type === 'file') {
     <ng-container [matColumnDef]="column.def">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mat-header-cell *matHeaderCellDef>
             <span class="column-label truncate-text">{{ column.label }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [matTooltip]="row[column.def]">
@@ -59,7 +59,7 @@
     } @else {
     @if (column.type === 'button') {
     <ng-container [matColumnDef]="column.def">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mat-header-cell *matHeaderCellDef>
             <span class="column-label truncate-text">{{ column.label }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [matTooltip]="row[column.def]">
@@ -70,7 +70,7 @@
     } @else {
     @if (column.def === 'statut') {
     <ng-container [matColumnDef]="column.def">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> 
+        <mat-header-cell *matHeaderCellDef> 
             <span class="column-label truncate-text">{{column.label}}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -120,7 +120,7 @@
     @else {
     @if (column.type === 'date') {
     <ng-container [matColumnDef]="column.def">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mat-header-cell *matHeaderCellDef>
             <span class="column-label truncate-text">{{ column.label }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -136,7 +136,7 @@
     @else {
     @if (column.type === 'experience') {
     <ng-container [matColumnDef]="column.def">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mat-header-cell *matHeaderCellDef>
             <span class="column-label truncate-text">{{ column.label }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -155,7 +155,7 @@
     
     @else {
     <ng-container [matColumnDef]="column.def">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mat-header-cell *matHeaderCellDef>
             <span class="column-label truncate-text">{{ column.label }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">

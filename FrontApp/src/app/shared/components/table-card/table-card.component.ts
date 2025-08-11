@@ -46,6 +46,8 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   selection = new SelectionModel<T>(true, []);
   dataSourceTable!: MatTableDataSource<T>;
   displayedColumns: string[] = [];
+  originalData: T[] = []; // Store original order
+  private sortSubscriptionInitialized = false; // Track sort subscription
 
   @ViewChild(MatSort, { static: false }) sort!: MatSort;
   @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
@@ -64,6 +66,8 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   ngOnChanges(changes: SimpleChanges) {
     //console.log('ngOnChanges called:', changes);
     if (changes['dataSource'] && this.dataSource) {
+      // Store original order when data changes
+      this.originalData = [...this.dataSource];
       this.updateDataSource();
     }
     if (changes['columnDefinitions'] && this.columnDefinitions) {
@@ -78,6 +82,7 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     setTimeout(() => {
       if (this.dataSourceTable && this.sort) {
         this.dataSourceTable.sort = this.sort;
+        this.setupCustomSorting();
         //console.log('Sort assigned successfully');
       } else {
         //console.error('Failed to assign sort - missing dependencies');
@@ -111,6 +116,8 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   }
   private initializeTable() {
     this.dataSourceTable = new MatTableDataSource(this.dataSource);
+    // Store original order
+    this.originalData = [...this.dataSource];
     console.log("DATESOURCETABLE ", this.dataSourceTable);
     this.setDisplayedColumns();
     
@@ -118,6 +125,7 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     setTimeout(() => {
       if (this.sort) {
         this.dataSourceTable.sort = this.sort;
+        this.setupCustomSorting();
       }
       if (this.paginator) {
         this.dataSourceTable.paginator = this.paginator;
@@ -137,6 +145,7 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
     setTimeout(() => {
       if (this.sort) {
         this.dataSourceTable.sort = this.sort;
+        this.setupCustomSorting();
         //console.log('Sort re-assigned after data update');
       }
       
@@ -145,6 +154,49 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
         //console.log('Paginator re-assigned after data update');
       }
     }, 0);
+  }
+
+  private setupCustomSorting() {
+    if (this.dataSourceTable && this.sort) {
+      // Define which columns are sortable
+      const sortableColumns = ['name'];
+      
+      this.dataSourceTable.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+        // Only allow sorting for specified columns
+        if (!sortableColumns.includes(sortHeaderId)) {
+          return '';
+        }
+        
+        if (sortHeaderId === 'name') {
+          // Alphabetic sorting for name (case-insensitive)
+          return data.name ? data.name.toLowerCase() : '';
+        }
+        
+        // Default behavior for other sortable columns
+        return data[sortHeaderId] || '';
+      };
+
+      // Only subscribe once to avoid multiple subscriptions
+      if (!this.sortSubscriptionInitialized) {
+        this.sortSubscriptionInitialized = true;
+        
+        // Listen to sort changes to implement custom behavior
+        this.sort.sortChange.subscribe((sortState) => {
+          if (sortableColumns.includes(sortState.active)) {
+            if (sortState.direction === '') {
+              // When direction is empty (third state), restore original order
+              this.dataSourceTable.data = [...this.originalData];
+            } else if (sortState.direction === 'desc') {
+              // Skip desc state and go directly to original order
+              this.sort.direction = '';
+              this.sort._stateChanges.next();
+              this.dataSourceTable.data = [...this.originalData];
+            }
+            // 'asc' direction will be handled by the default sorting mechanism
+          }
+        });
+      }
+    }
   }
 
   setDisplayedColumns() {
