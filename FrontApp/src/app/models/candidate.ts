@@ -1,7 +1,7 @@
 import {User} from './user'
 import { Recrutement } from './recrutement';
 
-type CandidateStatus = 'CONTACTED' | 'SCHEDULED' | 'CANCELLED' | 'IN_PROGRESS' | 'ACCEPTED' | 'REJECTED' | 'VIVIER';
+type CandidateStatus = 'CONTACTED' | 'SCHEDULED' | 'CANCELLED' | 'IN_PROGRESS' | 'ACCEPTED' | 'REJECTED' | 'VIVIER' | 'RECRUITED';
 
 export interface Candidate {
   id: number;

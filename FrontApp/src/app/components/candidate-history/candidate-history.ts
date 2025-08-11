@@ -211,9 +211,19 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
 
           const isLastEvaluation = lastEvaluation?.id === evalu.id;
           if (isLastEvaluation) {
-            const updatedCandidate = {
-              statut: newStatus
-            };
+
+            let updatedCandidate ;
+
+            if(newStatus === 'ACCEPTED' && lastEvaluation.type === 'MANAGERIAL') {
+              updatedCandidate = {
+                statut: 'RECRUITED'
+              };            
+            }
+            else {
+              updatedCandidate = {
+                statut: newStatus
+              };
+            }
 
             this.candidatesService.updateCandidate(this.data.id, updatedCandidate).subscribe({
               next: () => {

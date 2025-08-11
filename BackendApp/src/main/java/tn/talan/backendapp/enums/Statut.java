@@ -7,5 +7,6 @@ public enum Statut {
     ACCEPTED,
     REJECTED,
     IN_PROGRESS,
-    VIVIER
+    VIVIER,
+    RECRUITED
 }

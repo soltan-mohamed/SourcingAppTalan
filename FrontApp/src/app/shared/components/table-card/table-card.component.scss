@@ -39,10 +39,14 @@ mat-header-cell{
   padding: 6px 12px;
   line-height: 1.2;
   border: none;
+
+  &.badge-solid-recruited {
+    color: #59dd30 !important;
+    background-color: rgba(70, 170, 60, 0.842) !important;
+  }
   
-  // Override any white text color from parent
   &.badge-solid-accepted {
-    color: #198754 !important;
+    color: #479e76 !important;
     background-color: rgba(25, 135, 84, 0.15) !important;
   }
   
