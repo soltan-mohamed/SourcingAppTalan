@@ -1,6 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, OnInit, OnChanges, AfterViewInit, ViewChild, SimpleChanges, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnInit, OnChanges, OnDestroy, AfterViewInit, ViewChild, SimpleChanges, EventEmitter } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -15,6 +15,8 @@ import { EditCandidat } from 'app/components/edit-candidat/edit-candidat';
 import { CreateRecrutement } from 'app/components/create-recrutement/create-recrutement';
 import { CandidateHistory } from 'app/components/candidate-history/candidate-history';
 import { CandidatesService } from 'app/services/candidates-service';
+import { InterviewStateService } from 'app/services/interview-state';
+import { Subscription } from 'rxjs';
 import { Candidate } from 'app/models/candidate';
 
 @Component({
@@ -37,7 +39,7 @@ import { Candidate } from 'app/models/candidate';
   templateUrl: './table-card.component.html',
   styleUrl: './table-card.component.scss'
 })
-export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
+export class TableCardComponent<T> implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Input() dataSource: T[] = [];
   @Input() columnDefinitions: any[] = [];
 
@@ -48,19 +50,22 @@ export class TableCardComponent<T> implements OnInit, OnChanges, AfterViewInit {
   displayedColumns: string[] = [];
   originalData: T[] = []; // Store original order
   private sortSubscriptionInitialized = false; // Track sort subscription
+  private interviewUpdateSubscription: Subscription = new Subscription();
 
   @ViewChild(MatSort, { static: false }) sort!: MatSort;
   @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
 
   constructor(
     private dialog: MatDialog,
-    private cs : CandidatesService
+    private cs : CandidatesService,
+    private interviewStateService: InterviewStateService
   ) {}
 
   ngOnInit() {
     //console.log('ngOnInit - dataSource:', this.dataSource);
     //console.log('ngOnInit - columnDefinitions:', this.columnDefinitions);
     this.initializeTable();
+    this.setupInterviewUpdateListener();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -308,6 +313,22 @@ openHistory(row: T): void {
       console.error('Error loading CV file', err);
     }
   });
+}
+
+setupInterviewUpdateListener(): void {
+  this.interviewUpdateSubscription = this.interviewStateService.interviewUpdated$.subscribe(
+    (updatedEvaluation) => {
+      console.log('🔄 Table component received interview update notification:', updatedEvaluation);
+      
+      // Emit candidate updated event to refresh the parent component's data
+      console.log('📊 Emitting candidate update event from table component');
+      this.candidateUpdated.emit();
+    }
+  );
+}
+
+ngOnDestroy(): void {
+  this.interviewUpdateSubscription.unsubscribe();
 }
 
 

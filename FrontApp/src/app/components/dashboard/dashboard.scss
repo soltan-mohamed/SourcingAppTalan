@@ -216,6 +216,65 @@
         transition: all 0.3s ease;
       }
 
+      .interview-badges {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .interview-status-badge {
+        padding: 0.25rem 0.6rem;
+        border-radius: 1rem;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+
+        .material-symbols-outlined {
+          font-size: 0.8rem;
+          width: 0.8rem;
+          height: 0.8rem;
+        }
+
+        &.status-scheduled {
+          background-color: #e3f2fd;
+          color: #1976d2;
+          border-color: #bbdefb;
+        }
+
+        &.status-in-progress {
+          background-color: #fff3e0;
+          color: #f57c00;
+          border-color: #ffcc02;
+          animation: pulse 2s infinite;
+        }
+
+        &.status-completed {
+          background-color: #e8f5e8;
+          color: #388e3c;
+          border-color: #c8e6c9;
+        }
+
+        &.status-cancelled {
+          background-color: #ffebee;
+          color: #d32f2f;
+          border-color: #ffcdd2;
+        }
+
+        &.status-default {
+          background-color: #f5f5f5;
+          color: #666;
+          border-color: #e0e0e0;
+        }
+      }
+
       // --- NEW: Expand Button ---
       .expand-button {
         position: absolute;
@@ -471,6 +530,32 @@
     padding: 1.5rem;
     height: calc(100% - 100px);
     overflow: hidden;
+  }
+
+  /* Review Sections */
+  .review-section {
+    margin-bottom: 2rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #f0f0f0;
+      
+      .material-symbols-outlined {
+        font-size: 1.25rem;
+        color: #3f51b5;
+      }
+    }
   }
 }
 
@@ -758,6 +843,22 @@
 }
 ::ng-deep .mat-mdc-row:hover {
   background-color: #f8f9fa;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 ::ng-deep .mat-mdc-cell, ::ng-deep .mat-mdc-header-cell {
   border-bottom-color: #e0e0e0;

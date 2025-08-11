@@ -519,4 +519,78 @@
   }
 }
 
+/* Status Column Styles */
+.status-cell {
+  .mat-mdc-chip-set {
+    .mat-mdc-chip {
+      font-weight: 500;
+      
+      .mat-icon {
+        margin-right: 0.25rem;
+        font-size: 1rem;
+        width: 1rem;
+        height: 1rem;
+      }
+      
+      // Status specific colors
+      &.mat-primary {
+        background-color: #3f51b5 !important;
+        color: white;
+      }
+      
+      &.mat-warn {
+        background-color: #ff9800 !important;
+        color: white;
+        animation: pulse 2s infinite;
+      }
+      
+      &.mat-accent {
+        background-color: #4caf50 !important;
+        color: white;
+      }
+    }
+  }
+}
+
+/* Pulsing animation for IN_PROGRESS status */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Update button styles */
+.card-actions {
+  button[matTooltip*="Check Status"] {
+    color: #ff9800;
+    
+    &:hover {
+      background-color: rgba(255, 152, 0, 0.1);
+    }
+  }
+}
+
+/* Auto-update indicator */
+.status-auto-update {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background-color: #4caf50;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+}
+
 

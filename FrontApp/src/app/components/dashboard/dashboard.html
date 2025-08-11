@@ -67,10 +67,17 @@
                 <h3 class="candidate-name">
                   {{ interview.fullName || 'Unknown Candidate' }}
                 </h3>
-                <span class="interview-type-badge" 
-                      [ngClass]="'badge-' + (interview.type.toLowerCase() || 'default')">
-                  {{ interview.type }}
-                </span>
+                <div class="interview-badges">
+                  <span class="interview-type-badge" 
+                        [ngClass]="'badge-' + (interview.type.toLowerCase() || 'default')">
+                    {{ interview.type }}
+                  </span>
+                  <span class="interview-status-badge" 
+                        [ngClass]="getInterviewStatusClass(interview.status)">
+                    <span class="material-symbols-outlined">{{ getInterviewStatusIcon(interview.status) }}</span>
+                    {{ getInterviewStatusText(interview.status) }}
+                  </span>
+                </div>
                  <button class="expand-button" (click)="toggleInterview(interview, $event)">
                   <span class="material-symbols-outlined">expand_more</span>
                 </button>
@@ -124,58 +131,112 @@
           </div>
           <div class="header-text">
             <h2>To Review</h2>
-            <p>Candidates requiring your attention</p>
+            <p>In-progress interviews and candidates requiring your attention</p>
           </div>
         </div>
 
         <div class="card-content">
-          <!-- Table -->
-          <div class="table-container" *ngIf="candidates.length !== 0 && !isLoading">
-            <table mat-table [dataSource]="candidates" class="candidates-table">
-              
-              <ng-container matColumnDef="fullName">
-                <th mat-header-cell *matHeaderCellDef class="table-header">Full Name</th>
-                <td mat-cell *matCellDef="let candidate" class="table-cell">{{candidate.fullName}}</td>
-              </ng-container>
+          <!-- In-Progress Interviews Section -->
+          <div *ngIf="inProgressInterviews.length > 0" class="review-section">
+            <h3 class="section-title">
+              <span class="material-symbols-outlined">play_circle</span>
+              In-Progress Interviews ({{inProgressInterviews.length}})
+            </h3>
+            <div class="table-container">
+              <table mat-table [dataSource]="inProgressInterviews" class="candidates-table">
+                
+                <ng-container matColumnDef="fullName">
+                  <th mat-header-cell *matHeaderCellDef class="table-header">Candidate Name</th>
+                  <td mat-cell *matCellDef="let interview" class="table-cell">{{interview.fullName}}</td>
+                </ng-container>
 
-              <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef class="table-header">Status</th>
-                <td mat-cell *matCellDef="let candidate" class="table-cell">
-                  @switch (candidate.statut) {
-                    @case ('IN_PROGRESS') {
-                      <span class="status-badge status-in-progress">{{ candidate.statut }}</span>
-                    }
-                    @case ("CONTACTED") {
-                      <span class="status-badge status-contacted">{{ candidate.statut }}</span>
-                    }
-                  }
-                </td>
-              </ng-container>
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef class="table-header">Status</th>
+                  <td mat-cell *matCellDef="let interview" class="table-cell">
+                    <span class="status-badge status-in-progress">
+                      <span class="material-symbols-outlined">play_circle</span>
+                      {{ getInterviewStatusText(interview.status) }}
+                    </span>
+                  </td>
+                </ng-container>
 
-              <ng-container matColumnDef="evaluationType">
-                <th mat-header-cell *matHeaderCellDef class="table-header">Interview</th>
-                <td mat-cell *matCellDef="let candidate" class="table-cell">{{candidate.evaluationType}}</td>
-              </ng-container>
+                <ng-container matColumnDef="type">
+                  <th mat-header-cell *matHeaderCellDef class="table-header">Interview Type</th>
+                  <td mat-cell *matCellDef="let interview" class="table-cell">
+                    <span class="interview-type-badge" 
+                          [ngClass]="'badge-' + (interview.type.toLowerCase() || 'default')">
+                      {{ interview.type }}
+                    </span>
+                  </td>
+                </ng-container>
 
-              <ng-container matColumnDef="date">
-                <th mat-header-cell *matHeaderCellDef class="table-header">Date</th>
-                <td mat-cell *matCellDef="let candidate" class="table-cell">{{candidate.date | date:'dd/MM/yyyy'}}</td>
-              </ng-container>
+                <ng-container matColumnDef="date">
+                  <th mat-header-cell *matHeaderCellDef class="table-header">Date</th>
+                  <td mat-cell *matCellDef="let interview" class="table-cell">{{interview.date | date:'dd/MM/yyyy HH:mm'}}</td>
+                </ng-container>
 
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
-                  class="table-row"
-                  (click)="openHistory(row)"></tr>
-            </table>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+                    class="table-row"
+                    (click)="openInterviewHistory(row)"></tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- Review Candidates Section -->
+          <div *ngIf="reviewCandidates.length > 0" class="review-section">
+            <h3 class="section-title">
+              <span class="material-symbols-outlined">person_check</span>
+              Candidates to Review ({{reviewCandidates.length}})
+            </h3>
+            <div class="table-container">
+              <table mat-table [dataSource]="reviewCandidates" class="candidates-table">
+                
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef class="table-header">Candidate Name</th>
+                  <td mat-cell *matCellDef="let candidate" class="table-cell">{{candidate.name}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef class="table-header">Status</th>
+                  <td mat-cell *matCellDef="let candidate" class="table-cell">
+                    <span class="status-badge" 
+                          [ngClass]="{'status-in-progress': candidate.statut === 'IN_PROGRESS', 'status-contacted': candidate.statut === 'CONTACTED'}">
+                      {{ candidate.statut }}
+                    </span>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="position">
+                  <th mat-header-cell *matHeaderCellDef class="table-header">Position</th>
+                  <td mat-cell *matCellDef="let candidate" class="table-cell">{{candidate.position}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="type">
+                  <th mat-header-cell *matHeaderCellDef class="table-header">Last Interview Type</th>
+                  <td mat-cell *matCellDef="let candidate" class="table-cell">
+                    <span class="interview-type-badge" 
+                          [ngClass]="'badge-' + (candidate.type.toLowerCase() || 'default')">
+                      {{ candidate.type }}
+                    </span>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="candidateDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: candidateDisplayedColumns;" 
+                    class="table-row"
+                    (click)="openCandidateHistoryFromTable(row)"></tr>
+              </table>
+            </div>
           </div>
 
           <!-- Empty State -->
-          <div class="empty-state" *ngIf="candidates.length === 0 && !isLoading">
+          <div class="empty-state" *ngIf="inProgressInterviews.length === 0 && reviewCandidates.length === 0 && !isLoading">
             <div class="empty-icon">
-              <span class="material-symbols-outlined">search_off</span>
+              <span class="material-symbols-outlined">check_circle</span>
             </div>
-            <h3>No Reviews Pending</h3>
-            <p>All candidates have been reviewed. Great job!</p>
+            <h3>Nothing to Review</h3>
+            <p>No in-progress interviews or candidates requiring attention. Great job!</p>
           </div>
 
           <!-- Loading State -->
@@ -187,7 +248,7 @@
                     d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
               </svg>
             </div>
-            <span class="loading-text">Loading candidates...</span>
+            <span class="loading-text">Loading interviews and candidates...</span>
           </div>
         </div>
       </div>
