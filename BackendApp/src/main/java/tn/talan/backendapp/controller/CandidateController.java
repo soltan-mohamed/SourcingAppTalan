@@ -65,6 +65,26 @@ public class CandidateController {
                 .body(cvBytes);
     }
 
+    @DeleteMapping(path="/{id}/cv")
+    public ResponseEntity<Map<String,Object>> deleteCV (@PathVariable Long id) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            service.deleteCv(id);
+
+            response.put("success", true);
+            response.put("message", "CV deleted successfully");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error deleting CV for candidate {}: {}", id, e.getMessage());
+            response.put("success", false);
+            response.put("message", "Failed to delete CV: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
 
     @PostMapping(path="/{id}/cv")

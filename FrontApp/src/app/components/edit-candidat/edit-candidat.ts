@@ -62,7 +62,7 @@ export class EditCandidat implements OnInit {
       prenom: ['', [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ'-\s]+$/), Validators.minLength(2)]],
       telephone: ['', [Validators.required, Validators.pattern(/^[0-9-\s]{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
-      position: ['', Validators.required],
+      position: [''],
       hiringDate: [''],
       skills: [[]],
     });
@@ -218,6 +218,25 @@ export class EditCandidat implements OnInit {
     this.selectedFile = null;
     this.fileError = false;
     this.fileErrorMessage = '';
+    this.candidateService.deleteCV(this.data.id).subscribe({
+      next: (data : any) => {
+        if (data.success === true) {
+          this.snackBar.open(
+            data.message,
+            'Close',
+            {
+              duration: 5000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+              panelClass: ['success-snackbar']
+            }
+          );
+        }
+      },
+      error: (err) => {
+        console.error('Error deleting CV:', err);
+      }
+    });
   }
 
   formatFileSize(bytes: number): string {
@@ -299,15 +318,6 @@ export class EditCandidat implements OnInit {
           }
       });
 
-
-      
-      // setTimeout(() => {
-      //   this.isSubmitting = false;
-      //   console.log('Candidate submitted successfully!');
-        
-      //   // Close dialog and return the updated data
-      //   this.dialogRef.close(formData);
-      // }, 2000);
     } else {
       this.CandidateForm.markAllAsTouched();
       
