@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -44,16 +44,19 @@ import { InterviewStateService } from 'app/services/interview-state';
   templateUrl: './interviews.html',
   styleUrls: ['./interviews.scss']
 })
-export class InterviewsComponent implements OnInit {
+export class InterviewsComponent implements OnInit, OnDestroy {
   
   searchDate: string = '';
   searchCandidate: string = '';
   selectedType: string = '';
   selectedDaysLeftStatus: string = '';
   
-  displayedColumns: string[] = ['candidate', 'date', 'time', 'type','position','evaluator','days left','actions'];
+  displayedColumns: string[] = ['candidate', 'date', 'time', 'type','position','evaluator','status','days left','actions'];
   selection = new SelectionModel<Evaluation>(true, []);
   interviews: Evaluation[] = [];
+  
+  // Timer for automatic status updates
+  private statusUpdateTimer: any;
 
   get dataSource() {
     let filteredInterviews = this.interviews;
@@ -262,6 +265,38 @@ export class InterviewsComponent implements OnInit {
     }
   }
 
+  // Method to get color for interview status chips
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'SCHEDULED':
+        return 'primary';
+      case 'IN_PROGRESS':
+        return 'warn';
+      case 'COMPLETED':
+        return 'accent';
+      case 'CANCELLED':
+        return '';
+      default:
+        return 'primary';
+    }
+  }
+
+  // Method to get formatted status text
+  getStatusText(status: string): string {
+    switch (status) {
+      case 'SCHEDULED':
+        return 'Scheduled';
+      case 'IN_PROGRESS':
+        return 'In Progress';
+      case 'COMPLETED':
+        return 'Completed';
+      case 'CANCELLED':
+        return 'Cancelled';
+      default:
+        return status;
+    }
+  }
+
   // Method to get CSS class for days left styling
   getDaysLeftClass(date: string | Date): string {
     const daysLeft = this.calculateDaysLeftNumber(typeof date === 'string' ? date : date.toISOString());
@@ -373,21 +408,47 @@ export class InterviewsComponent implements OnInit {
 
   // Helper method to open candidate history dialog directly in interviews component
   private openCandidateHistoryDialog(candidateData: any): void {
-    const dialogRef = this.dialog.open(CandidateHistory, {
-      width: '95vw',
-      maxWidth: '1400px',
-      height: '90vh',
-      maxHeight: '900px',
-      disableClose: false,
-      panelClass: 'candidate-history-dialog',
-      data: candidateData
-    });
+    // Instead of using the passed candidateData directly, fetch fresh data with computed status
+    this.candidatesService.fetchCandidateByIdWithComputedStatus(candidateData.id).subscribe({
+      next: (updatedCandidate) => {
+        const dialogRef = this.dialog.open(CandidateHistory, {
+          width: '95vw',
+          maxWidth: '1400px',
+          height: '90vh',
+          maxHeight: '900px',
+          disableClose: false,
+          panelClass: 'candidate-history-dialog',
+          data: updatedCandidate
+        });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('Candidate history dialog closed');
-      if (result?.statusChanged) {
-        // Refresh interviews if the candidate status changed
-        this.loadInterviews();
+        dialogRef.afterClosed().subscribe(result => {
+          console.log('Candidate history dialog closed');
+          if (result?.statusChanged) {
+            // Refresh interviews if the candidate status changed
+            this.loadInterviews();
+          }
+        });
+      },
+      error: (err) => {
+        console.error(`Failed to load updated candidate data for ${candidateData.id}`, err);
+        // Fallback to using the existing candidate data
+        const dialogRef = this.dialog.open(CandidateHistory, {
+          width: '95vw',
+          maxWidth: '1400px',
+          height: '90vh',
+          maxHeight: '900px',
+          disableClose: false,
+          panelClass: 'candidate-history-dialog',
+          data: candidateData
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          console.log('Candidate history dialog closed');
+          if (result?.statusChanged) {
+            // Refresh interviews if the candidate status changed
+            this.loadInterviews();
+          }
+        });
       }
     });
   }
@@ -465,8 +526,102 @@ export class InterviewsComponent implements OnInit {
  
 
   ngOnInit(): void {
+     console.log('🚀 Interviews component initializing...');
      this.loadInterviews();
-}
+     this.startStatusUpdateTimer();
+     console.log('⏰ Automatic status update timer started - will check every 10 seconds for interviews that need status updates');
+  }
+
+  ngOnDestroy(): void {
+    if (this.statusUpdateTimer) {
+      clearInterval(this.statusUpdateTimer);
+    }
+  }
+
+  /**
+   * Starts a timer that checks for interviews that should be updated from SCHEDULED to IN_PROGRESS
+   * Runs every 10 seconds to check if any scheduled interviews have passed their start time by 30 seconds
+   */
+  private startStatusUpdateTimer(): void {
+    // Check every 10 seconds for more responsive automatic updates
+    this.statusUpdateTimer = setInterval(() => {
+      this.checkAndUpdateInterviewStatuses();
+    }, 10000);
+  }
+
+  /**
+   * Checks all scheduled interviews and updates their status to IN_PROGRESS 
+   * if they have passed their scheduled time by 30 seconds
+   */
+  private checkAndUpdateInterviewStatuses(): void {
+    const currentTime = new Date();
+    const scheduledInterviews = this.interviews.filter(interview => 
+      interview.statut === 'SCHEDULED' && interview.date
+    );
+
+    console.log(`🔍 [AUTOMATIC CHECK] Checking ${scheduledInterviews.length} scheduled interviews for status updates at ${currentTime.toLocaleTimeString()}...`);
+
+    let updatedCount = 0;
+    scheduledInterviews.forEach(interview => {
+      const interviewDateTime = new Date(interview.date);
+      const timeDifference = currentTime.getTime() - interviewDateTime.getTime();
+      const thirtySecondsInMs = 30 * 1000; // 30 seconds in milliseconds
+
+      // Debug log for each interview being checked
+      const secondsFromNow = Math.floor(timeDifference / 1000);
+      console.log(`⏰ Interview ${interview.id} scheduled for ${interviewDateTime.toLocaleTimeString()}, current difference: ${secondsFromNow}s`);
+
+      // If the current time is 30 seconds or more after the scheduled time
+      if (timeDifference >= thirtySecondsInMs) {
+        const secondsOverdue = Math.floor(timeDifference / 1000);
+        console.log(`� [AUTOMATIC UPDATE] Interview ${interview.id} is ${secondsOverdue} second(s) overdue. Updating status to IN_PROGRESS automatically.`);
+        this.updateInterviewStatusToInProgress(interview);
+        updatedCount++;
+      }
+    });
+
+    if (updatedCount === 0) {
+      console.log(`✅ [AUTOMATIC CHECK] No interviews need status updates. All ${scheduledInterviews.length} scheduled interviews are still upcoming.`);
+    } else {
+      console.log(`🔄 [AUTOMATIC UPDATE] ${updatedCount} interview(s) updated to IN_PROGRESS status automatically.`);
+    }
+  }
+
+  /**
+   * Updates a specific interview's status from SCHEDULED to IN_PROGRESS
+   */
+  private updateInterviewStatusToInProgress(interview: Evaluation): void {
+    const updatePayload = {
+      evaluateurId: interview.evaluateur?.id,
+      date: interview.date,
+      description: interview.description,
+      type: interview.type,
+      statut: 'IN_PROGRESS'
+    };
+
+    console.log(`🔄 [AUTOMATIC UPDATE] Sending status update to backend for interview ${interview.id}...`);
+
+    this.interviewService.updateEvaluation(interview.id, updatePayload).subscribe({
+      next: (updatedInterview) => {
+        // Update the local interview list
+        const index = this.interviews.findIndex(i => i.id === interview.id);
+        if (index > -1) {
+          this.interviews[index] = updatedInterview;
+          // Force change detection to update the UI immediately
+          this.interviews = [...this.interviews];
+        }
+        
+        console.log(`✅ [AUTOMATIC UPDATE] Interview ${interview.id} status updated to IN_PROGRESS successfully - UI should refresh automatically`);
+        
+        // Notify other components about the status change
+        this.interviewStateService.notifyInterviewUpdated(updatedInterview);
+        console.log(`📡 [AUTOMATIC UPDATE] Other components notified of status change for interview ${interview.id}`);
+      },
+      error: (err) => {
+        console.error(`❌ [AUTOMATIC UPDATE] Failed to update interview ${interview.id} status to IN_PROGRESS:`, err);
+      }
+    });
+  }
  loadInterviews(): void {
  console.log("Loading interviews for the authenticated user...");
 
@@ -482,7 +637,7 @@ export class InterviewsComponent implements OnInit {
         }
         
         this.interviews = interviews.filter(interview => 
-          interview.statut === 'SCHEDULED' // Vous pouvez conserver ce filtre côté client si besoin
+          interview.statut === 'SCHEDULED' || interview.statut === 'IN_PROGRESS' // Include both statuses now
         );
         
         console.log("Filtered interviews count:", this.interviews.length);
@@ -493,6 +648,7 @@ export class InterviewsComponent implements OnInit {
             id: interview.id,
             type: interview.type,
             date: interview.date,
+            statut: interview.statut,
             recrutement: interview.recrutement,
             candidateId: interview.recrutement?.candidate?.id,
             candidateFullName: interview.recrutement?.candidate?.fullName,
@@ -500,6 +656,9 @@ export class InterviewsComponent implements OnInit {
             fullObject: interview
           });
         });
+
+        // After loading, immediately check for any interviews that should be updated
+        this.checkAndUpdateInterviewStatuses();
       },
       error: (err) => {
         // L'erreur 500 ne devrait plus se produire.
@@ -507,6 +666,25 @@ export class InterviewsComponent implements OnInit {
         console.error('Error fetching my interviews:', err);
       }
     });
+  }
+
+  /**
+   * Manual method to immediately check and update interview statuses
+   * Can be called from the UI or for immediate updates
+   */
+  public manualStatusUpdate(): void {
+    console.log('🔄 Manual status update triggered by user');
+    
+    const scheduledCount = this.interviews.filter(i => i.statut === 'SCHEDULED').length;
+    const inProgressCount = this.interviews.filter(i => i.statut === 'IN_PROGRESS').length;
+    
+    console.log(`📊 Current status: ${scheduledCount} scheduled, ${inProgressCount} in progress`);
+    
+    this.checkAndUpdateInterviewStatuses();
+    
+    // Provide user feedback
+    const totalInterviews = this.interviews.length;
+    console.log(`✅ Status check completed for ${totalInterviews} total interviews`);
   }
 }
 

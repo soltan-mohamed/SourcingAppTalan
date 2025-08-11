@@ -22,6 +22,7 @@ import { CandidatesService } from 'app/services/candidates-service';
 import { Candidate } from 'app/models/candidate';
 import { UsersService } from 'app/services/users-service';
 import { User } from 'app/models/user';
+import { InterviewStateService } from 'app/services/interview-state';
 import { SearchParams, EXPERIENCE_RANGES, ExperienceRange, SEARCH_CRITERIA, SearchCriteria } from 'app/models/search-params';
 
 @Component({
@@ -59,12 +60,14 @@ export class Candidates implements OnInit, OnDestroy {
   
   private candidatesSubscription: Subscription = new Subscription();
   private searchSubscription: Subscription = new Subscription();
+  private interviewUpdateSubscription: Subscription = new Subscription();
   currentUser : any;
 
   constructor(
     private dialog: MatDialog,
     private candidateService : CandidatesService,
     private userService : UsersService,
+    private interviewStateService: InterviewStateService,
     private fb: FormBuilder
   ) {
     this.searchForm = this.fb.group({
@@ -77,6 +80,7 @@ export class Candidates implements OnInit, OnDestroy {
    ngOnInit(): void {
     this.loadStatuses();
     this.setupSearchListener();
+    this.setupInterviewUpdateListener();
     
     this.userService.getCurrentUser().subscribe({
       next: (user) => {
@@ -99,6 +103,8 @@ export class Candidates implements OnInit, OnDestroy {
               hirable = this.isHirable(candidate);
               let type = 'Not yet'; // Default type
               let position = 'Not available';
+              let candidateStatus = candidate.statut; // Start with the stored status
+              
               if (candidate.recrutements?.length > 0) {
                 const allRecrutements = candidate.recrutements
                     .flatMap(r => r || [])
@@ -108,28 +114,40 @@ export class Candidates implements OnInit, OnDestroy {
 
                 if (lastRecrutement) {
                   position = lastRecrutement.position;
-                }
+                  
+                  const allEvaluations = lastRecrutement.evaluations
+                    .flatMap(r => r || [])
+                    .filter(e => e.date) // On garde uniquement celles avec une date
+                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-                const allEvaluations = lastRecrutement.evaluations
-                  .flatMap(r => r || [])
-                  .filter(e => e.date) // On garde uniquement celles avec une date
-                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                  // Check if any interview is currently IN_PROGRESS
+                  const hasInProgressInterview = allEvaluations.some(evaluation => evaluation.statut === 'IN_PROGRESS');
+                  const hasScheduledInterview = allEvaluations.some(evaluation => evaluation.statut === 'SCHEDULED');
+                  
+                  if (hasInProgressInterview) {
+                    candidateStatus = 'IN_PROGRESS';
+                  } else if (hasScheduledInterview && candidateStatus !== 'IN_PROGRESS') {
+                    // Only update to SCHEDULED if no in-progress interviews and current status allows it
+                    if (candidateStatus === 'CONTACTED' || candidateStatus === 'SCHEDULED') {
+                      candidateStatus = 'SCHEDULED';
+                    }
+                  }
 
-                const lastEval = allEvaluations[0];
-
-                if (lastEval) {
-                  switch (lastEval.type?.toLowerCase()) {
-                    case 'rh':
-                      type = 'RH';
-                      break;
-                    case 'technique':
-                      type = 'TECH';
-                      break;
-                    case 'managerial':
-                      type = 'MNGRL';
-                      break;
-                    default:
-                      type = 'Not yet';
+                  const lastEval = allEvaluations[0];
+                  if (lastEval) {
+                    switch (lastEval.type?.toLowerCase()) {
+                      case 'rh':
+                        type = 'RH';
+                        break;
+                      case 'technique':
+                        type = 'TECH';
+                        break;
+                      case 'managerial':
+                        type = 'MNGRL';
+                        break;
+                      default:
+                        type = 'Not yet';
+                    }
                   }
                 }
               }
@@ -138,7 +156,7 @@ export class Candidates implements OnInit, OnDestroy {
                 ...candidate,
                 name,
                 type,
-                statut: candidate.statut,
+                statut: candidateStatus, // Use the computed status instead of candidate.statut
                 position : position,
                 editable,
                 hirable
@@ -265,6 +283,141 @@ export class Candidates implements OnInit, OnDestroy {
       });
   }
 
+  setupInterviewUpdateListener(): void {
+    this.interviewUpdateSubscription = this.interviewStateService.interviewUpdated$.subscribe(
+      (updatedEvaluation) => {
+        console.log('🔄 Candidates component received interview update notification:', updatedEvaluation);
+        
+        // Handle candidate status synchronization with interview status
+        this.handleCandidateStatusSync(updatedEvaluation);
+        
+        // When an interview status changes, we need to refresh the candidates list
+        // because candidate statuses might be affected by their interview statuses
+        if (this.hasActiveFilters()) {
+          console.log('📋 Refreshing candidates with current filters after interview update');
+          this.performSearch();
+        } else {
+          console.log('📋 Refreshing all candidates after interview update');
+          this.loadCandidates();
+        }
+      }
+    );
+  }
+
+  handleCandidateStatusSync(updatedEvaluation: any): void {
+    if (!updatedEvaluation || !updatedEvaluation.idCandidate) {
+      console.warn('⚠️ No candidate ID found in interview update, skipping status sync');
+      return;
+    }
+
+    const candidateId = updatedEvaluation.idCandidate;
+    const interviewStatus = updatedEvaluation.statut;
+    
+    console.log(`🔄 Syncing candidate ${candidateId} status based on interview status: ${interviewStatus}`);
+
+    // First, fetch the latest candidate data from the server to ensure we have accurate information
+    this.candidateService.fetchCandidateById(candidateId).subscribe({
+      next: (candidate) => {
+        this.determineAndUpdateCandidateStatus(candidate, interviewStatus);
+      },
+      error: (error) => {
+        console.error(`❌ Failed to fetch candidate ${candidateId} for status sync:`, error);
+        // Fallback to refreshing the entire list
+        if (this.hasActiveFilters()) {
+          this.performSearch();
+        } else {
+          this.loadCandidates();
+        }
+      }
+    });
+  }
+
+  determineAndUpdateCandidateStatus(candidate: any, triggeredByInterviewStatus: string): void {
+    if (!candidate || !candidate.recrutements?.length) {
+      console.log(`ℹ️ Candidate ${candidate?.id} has no recruitments, keeping original status`);
+      return;
+    }
+
+    console.log(`🔍 Analyzing all interviews for candidate ${candidate.id}`);
+
+    // Get all evaluations across all recruitments
+    const allEvaluations = candidate.recrutements
+      .flatMap((r: any) => r?.evaluations || [])
+      .filter((e: any) => e?.date) // Only consider evaluations with dates
+      .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    if (!allEvaluations.length) {
+      console.log(`ℹ️ Candidate ${candidate.id} has no evaluations, keeping original status`);
+      return;
+    }
+
+    // Check the current status of all interviews
+    const hasInProgressInterview = allEvaluations.some((e: any) => e.statut === 'IN_PROGRESS');
+    const hasScheduledInterview = allEvaluations.some((e: any) => e.statut === 'SCHEDULED');
+    const allCompletedOrCancelled = allEvaluations.every((e: any) => 
+      e.statut === 'COMPLETED' || e.statut === 'CANCELLED' || e.statut === 'REJECTED' || e.statut === 'ACCEPTED'
+    );
+
+    let newCandidateStatus = candidate.statut; // Start with current status
+
+    // Determine the correct candidate status based on interview states
+    if (hasInProgressInterview) {
+      // If any interview is in progress, candidate should be IN_PROGRESS
+      newCandidateStatus = 'IN_PROGRESS';
+    } else if (hasScheduledInterview) {
+      // If no interviews are in progress but some are scheduled
+      // Update to SCHEDULED only if current status allows it
+      if (candidate.statut === 'CONTACTED' || candidate.statut === 'IN_PROGRESS' || candidate.statut === 'SCHEDULED') {
+        newCandidateStatus = 'SCHEDULED';
+      }
+    } else if (allCompletedOrCancelled && candidate.statut === 'IN_PROGRESS') {
+      // If all interviews are completed/cancelled and candidate was IN_PROGRESS
+      // Revert to CONTACTED (they can be contacted for new opportunities)
+      newCandidateStatus = 'CONTACTED';
+    }
+
+    console.log(`� Interview analysis for candidate ${candidate.id}:`);
+    console.log(`   - Has IN_PROGRESS interviews: ${hasInProgressInterview}`);
+    console.log(`   - Has SCHEDULED interviews: ${hasScheduledInterview}`);
+    console.log(`   - All completed/cancelled: ${allCompletedOrCancelled}`);
+    console.log(`   - Current status: ${candidate.statut}`);
+    console.log(`   - Proposed new status: ${newCandidateStatus}`);
+    console.log(`   - Triggered by interview status: ${triggeredByInterviewStatus}`);
+
+    // Only update if the status actually needs to change
+    if (newCandidateStatus !== candidate.statut) {
+      console.log(`✅ Updating candidate ${candidate.id} database status from ${candidate.statut} to ${newCandidateStatus}`);
+      
+      const candidateUpdate = {
+        statut: newCandidateStatus
+      };
+
+      this.candidateService.updateCandidate(candidate.id, candidateUpdate).subscribe({
+        next: (updatedCandidate) => {
+          console.log(`✅ Successfully updated candidate ${candidate.id} database status to ${newCandidateStatus}`);
+          
+          // Refresh the candidates list to reflect the database changes
+          if (this.hasActiveFilters()) {
+            this.performSearch();
+          } else {
+            this.loadCandidates();
+          }
+        },
+        error: (error) => {
+          console.error(`❌ Failed to update candidate ${candidate.id} database status:`, error);
+          // If update fails, still refresh the list to show current server state
+          if (this.hasActiveFilters()) {
+            this.performSearch();
+          } else {
+            this.loadCandidates();
+          }
+        }
+      });
+    } else {
+      console.log(`ℹ️ Candidate ${candidate.id} database status already matches expected status: ${newCandidateStatus}`);
+    }
+  }
+
   performSearch(): void {
     this.isSearching = true;
     const formValue = this.searchForm.value;
@@ -337,6 +490,7 @@ export class Candidates implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.candidatesSubscription.unsubscribe();
     this.searchSubscription.unsubscribe();
+    this.interviewUpdateSubscription.unsubscribe();
   }
 
   // Helper methods for status handling

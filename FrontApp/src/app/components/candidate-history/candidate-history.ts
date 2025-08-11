@@ -293,21 +293,49 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
   }
 
   private updateLocalEvaluation(updatedEval: Evaluation): void {
+    console.log('🔄 CandidateHistory updating local evaluation:', updatedEval);
+    
     // Parcourir les recrutements pour trouver la bonne évaluation et la remplacer
     if (this.data && this.data.recrutements) {
+      let evaluationFound = false;
+      
       for (const recrutement of this.data.recrutements) {
         if (recrutement.evaluations) {
           const index = recrutement.evaluations.findIndex(e => e.id === updatedEval.id);
           if (index > -1) {
+            const oldStatus = recrutement.evaluations[index].statut;
+            const newStatus = updatedEval.statut;
+            
             // Remplacer l'évaluation obsolète par la nouvelle
             recrutement.evaluations[index] = updatedEval;
-            console.log('Local evaluation updated in CandidateHistory.');
+            evaluationFound = true;
+            
+            console.log(`✅ Evaluation ${updatedEval.id} updated: ${oldStatus} → ${newStatus}`);
+            
+            // Add a visual highlight to the updated evaluation
+            if (updatedEval.isHighlighted !== undefined) {
+              updatedEval.isHighlighted = true;
+              
+              // Remove highlight after a few seconds
+              setTimeout(() => {
+                if (updatedEval.isHighlighted) {
+                  updatedEval.isHighlighted = false;
+                }
+              }, 3000);
+            }
+            
             // Forcer la mise à jour de l'arbre si nécessaire
             this.loadCandidateData(); // Solution simple pour rafraîchir la vue de l'arbre
             break; 
           }
         }
       }
+      
+      if (!evaluationFound) {
+        console.log('⚠️ Evaluation not found in candidate history data');
+      }
+    } else {
+      console.log('⚠️ No recruitment data available for update');
     }
   }
 

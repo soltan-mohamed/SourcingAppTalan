@@ -403,4 +403,63 @@ private getAuthHeadersForFileUpload(): HttpHeaders {
       })
     );
   }
+
+  /**
+   * Computes the correct candidate status based on their current interview statuses
+   * This ensures consistent status calculation across all components
+   */
+  computeCandidateStatus(candidate: Candidate): string {
+    if (!candidate || !candidate.recrutements?.length) {
+      return candidate?.statut || 'CONTACTED';
+    }
+
+    // Get all evaluations across all recruitments
+    const allEvaluations = candidate.recrutements
+      .flatMap(r => r?.evaluations || [])
+      .filter(e => e?.date) // Only consider evaluations with dates
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    if (!allEvaluations.length) {
+      return candidate.statut || 'CONTACTED';
+    }
+
+    // Check the current status of all interviews
+    const hasInProgressInterview = allEvaluations.some(e => e.statut === 'IN_PROGRESS');
+    const hasScheduledInterview = allEvaluations.some(e => e.statut === 'SCHEDULED');
+    const allCompletedOrCancelled = allEvaluations.every(e => 
+      e.statut === 'COMPLETED' || e.statut === 'CANCELLED' || e.statut === 'REJECTED' || e.statut === 'ACCEPTED'
+    );
+
+    let computedStatus = candidate.statut; // Start with stored status
+
+    // Determine the correct candidate status based on interview states
+    if (hasInProgressInterview) {
+      // If any interview is in progress, candidate should be IN_PROGRESS
+      computedStatus = 'IN_PROGRESS';
+    } else if (hasScheduledInterview) {
+      // If no interviews are in progress but some are scheduled
+      // Update to SCHEDULED only if current status allows it
+      if (candidate.statut === 'CONTACTED' || candidate.statut === 'IN_PROGRESS' || candidate.statut === 'SCHEDULED') {
+        computedStatus = 'SCHEDULED';
+      }
+    } else if (allCompletedOrCancelled && candidate.statut === 'IN_PROGRESS') {
+      // If all interviews are completed/cancelled and candidate was IN_PROGRESS
+      // Revert to CONTACTED (they can be contacted for new opportunities)
+      computedStatus = 'CONTACTED';
+    }
+
+    return computedStatus;
+  }
+
+  /**
+   * Fetches candidate by ID and returns it with computed status
+   */
+  fetchCandidateByIdWithComputedStatus(id: number): Observable<Candidate> {
+    return this.fetchCandidateById(id).pipe(
+      map(candidate => ({
+        ...candidate,
+        statut: this.computeCandidateStatus(candidate) as any
+      }))
+    );
+  }
 }
