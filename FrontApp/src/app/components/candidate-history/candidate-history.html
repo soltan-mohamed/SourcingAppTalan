@@ -215,34 +215,29 @@
                                             </svg>
                                             <span>{{ node.data.statut }}</span>
                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="dropdown-arrow">
-                                                <path d="M8 4L5 7H11L8 4Z" fill="currentColor"/>
                                                 <path d="M8 12L11 9H5L8 12Z" fill="currentColor"/>
                                             </svg>
                                             </span>
 
                                             <!-- Dropdown Menu -->
                                             <div *ngIf="node.data.editing" 
-                                                class="status-dropdown-menu"
+                                                class="status-dropdown-menu dropdown-up"
                                                 (click)="$event.stopPropagation()">
                                             <div *ngFor="let status of evaluationStatus" 
-                                                class="dropdown-item"
+                                                [class]="'dropdown-item ' + getStatusColor(status)"
                                                 (click)="changeStatus(status, node.data.id)"
                                                 [class.active]="status === node.data.statut">
-                                                <svg [class]="'dropdown-status-icon ' + getStatusColor(status)" class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg [class]="'dropdown-status-icon'" class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                                         [attr.d]="getStatusIcon(status)"></path>
                                                 </svg>
-                                                <span>{{ status }}</span>
+                                                <span>{{ status.replace('_', ' ') }}</span>
                                             </div>
                                             </div>
                                         </div>
 
                                         <!-- close dropdown when clicking -->
-                                        <div *ngIf="node.data.editing" 
-                                            class="dropdown-overlay" 
-                                            (click)="closeDropdown()">
-                                        </div>         
-                                    </div>
+                                        </div>
                                 </div>
 
                                 <div class="evaluation-details">

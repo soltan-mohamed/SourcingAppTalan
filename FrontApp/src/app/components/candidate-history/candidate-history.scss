@@ -460,45 +460,59 @@
           }
           
           .status-dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            margin-top: 0.25rem;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-            min-width: 7.5rem;
+            position: absolute !important;
+            left: 0 !important;
+            background: white !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 8px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+            z-index: 1000 !important;
+            min-width: 150px !important;
+            overflow: hidden !important;
+            backdrop-filter: blur(8px) !important;
+            
+            &.dropdown-up {
+              bottom: 100% !important;
+              margin-bottom: 0.75rem !important;
+            }
             
             .dropdown-item {
-              padding: 0.75rem;
-              font-size: 0.75rem;
-              cursor: pointer;
-              display: flex;
-              align-items: center;
+              padding: 0.75rem 1rem !important;
+              font-size: 0.875rem !important;
+              cursor: pointer !important;
+              display: flex !important;
+              align-items: center !important;
+              transition: all 0.2s ease !important;
+              border: none !important;
+              position: relative !important;
               
               &:hover {
-                background: #f3f4f6;
+                background-color: #f8fafc !important;
+                transform: translateX(2px) !important;
               }
               
-              &.active {
-                background: #eff6ff;
+              &:first-child {
+                border-top-left-radius: 8px !important;
+                border-top-right-radius: 8px !important;
               }
               
-              .dropdown-icon {
-                width: 0.75rem;
-                height: 0.75rem;
-                margin-right: 0.5rem;
+              &:last-child {
+                border-bottom-left-radius: 8px !important;
+                border-bottom-right-radius: 8px !important;
+              }
+              
+              .dropdown-icon, .dropdown-status-icon {
+                width: 1rem !important;
+                height: 1rem !important;
+                margin-right: 0.75rem !important;
+                flex-shrink: 0 !important;
+              }
+              
+              span {
+                font-weight: 500 !important;
+                text-transform: capitalize !important;
               }
             }
-          }
-          
-          .dropdown-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 5;
-            cursor: pointer;
           }
         }
       }
@@ -773,8 +787,17 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .status-badge {
   animation: fadeIn 0.3s ease-in-out;
+}
+
+.dropdown-up {
+  animation: fadeInUp 0.2s ease-out;
 }
 
 .evaluation-step {
@@ -794,4 +817,40 @@
 /* Override Material dialog surface background that uses CSS variables */
 ::ng-deep .mat-mdc-dialog-surface {
   background-color: transparent !important;
+}
+
+/* Status color classes for dropdown items */
+.status-contacted {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+}
+
+.status-cancelled {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+.status-accepted {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+}
+
+.status-rejected {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+}
+
+.status-vivier {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+}
+
+.status-in-progress {
+  background-color: #dbeafe !important;
+  color: #1d4ed8 !important;
+}
+
+.status-scheduled {
+  background-color: #fed7aa !important;
+  color: #c2410c !important;
 }

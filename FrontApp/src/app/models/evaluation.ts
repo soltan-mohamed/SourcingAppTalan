@@ -22,4 +22,5 @@ export interface Evaluation {
     editing : boolean,
     editingText : boolean;
      isHighlighted?: boolean;
+     dropdownPosition?: 'up' | 'down';
 }

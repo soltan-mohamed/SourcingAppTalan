@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject,OnDestroy, ViewChildren, QueryList, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Inject,OnDestroy, ViewChildren, QueryList, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTreeModule, MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
@@ -111,12 +111,53 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
   
   toggleDropdown(event: Event, evalData : Evaluation) {
     event.stopPropagation();
-    this.editingEval = evalData
+    
+    // If clicking on the same evaluation that's already open, close it
+    if (this.editingEval && this.editingEval.id === evalData.id && this.editingEval.editing) {
+      this.closeDropdown();
+      return;
+    }
+    
+    // Close any currently open dropdown
+    if (this.editingEval && this.editingEval.editing) {
+      this.editingEval.editing = false;
+    }
+    
+    // Open the new dropdown
+    this.editingEval = evalData;
     this.editingEval.editing = true;
+    
+    // Set dropdown position
+    this.setDropdownPosition(evalData);
+  }
+  
+  setDropdownPosition(evalData: Evaluation) {
+    // Set all dropdowns to open upward for better UX
+    evalData.dropdownPosition = 'up';
   }
   
   closeDropdown() {
-    this.editingEval.editing = false;
+    if (this.editingEval) {
+      this.editingEval.editing = false;
+      this.editingEval = null as any; // Reset reference
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    // Close dropdown when clicking outside
+    if (this.editingEval && this.editingEval.editing) {
+      const target = event.target as HTMLElement;
+      
+      // Check if click is inside any dropdown-related element
+      const clickedInsideDropdown = target.closest('.status-dropdown-section') || 
+                                   target.closest('.status-dropdown-menu') ||
+                                   target.closest('.status-dropdown-badge');
+      
+      if (!clickedInsideDropdown) {
+        this.closeDropdown();
+      }
+    }
   }
 
   saveDescription(evalu : Evaluation) {
@@ -302,15 +343,15 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
 
   getStatusColor(status: string): string {
     const colors: { [key: string]: string } = {
-      'CONTACTED': 'bg-blue-100 text-blue-800',
-      'CANCELLED': 'bg-yellow-100 text-indigo-800',
-      'ACCEPTED': 'bg-green-100 text-green-800',
-      'REJECTED': 'bg-red-100 text-red-800',
-      'VIVIER': 'bg-gray-100 text-gray-800',
-      'IN_PROGRESS': 'bg-blue-100 text-blue-700',
-      'SCHEDULED': 'bg-orange-100 text-orange-700'
+      'CONTACTED': 'status-contacted',
+      'CANCELLED': 'status-cancelled',
+      'ACCEPTED': 'status-accepted',
+      'REJECTED': 'status-rejected',
+      'VIVIER': 'status-vivier',
+      'IN_PROGRESS': 'status-in-progress',
+      'SCHEDULED': 'status-scheduled'
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'status-vivier';
   }
 
   getStatusIcon(status: string): string {
