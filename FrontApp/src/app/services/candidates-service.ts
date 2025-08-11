@@ -31,6 +31,12 @@ export class CandidatesService {
 
   ////////////////////////////////
 
+  deleteCV(candidateId: number): Observable<any> {
+
+    return this.http.delete(`${backendUrl}/candidats/${candidateId}/cv`) ;
+
+  }
+
   uploadCv(candidateId: number, file: File): Observable<HttpEvent<any>> {
     const formData = new FormData();
     formData.append('file', file);

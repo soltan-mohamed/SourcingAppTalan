@@ -52,6 +52,20 @@ public class CandidateService {
         return repository.save(candidate);
     }
 
+    public void deleteCv(Long candidateId) {
+        Candidate candidate = repository.findById(candidateId)
+                .orElseThrow(() -> new RuntimeException("Candidate not found with id: " + candidateId));
+
+        candidate.setCvData(null);
+        candidate.setCvFilename(null);
+        candidate.setCvFileSize(null);
+
+        log.info("CV deleted for candidate {}", candidateId);
+
+        repository.save(candidate);
+    }
+
+
     private void validateFile(MultipartFile file) {
         if (file.isEmpty()) {
             throw new RuntimeException("File is empty");
