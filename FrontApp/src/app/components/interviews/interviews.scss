@@ -525,11 +525,23 @@
     .mat-mdc-chip {
       font-weight: 500;
       
-      .mat-icon {
-        margin-right: 0.25rem;
-        font-size: 1rem;
-        width: 1rem;
-        height: 1rem;
+      .chip-content {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        
+        .status-icon {
+          font-size: 1rem;
+          width: 1rem;
+          height: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .status-text {
+          line-height: 1;
+        }
       }
       
       // Status specific colors

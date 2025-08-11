@@ -611,6 +611,20 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  gap: 0.375rem;
+  
+  .status-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .status-text {
+    line-height: 1;
+  }
   
   &.status-contacted {
     background-color: #e3f2fd;
