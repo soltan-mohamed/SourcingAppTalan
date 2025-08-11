@@ -136,13 +136,30 @@ export class InterviewsComponent implements OnInit, OnDestroy {
       filteredInterviews = filteredInterviews.filter(i => {
         if (!i.type) return false;
         
-        // Case-insensitive comparison
-        const interviewType = i.type.toLowerCase();
-        const selectedType = this.selectedType.toLowerCase();
+        // Case-insensitive comparison with exact matching
+        const interviewType = i.type.toUpperCase().trim();
+        const selectedType = this.selectedType.toUpperCase().trim();
         
-        return interviewType === selectedType ||
-               interviewType.includes(selectedType) ||
-               selectedType.includes(interviewType);
+        // Direct match
+        if (interviewType === selectedType) {
+          return true;
+        }
+        
+        // Handle common variations and aliases
+        const typeMap: { [key: string]: string[] } = {
+          'TECHNIQUE': ['TECHNIQUE', 'TECHNICAL', 'TECH'],
+          'RH': ['RH', 'HR', 'HUMAN_RESOURCES'],
+          'MANAGERIAL': ['MANAGERIAL', 'MANAGER', 'MANAGEMENT', 'FINAL']
+        };
+        
+        // Check if the selected type matches any variation of the interview type
+        for (const [standardType, variations] of Object.entries(typeMap)) {
+          if (variations.includes(selectedType) && variations.includes(interviewType)) {
+            return true;
+          }
+        }
+        
+        return false;
       });
     }
     
@@ -234,6 +251,16 @@ export class InterviewsComponent implements OnInit, OnDestroy {
       });
     }
     
+    // Debug: show available interview types when type filter is selected
+    if (this.selectedType && this.selectedType.trim()) {
+      console.log(`Filtering by interview type: ${this.selectedType}`);
+      console.log('Available interview types in data:');
+      const uniqueTypes = [...new Set(this.interviews.map(i => i.type).filter(type => type))];
+      uniqueTypes.forEach((type, index) => {
+        console.log(`${index + 1}. "${type}"`);
+      });
+    }
+    
     const filteredCount = this.dataSource.length;
     const totalCount = this.interviews.length;
     
@@ -249,6 +276,11 @@ export class InterviewsComponent implements OnInit, OnDestroy {
     
     console.log('Search filters cleared');
     console.log(`Showing all ${this.interviews.length} interviews`);
+  }
+
+  // Helper method to get all unique interview types for debugging
+  getAvailableInterviewTypes(): string[] {
+    return [...new Set(this.interviews.map(i => i.type).filter(type => type))];
   }
 
   // Method to get color for interview type chips
