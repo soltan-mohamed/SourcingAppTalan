@@ -77,6 +77,11 @@
             <span class="mobile-label"></span>
             <div>
                 @switch (row.statut) {
+                @case ('RECRUITED') {
+                <div>
+                    <span class="badge badge-solid-recruited">{{ row.statut }}</span>
+                </div>
+                }
                 @case ('ACCEPTED') {
                 <div>
                     <span class="badge badge-solid-accepted">{{ row.statut }}</span>
