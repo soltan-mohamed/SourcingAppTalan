@@ -51,7 +51,7 @@
         </mat-header-cell>
         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [matTooltip]="row[column.def]">
             <span class="mobile-label"></span>
-            <button mat-icon-button color="accent" class="text-blue-500 tbl-action-btn" (click)="$event.stopPropagation(); openCvFile(row.id)">
+            <button [disabled]="!row.cvFilename" mat-icon-button color="accent" class="text-blue-500 tbl-action-btn" (click)="$event.stopPropagation(); openCvFile(row.id)">
                 <app-feather-icons [icon]="'file-text'" class="text-blue-900" [class]="'tbl-fav-edit'"></app-feather-icons>
             </button>
         </mat-cell>
