@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import tn.talan.backendapp.dtos.RecrutementStatusUpdateDTO;
 import tn.talan.backendapp.dtos.createRecrutementDTO;
 import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.Recrutement;
@@ -67,6 +68,16 @@ public class RecrutementService {
         }
         return null;
     }
+
+    public Recrutement updateStatus(RecrutementStatusUpdateDTO updated) {
+        Recrutement r = repository.findById(updated.getId())
+                .orElseThrow(() -> new RuntimeException("Candidate not found with id: " + updated.getId()));
+
+        r.setStatut(updated.getStatut());
+        return repository.save(r);
+
+    }
+
 
     public Recrutement create(createRecrutementDTO recrutementDTO, Candidate candidate) {
         String email = authService.getCurrentUsername();
