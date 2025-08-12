@@ -72,11 +72,7 @@
                         [ngClass]="'badge-' + (interview.type.toLowerCase() || 'default')">
                     {{ interview.type }}
                   </span>
-                  <span class="interview-status-badge" 
-                        [ngClass]="getInterviewStatusClass(interview.status)">
-                    <span class="material-symbols-outlined">{{ getInterviewStatusIcon(interview.status) }}</span>
-                    {{ getInterviewStatusText(interview.status) }}
-                  </span>
+
                 </div>
                  <button class="expand-button" (click)="toggleInterview(interview, $event)">
                   <span class="material-symbols-outlined">expand_more</span>
