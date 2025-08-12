@@ -697,6 +697,15 @@
               font-family: 'Material Symbols Outlined';
             }
           }
+          .delete-button {
+  /* We only need to set the color. Sizing and alignment are handled by mat-icon-button */
+  color: #ef4444; /* Red color for the icon */
+  
+  /* Optional: Add a subtle hover effect */
+  &:hover {
+    background-color: rgba(239, 68, 68, 0.08); /* Faint red background on hover */
+  }
+}
         }
       }
     }
