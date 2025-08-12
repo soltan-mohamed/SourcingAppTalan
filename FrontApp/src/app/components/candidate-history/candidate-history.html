@@ -328,6 +328,10 @@
                                                     draw
                                                 </span>
                                             </button>
+                                              <button class="delete-button" mat-icon-button matTooltip="Delete Evaluation" 
+        (click)="deleteEvaluation(node.data.id, recruitment.id)">
+    <mat-icon>delete</mat-icon>
+</button>
 
 
                                         </div>

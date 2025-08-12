@@ -518,4 +518,27 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
     });
 
   }
+    deleteEvaluation(evaluationId: number, recruitmentId: number): void {
+    // It's critical to confirm a destructive action with the user.
+    const isConfirmed = window.confirm('Are you sure you want to delete this evaluation? This action cannot be undone.');
+
+    if (isConfirmed) {
+      this.interviewService.deleteEvaluation(evaluationId).subscribe({
+        next: () => {
+          // On success, remove the evaluation from the local data
+          const recruitment = this.recruitementData.find(r => r.id === recruitmentId);
+          if (recruitment && recruitment.evaluations) {
+            recruitment.evaluations = recruitment.evaluations.filter(e => e.id !== evaluationId);
+            
+            // Reload the tree data to refresh the UI
+            this.loadCandidateData(); 
+          }
+        },
+        error: (err) => {
+          console.error("❌ Error while deleting evaluation", err);
+          // Here you could show a user-friendly error message (e.g., using MatSnackBar)
+        }
+      });
+    }
+  }
 }

@@ -51,4 +51,17 @@ getInterviewsAssignedTo(userId: number, roles: string[]): Observable<Evaluation[
     return this.http.get<Evaluation[]>(`${backendUrl}/evaluations/assigned-to/${userId}${roleQuery}`);
   }
 
+deleteEvaluation(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`)
+      .pipe(
+        tap(() => {
+          console.log(`✅ Evaluation with id ${id} deleted successfully.`);
+        }),
+        catchError(error => {
+          console.error(`❌ Failed to delete evaluation with id ${id}:`, error);
+          return throwError(() => error);
+        })
+      );
+  }  
+
 }
