@@ -225,7 +225,7 @@
                                                 (click)="$event.stopPropagation()">
                                             <div *ngFor="let status of evaluationStatus" 
                                                 [class]="'dropdown-item ' + getStatusColor(status)"
-                                                (click)="changeStatus(status, node.data.id)"
+                                                (click)="changeStatus(status, node.data.id,recruitment.id)"
                                                 [class.active]="status === node.data.statut">
                                                 <svg [class]="'dropdown-status-icon'" class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 

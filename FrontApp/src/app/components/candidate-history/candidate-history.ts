@@ -20,6 +20,7 @@ import { InterviewService } from 'app/services/interview-service';
 import { Subscription } from 'rxjs';
 import { InterviewStateService } from 'app/services/interview-state';
 import { EmailTemplate } from '../email-template/email-template';
+import { RecrutementService } from 'app/services/recrutement-service';
 // Flat node interface for the tree
 interface FlatNode {
   expandable: boolean;
@@ -103,7 +104,8 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
     @Inject(MAT_DIALOG_DATA) public data: Candidate & { highlightEvaluationId?: number },
     private candidatesService: CandidatesService,
     private interviewService: InterviewService,
-     private interviewStateService: InterviewStateService
+    private interviewStateService: InterviewStateService,
+    private recruitementService : RecrutementService
     
   ) {
     this.highlightedEvaluationId = this.data.highlightEvaluationId;
@@ -184,7 +186,7 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
   }
 
   
-  changeStatus(newStatus: EvaluationStatus, eval_id: number) {
+  changeStatus(newStatus: EvaluationStatus, eval_id: number, recruitment_id : number) {
     const evalu = this.recruitementData
       .flatMap(item => item.evaluations || [])
       .find(evaluation => evaluation && String(evaluation.id) === String(eval_id));
@@ -196,6 +198,10 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
         type: evalu.type,
         date: evalu.date,
       };
+
+      let newRecruitementStatus = "IN_PROGRESS"
+
+      if (newStatus === 'REJECTED') newRecruitementStatus  = "NOT_RECRUITED";
       
       this.interviewService.updateEvaluation(evalu.id, updatedEval).subscribe({
         next: (res) => {
@@ -216,14 +222,18 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
 
             if(newStatus === 'ACCEPTED' && lastEvaluation.type === 'MANAGERIAL') {
               updatedCandidate = {
-                statut: 'RECRUITED'
-              };            
+                statut: 'RECRUITED',
+              };     
+
+              newRecruitementStatus = "RECRUITED";
+
             }
             else {
               updatedCandidate = {
                 statut: newStatus
               };
             }
+
 
             this.candidatesService.updateCandidate(this.data.id, updatedCandidate).subscribe({
               next: () => {
@@ -236,6 +246,26 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
               },
               error: (err) => {
                 console.error("❌ Erreur lors de la mise à jour du statut candidat", err);
+              }
+            });
+          }
+
+          const updatedRecruitement = {
+            statut : newRecruitementStatus,
+            id : recruitment_id
+          }
+
+          const foundRecruitement = this.recruitementData.find(r => r.id === recruitment_id);
+          if (foundRecruitement && foundRecruitement.statut !== newRecruitementStatus) {
+            // Updating recruitement status
+            this.recruitementService.updateRecrutementStatus(updatedRecruitement).subscribe({
+              next: () => {
+                if(foundRecruitement) foundRecruitement.statut = newRecruitementStatus;
+                console.log("✅ Statut du recrutement mis à jour !");
+                
+              },
+              error: (err) => {
+                console.error("❌ Erreur lors de la mise à jour du statut recrutement", err);
               }
             });
           }
@@ -346,7 +376,8 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
       
       this.treeControls = [];
       this.dataSources = [];
-      
+      this.recruitementData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
       this.recruitementData.forEach((recruitment, index) => {
         let shouldExpand = false;
         recruitment.evaluations?.forEach(e => {

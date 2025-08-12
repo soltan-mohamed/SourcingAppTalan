@@ -219,12 +219,12 @@ export class Candidates implements OnInit, OnDestroy {
     const candidateStatus = candidate?.statut as string;
     
     // First check: Only allow recruitment for CONTACTED or VIVIER status
-    if (candidateStatus !== 'CONTACTED' && candidateStatus !== 'VIVIER') {
+    if (candidateStatus !== 'CONTACTED' && candidateStatus !== 'VIVIER' && candidateStatus !== 'REJECTED') {
       return false;
     }
 
     // For CONTACTED and VIVIER candidates, check if they have existing recruitments
-    if (!candidate.recrutements || candidate.recrutements.length === 0) {
+    if (!candidate.recrutements || candidate.recrutements.length === 0 ) {
       // No recruitments exist, they can be hired
       return true;
     }

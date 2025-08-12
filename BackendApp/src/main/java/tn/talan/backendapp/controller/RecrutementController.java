@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import tn.talan.backendapp.dtos.CreateRecrutementDTO_2;
+import tn.talan.backendapp.dtos.RecrutementStatusUpdateDTO;
 import tn.talan.backendapp.dtos.createRecrutementDTO;
 import tn.talan.backendapp.entity.Candidate;
 import tn.talan.backendapp.entity.Recrutement;
@@ -41,7 +42,6 @@ public class RecrutementController {
     }
 
 
-
     @GetMapping("/{id}")
     public Recrutement getById(@PathVariable Long id) {
         return service.getById(id);
@@ -72,6 +72,11 @@ public class RecrutementController {
     @PutMapping("/{id}")
     public Recrutement update(@PathVariable Long id, @RequestBody Recrutement r) {
         return service.update(id, r);
+    }
+
+    @PutMapping
+    public Recrutement updateStatus(@RequestBody RecrutementStatusUpdateDTO r) {
+        return service.updateStatus(r);
     }
 
     @DeleteMapping("/{id}")
