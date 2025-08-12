@@ -183,9 +183,10 @@
     <ng-container matColumnDef="actions">
         <mat-header-cell class="column-label pr-0" *matHeaderCellDef>Actions</mat-header-cell>
         <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-            <button mat-icon-button color="" (click)="$event.stopPropagation()" (click)="openHistory(row)">
-                <app-feather-icons [icon]="'refresh-ccw'" [class]="'tbl-fav-loop'"></app-feather-icons>
-            </button>
+           <button mat-icon-button color="accent" matTooltip="View details" 
+                      (click)="$event.stopPropagation()" (click)="openHistory(row)" class="view-btn">
+                <mat-icon>visibility</mat-icon>
+              </button>
             <button [disabled]="row.editable === false" mat-icon-button color="" (click)="$event.stopPropagation()" (click)="editCall(row)">
                 <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
             </button>
