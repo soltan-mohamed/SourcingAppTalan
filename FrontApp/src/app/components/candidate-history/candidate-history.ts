@@ -519,24 +519,62 @@ export class CandidateHistory implements OnInit ,OnDestroy, AfterViewInit{
 
   }
     deleteEvaluation(evaluationId: number, recruitmentId: number): void {
-    // It's critical to confirm a destructive action with the user.
     const isConfirmed = window.confirm('Are you sure you want to delete this evaluation? This action cannot be undone.');
 
     if (isConfirmed) {
       this.interviewService.deleteEvaluation(evaluationId).subscribe({
         next: () => {
-          // On success, remove the evaluation from the local data
+          console.log(`✅ Evaluation ${evaluationId} deleted successfully.`);
+
+          // First, remove the evaluation from the local UI data
           const recruitment = this.recruitementData.find(r => r.id === recruitmentId);
           if (recruitment && recruitment.evaluations) {
             recruitment.evaluations = recruitment.evaluations.filter(e => e.id !== evaluationId);
-            
-            // Reload the tree data to refresh the UI
-            this.loadCandidateData(); 
           }
+          
+          // Refresh the tree view to show the evaluation has been removed
+          this.loadCandidateData();
+
+          // --- START: NEW LOGIC TO UPDATE CANDIDATE STATUS ---
+
+          // 1. Get all remaining evaluations from all recruitments
+          const allRemainingEvaluations = this.recruitementData
+                .flatMap(r => r.evaluations || [])
+                .filter(e => e && e.date); // Ensure we only consider evaluations with a date
+
+          let newCandidateStatus: string;
+
+          if (allRemainingEvaluations.length > 0) {
+            // 2. If evaluations remain, find the new latest one by sorting by date
+            const latestEvaluation = allRemainingEvaluations
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+            
+            newCandidateStatus = latestEvaluation.statut;
+            console.log(`New latest evaluation found. Setting candidate status to: ${newCandidateStatus}`);
+
+          } else {
+            // 3. If no evaluations are left, default the status to 'IN_PROGRESS'
+            newCandidateStatus = 'IN_PROGRESS';
+            console.log('No evaluations left. Setting candidate status to IN_PROGRESS.');
+          }
+
+          // 4. Call the service to update the candidate's status in the backend
+          const updatedCandidate = { statut: newCandidateStatus };
+          this.candidatesService.updateCandidate(this.data.id, updatedCandidate).subscribe({
+              next: () => {
+                // 5. Update the local data to refresh the UI instantly
+                this.data.statut = newCandidateStatus as any;
+                console.log(`✅ Candidate status updated successfully to ${newCandidateStatus}.`);
+              },
+              error: (err) => {
+                console.error("❌ Failed to update candidate status after deletion.", err);
+              }
+          });
+          // --- END: NEW LOGIC ---
+
         },
         error: (err) => {
           console.error("❌ Error while deleting evaluation", err);
-          // Here you could show a user-friendly error message (e.g., using MatSnackBar)
         }
       });
     }
