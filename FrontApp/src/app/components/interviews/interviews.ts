@@ -173,6 +173,16 @@ export class InterviewsComponent implements OnInit, OnDestroy {
       });
     }
     
+    // Sort by days left (ascending order - least days left first)
+    filteredInterviews.sort((a, b) => {
+      if (!a.date || !b.date) return 0;
+      
+      const daysLeftA = this.calculateDaysLeftNumber(a.date);
+      const daysLeftB = this.calculateDaysLeftNumber(b.date);
+      
+      return daysLeftA - daysLeftB;
+    });
+    
     return filteredInterviews;
   }
 
@@ -199,9 +209,14 @@ export class InterviewsComponent implements OnInit, OnDestroy {
 
   // Helper method to calculate days left as number
   private calculateDaysLeftNumber(date: string): number {
-    const interviewDate = new Date(date);
     const today = new Date();
-    const timeDiff = interviewDate.getTime() - today.getTime();
+    const interviewDate = new Date(date);
+    
+    // Set both dates to start of day for accurate day comparison
+    const todayStartOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const interviewStartOfDay = new Date(interviewDate.getFullYear(), interviewDate.getMonth(), interviewDate.getDate());
+    
+    const timeDiff = interviewStartOfDay.getTime() - todayStartOfDay.getTime();
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   }
 
@@ -488,7 +503,12 @@ export class InterviewsComponent implements OnInit, OnDestroy {
   calculateDaysLeft(date: string | Date): string {
     const today = new Date();
     const interviewDate = new Date(date);
-    const timeDiff = interviewDate.getTime() - today.getTime();
+    
+    // Set both dates to start of day for accurate day comparison
+    const todayStartOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const interviewStartOfDay = new Date(interviewDate.getFullYear(), interviewDate.getMonth(), interviewDate.getDate());
+    
+    const timeDiff = interviewStartOfDay.getTime() - todayStartOfDay.getTime();
     const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
     
     if (daysLeft === 0) {
